@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Groq AI Chat</title>
+
+  <!-- Font Awesome (for icons) -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    html, body {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      font-family: 'Segoe UI', sans-serif;
+      background: linear-gradient(135deg, #120029, #1c1b3a, #0d1117);
+      color: #e0e0f5;
+    }
+
+    body {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .chat-header {
+      background: linear-gradient(to right, #612e9d, #3b1b7d);
+      padding: 16px 20px;
+      font-size: 20px;
+      font-weight: bold;
+      color: white;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-shrink: 0;
+    }
+
+    .chat-container {
+      flex-grow: 1;
+      padding: 16px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      scroll-behavior: smooth;
+    }
+
+    .message {
+      max-width: 80%;
+      padding: 12px 18px;
+      margin: 6px 0;
+      border-radius: 16px;
+      line-height: 1.5;
+      white-space: pre-wrap;
+      word-wrap: break-word;
+    }
+
+    .user-msg {
+      align-self: flex-end;
+      background: linear-gradient(to right, #8b5cf6, #7c3aed);
+      color: white;
+    }
+
+    .ai-msg {
+      align-self: flex-start;
+      background-color: #272840;
+      color: #e0e0f5;
+    }
+
+    .chat-input-area {
+      display: flex;
+      padding: 14px;
+      gap: 10px;
+      background-color: #0d1117;
+      border-top: 1px solid #2e2e3e;
+      flex-shrink: 0;
+    }
+
+    .chat-input-area input {
+      flex-grow: 1;
+      padding: 14px;
+      border-radius: 10px;
+      background-color: #1a1a2f;
+      color: white;
+      border: none;
+      outline: none;
+    }
+
+    .chat-input-area button {
+      padding: 12px 20px;
+      border: none;
+      border-radius: 8px;
+      background: linear-gradient(to right, #7c3aed, #4c1d95);
+      color: white;
+      font-weight: 500;
+      cursor: pointer;
+      transition: background 0.2s ease;
+    }
+
+    .chat-input-area button:hover {
+      background: linear-gradient(to right, #9d4edd, #5f27cd);
+    }
+
+    @media screen and (max-width: 600px) {
+      .chat-header {
+        font-size: 18px;
+        padding: 12px 16px;
+      }
+
+      .chat-input-area input {
+        padding: 12px;
+      }
+
+      .chat-input-area button {
+        padding: 10px 14px;
+      }
+
+      .message {
+        max-width: 95%;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="chat-header">
+    <i class="fas fa-comment-dots"></i> Groq AI Chat
+  </div>
+
+  <div class="chat-container" id="chatContainer"></div>
+
+  <div class="chat-input-area">
+    <input type="text" id="userInput" placeholder="Chat with Groq in Gen Z style..." />
+    <button onclick="sendMessage()">Send</button>
+  </div>
+
+  <script>
+    const chatContainer = document.getElementById('chatContainer');
+    const inputField = document.getElementById('userInput');
+
+    function appendMessage(content, isUser = false) {
+      const msg = document.createElement('div');
+      msg.className = 'message ' + (isUser ? 'user-msg' : 'ai-msg');
+      msg.textContent = content;
+      chatContainer.appendChild(msg);
+      chatContainer.scrollTop = chatContainer.scrollHeight;
+    }
+
+    async function sendMessage() {
+      const userText = inputField.value.trim();
+      if (!userText) return;
+
+      appendMessage(userText, true);
+      inputField.value = '';
+
+      const hiddenPrompt = `Talk in Gen Z. User said: ${userText}`;
+
+      try {
+        const res = await fetch('https://library-of-knowledge.vercel.app/groq', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ message: hiddenPrompt })
+        });
+
+        const data = await res.json();
+        const reply = data.choices?.[0]?.message?.content || 'Hmm... silent treatment huh?';
+        appendMessage(reply, false);
+      } catch (err) {
+        appendMessage('Something went wrong… Groq might be napping.', false);
+      }
+    }
+
+    inputField.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') sendMessage();
+    });
+  </script>
+
+</body>
+</html>
