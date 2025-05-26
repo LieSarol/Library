@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>GenZ Search</title>
+
+  <!-- Font Awesome for back icon -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', sans-serif;
+      background-color: #0d1117;
+      color: #c9d1d9;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .topbar {
+      position: absolute;
+      top: 20px;
+      left: 20px;
+    }
+
+    .back-btn {
+      color: #c9d1d9;
+      font-size: 25px;
+      cursor: pointer;
+      text-decoration: none;
+    }
+
+    .container {
+      flex-grow: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding-top: 60px;
+      text-align: center;
+    }
+
+    h1 {
+      font-size: 2.5rem;
+      font-weight: 600;
+      margin-bottom: 20px;
+    }
+
+    #searchInput {
+      padding: 14px 20px;
+      width: 90%;
+      max-width: 500px;
+      font-size: 16px;
+      border-radius: 50px;
+      border: none;
+      outline: none;
+      background-color: #161b22;
+      color: #f0f6fc;
+      box-shadow: 0 0 0 2px #30363d;
+      transition: box-shadow 0.2s ease;
+    }
+
+    #searchInput:focus {
+      box-shadow: 0 0 0 2px #58a6ff;
+    }
+
+    .search-btn {
+      margin-top: 20px;
+      padding: 12px 28px;
+      border: none;
+      border-radius: 30px;
+      background-color: #238636;
+      color: white;
+      font-size: 16px;
+      cursor: pointer;
+      transition: background 0.2s ease;
+    }
+
+    .search-btn:hover {
+      background-color: #2ea043;
+    }
+
+    .suggestions {
+      margin-top: 40px;
+      max-width: 600px;
+      width: 90%;
+      color: #8b949e;
+    }
+
+    .label {
+      font-weight: bold;
+      font-size: 14px;
+      margin-bottom: 8px;
+      color: #58a6ff;
+    }
+
+    .tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      justify-content: center;
+    }
+
+    .tag {
+      background-color: #161b22;
+      border: 1px solid #30363d;
+      padding: 8px 16px;
+      border-radius: 30px;
+      font-size: 14px;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    .tag:hover {
+      background-color: #21262d;
+    }
+  </style>
+</head>
+<body>
+  <!-- Back Button -->
+  <div class="topbar">
+    <a href="/" class="back-btn"><i class="fas fa-arrow-left"></i></a>
+  </div>
+
+  <!-- Google-style layout -->
+  <div class="container">
+    <h1>Ask me anything.</h1>
+    <input type="text" id="searchInput" placeholder="e.g. What is Xata?" />
+    <button class="search-btn" onclick="handleSearch()">Search</button>
+
+    <div class="suggestions">
+      <div class="label">Suggestions:</div>
+      <div class="tags">
+        <div class="tag" onclick="suggest('What is vector search in AI?')">Vector search</div>
+        <div class="tag" onclick="suggest('How to connect Node.js with Xata?')">Xata + Node.js</div>
+        <div class="tag" onclick="suggest('Explain Redis like I\'m 5')">Redis 101</div>
+        <div class="tag" onclick="suggest('Why do developers love Postgres?')">Postgres love</div>
+        <div class="tag" onclick="suggest('What is sessionStorage used for?')">sessionStorage</div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function handleSearch() {
+      const searchTerm = document.getElementById('searchInput').value.trim();
+      if (!searchTerm) return alert('Please enter something first!');
+      sessionStorage.setItem('searchQuery', searchTerm);
+      window.location.href = '/search-page.html';
+    }
+
+    function suggest(text) {
+      document.getElementById('searchInput').value = text;
+    }
+  </script>
+</body>
+</html>
