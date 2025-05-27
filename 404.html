@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>404 Not Found - Oopsies!</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      background: linear-gradient(135deg, #0d0d0d, #1a1a1a, #2b2b2b);
+      color: #c9d1d9;
+      font-family: 'Segoe UI', sans-serif;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      text-align: center;
+    }
+
+    .emoji {
+      font-size: 6rem;
+      margin-bottom: 20px;
+    }
+
+    h1 {
+      font-size: 3rem;
+      margin-bottom: 10px;
+    }
+
+    p {
+      font-size: 1.2rem;
+      max-width: 400px;
+      margin: 10px 0;
+      color: #8b949e;
+    }
+
+    .btn {
+      margin-top: 30px;
+      background-color: #238636;
+      color: white;
+      border: none;
+      padding: 12px 24px;
+      font-size: 16px;
+      border-radius: 30px;
+      cursor: pointer;
+      box-shadow: 0 0 0 2px #30363d;
+      transition: background-color 0.2s;
+    }
+
+    .btn:hover {
+      background-color: #2ea043;
+    }
+
+    .glitch {
+      color: #f85149;
+      animation: glitch 1s infinite;
+    }
+
+    @keyframes glitch {
+      0% { transform: skew(0deg); }
+      20% { transform: skew(2deg); }
+      40% { transform: skew(-2deg); }
+      60% { transform: skew(1deg); }
+      80% { transform: skew(-1deg); }
+      100% { transform: skew(0deg); }
+    }
+  </style>
+</head>
+<body>
+  <div class="emoji">404?</div>
+  <h1 class="glitch">Bruh...</h1>
+  <p>
+    You just went full NPC mode.<br>
+    This page doesn’t exist — probably chilling in another multiverse.
+  </p>
+  <p>
+    Maybe the URL tripped or got ratio’d. Either way, it’s gone.
+  </p>
+  <button class="btn" onclick="window.location.href='/'">
+    Take Me Home <i class="fas fa-rocket"></i>
+  </button>
+</body>
+</html>
