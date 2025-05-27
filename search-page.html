@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Search Page - GenZ</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', sans-serif;
+      background: linear-gradient(135deg, #0d0d0d, #1a1a1a, #2b2b2b);
+      color: #c9d1d9;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .topbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 20px;
+    }
+
+    .back-btn {
+      color: #c9d1d9;
+      font-size: 24px;
+      text-decoration: none;
+    }
+
+    .search-bar {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      position: relative;
+      margin-left: 10px;
+    }
+
+    #searchInput {
+      width: 100%;
+      padding: 12px 44px 12px 20px;
+      font-size: 16px;
+      border-radius: 30px;
+      border: none;
+      outline: none;
+      background-color: #161b22;
+      color: #f0f6fc;
+      box-shadow: 0 0 0 2px #30363d;
+    }
+
+    .search-icon {
+      position: absolute;
+      right: 16px;
+      font-size: 18px;
+      color: #8b949e;
+      cursor: pointer;
+    }
+
+    .container {
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .result-box {
+      margin-top: 40px;
+      background-color: #161b22;
+      border: 1px solid #30363d;
+      padding: 16px 24px;
+      border-radius: 12px;
+      max-width: 600px;
+      width: 90%;
+      cursor: pointer;
+      transition: background-color 0.2s;
+    }
+
+    .result-box:hover {
+      background-color: #21262d;
+    }
+
+    .label {
+      font-weight: bold;
+      font-size: 14px;
+      color: #58a6ff;
+      margin-bottom: 10px;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Top Row with Back and Search -->
+  <div class="topbar">
+    <a href="/" class="back-btn"><i class="fas fa-arrow-left"></i></a>
+    <div class="search-bar">
+      <input type="text" id="searchInput" placeholder="Search..." />
+      <i class="fas fa-search search-icon" onclick="handleSearch()"></i>
+    </div>
+  </div>
+
+  <!-- Result Section -->
+  <div class="container">
+    <div id="recentSearchBox" style="display:none; width: 100%;">
+      <div class="label">Your Last Search:</div>
+      <div class="result-box" onclick="goToEndPage()">
+        <span id="recentSearchText"></span>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const searchInput = document.getElementById('searchInput');
+    const recentSearchText = document.getElementById('recentSearchText');
+    const recentSearchBox = document.getElementById('recentSearchBox');
+
+    const searchQuery = sessionStorage.getItem('searchQuery');
+    if (searchQuery) {
+      searchInput.value = searchQuery;
+      recentSearchText.innerText = searchQuery;
+      recentSearchBox.style.display = 'block';
+    }
+
+    function handleSearch() {
+      const query = searchInput.value.trim();
+      if (!query) return;
+      sessionStorage.setItem("searchQuery", query);
+      location.reload();
+    }
+
+    function goToEndPage() {
+      window.location.href = "/search-end.html";
+    }
+
+    // Allow pressing Enter to trigger search
+    searchInput.addEventListener("keypress", function(event) {
+      if (event.key === "Enter") {
+        handleSearch();
+      }
+    });
+  </script>
+</body>
+</html>
