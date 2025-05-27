@@ -8,6 +8,9 @@
   <!-- Font Awesome for back icon -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
 
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet"/>
+
   <style>
     * {
       box-sizing: border-box;
@@ -15,8 +18,8 @@
 
     body {
       margin: 0;
-      font-family: 'Segoe UI', sans-serif;
-      background-color: #0d1117;
+      font-family: 'Poppins', sans-serif;
+      background: linear-gradient(135deg, #0d0d0d, #1a1a1a, #222);
       color: #c9d1d9;
       height: 100vh;
       display: flex;
@@ -30,7 +33,7 @@
     }
 
     .back-btn {
-      color: #c9d1d9;
+      color: #ffffff;
       font-size: 25px;
       cursor: pointer;
       text-decoration: none;
@@ -47,9 +50,10 @@
     }
 
     h1 {
-      font-size: 2.5rem;
+      font-size: 2.8rem;
       font-weight: 600;
       margin-bottom: 20px;
+      color: #ffffff;
     }
 
     #searchInput {
@@ -60,7 +64,7 @@
       border-radius: 50px;
       border: none;
       outline: none;
-      background-color: #161b22;
+      background-color: #111;
       color: #f0f6fc;
       box-shadow: 0 0 0 2px #30363d;
       transition: box-shadow 0.2s ease;
@@ -75,15 +79,15 @@
       padding: 12px 28px;
       border: none;
       border-radius: 30px;
-      background-color: #238636;
+      background: linear-gradient(90deg, #3ddc84, #238636);
       color: white;
       font-size: 16px;
       cursor: pointer;
-      transition: background 0.2s ease;
+      transition: background 0.3s ease;
     }
 
     .search-btn:hover {
-      background-color: #2ea043;
+      background: linear-gradient(90deg, #47e49c, #2ea043);
     }
 
     .suggestions {
@@ -159,4 +163,4 @@
     }
   </script>
 </body>
-</html>
+          </html>
