@@ -31,35 +31,10 @@
       text-decoration: none;
     }
 
-    .query {
-      font-size: 18px;
-      margin-bottom: 10px;
-      color: #58a6ff;
-    }
-
-    .pre-message-input {
-      width: 100%;
-      padding: 10px;
-      font-size: 16px;
-      margin-bottom: 15px;
-      border-radius: 10px;
-      border: none;
-      background: #161b22;
-      color: #f0f0f0;
-    }
-
-    .fetch-btn {
-      padding: 10px 20px;
-      background-color: #238636;
-      color: white;
-      border: none;
-      border-radius: 10px;
-      cursor: pointer;
-      margin-bottom: 20px;
-    }
-
-    .fetch-btn:hover {
-      background-color: #2ea043;
+    h2, .query {
+      font-weight: bold;
+      font-size: 24px;
+      color: #ffffff;
     }
 
     #responseBox {
@@ -95,6 +70,15 @@
     strong {
       color: #ffffff;
     }
+
+    code {
+      background-color: #222;
+      padding: 2px 6px;
+      border-radius: 6px;
+      font-family: monospace;
+      font-size: 14px;
+      color: #c9d1d9;
+    }
   </style>
 </head>
 <body>
@@ -106,19 +90,16 @@
 
   <div class="query" id="queryText">Loading query...</div>
 
-  <input type="text" id="preMessage" class="pre-message-input" placeholder="Write your pre-message (e.g. 'Explain this like a tutorial for beginners')">
-
-  <button class="fetch-btn" onclick="fetchTutorial()">Generate Tutorial</button>
-
-  <div id="responseBox">Response will appear here...</div>
+  <div id="responseBox">Tutorial will appear her...</div>
 
   <script>
     const query = sessionStorage.getItem("searchQuery") || "No query found.";
+    const preMessage = "Talk in Gen z"; // <--- You can change this anytime
+    const fullMessage = `${preMessage}\n\nQuestion: ${query}`;
+
     document.getElementById("queryText").innerText = "🔎 " + query;
 
-    async function fetchTutorial() {
-      const preMessage = document.getElementById("preMessage").value.trim();
-      const fullMessage = `${preMessage}\n\nQuestion: ${query}`;
+    window.onload = async () => {
       const responseBox = document.getElementById("responseBox");
       responseBox.innerHTML = "Loading...";
 
@@ -163,8 +144,10 @@
         } else if (insideCode) {
           codeBuffer.push(line);
         } else {
-          const boldLine = line.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
-          html += `<p>${boldLine}</p>`;
+          const formatted = line
+            .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>') // bold
+            .replace(/`([^`]+)`/g, '<code>$1</code>');        // inline code
+          html += `<p>${formatted}</p>`;
         }
       });
 
@@ -179,4 +162,4 @@
   </script>
 
 </body>
-  </html>
+</html>
