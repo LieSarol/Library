@@ -89,7 +89,9 @@
         });
 
         const data = await response.json();
-        const result = data.result || "No result returned.";
+        const data = await response.json();
+const result = data.choices?.[0]?.message?.content || "No result returned.";
+document.getElementById("responseBox").innerText = result;
 
         document.getElementById("responseBox").innerText = result;
       } catch (err) {
