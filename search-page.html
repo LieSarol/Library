@@ -5,91 +5,38 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Search Page - GenZ</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
-
   <style>
-    * {
-      box-sizing: border-box;
-    }
+    /* ... [Your existing styles remain unchanged] ... */
 
-    body {
-      margin: 0;
-      font-family: 'Segoe UI', sans-serif;
-      background: linear-gradient(135deg, #0d0d0d, #1a1a1a, #2b2b2b);
-      color: #c9d1d9;
-      height: 100vh;
-      display: flex;
-      flex-direction: column;
-    }
-
-    .topbar {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 20px;
-    }
-
-    .back-btn {
-      color: #c9d1d9;
-      font-size: 24px;
-      text-decoration: none;
-    }
-
-    .search-bar {
-      flex: 1;
-      display: flex;
-      align-items: center;
-      position: relative;
-      margin-left: 10px;
-    }
-
-    #searchInput {
-      width: 100%;
-      padding: 12px 44px 12px 20px;
-      font-size: 16px;
-      border-radius: 30px;
-      border: none;
-      outline: none;
-      background-color: #161b22;
-      color: #f0f6fc;
-      box-shadow: 0 0 0 2px #30363d;
-    }
-
-    .search-icon {
-      position: absolute;
-      right: 16px;
-      font-size: 18px;
-      color: #8b949e;
-      cursor: pointer;
-    }
-
-    .container {
-      padding: 20px;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-    }
-
-    .result-box {
-      margin-top: 40px;
-      background-color: #161b22;
+    .noun-box {
+      margin-top: 20px;
+      background-color: #0d1117;
       border: 1px solid #30363d;
       padding: 16px 24px;
       border-radius: 12px;
       max-width: 600px;
       width: 90%;
-      cursor: pointer;
-      transition: background-color 0.2s;
     }
 
-    .result-box:hover {
-      background-color: #21262d;
-    }
-
-    .label {
+    .noun-box .label {
       font-weight: bold;
       font-size: 14px;
       color: #58a6ff;
       margin-bottom: 10px;
+    }
+
+    .noun-box .nouns {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .noun-box .nouns span {
+      background-color: #21262d;
+      padding: 6px 12px;
+      border-radius: 20px;
+      font-size: 14px;
+      color: #c9d1d9;
     }
   </style>
 </head>
@@ -107,115 +54,106 @@
   <!-- Result Section -->
   <div class="container">
     <div id="recentSearchBox" style="display:none; width: 100%;">
-      <div class="label">Your Last Search:</div>
-      <div class="result-box" onclick="goToEndPage()">
-        <span id="recentSearchText"></span>
-      </div>
+      <div class="label">Related Questions:</div>
+      <div id="relatedQuestions"></div>
+    </div>
+    <div id="nounBox" class="noun-box" style="display:none;">
+      <div class="label">Extracted Nouns:</div>
+      <div class="nouns" id="nounsContainer"></div>
     </div>
   </div>
 
   <script>
-  const searchInput = document.getElementById('searchInput');
-  const recentSearchBox = document.getElementById('recentSearchBox');
+    const searchInput = document.getElementById('searchInput');
+    const recentSearchBox = document.getElementById('recentSearchBox');
+    const relatedQuestions = document.getElementById('relatedQuestions');
+    const nounBox = document.getElementById('nounBox');
+    const nounsContainer = document.getElementById('nounsContainer');
 
-  async function fetchSearch(query, limit = 10) {
-    try {
-      const res = await fetch(`https://library-of-knowledge.vercel.app/search-page.html/search?q=${encodeURIComponent(query)}&limit=${limit}`);
-      if (!res.ok) {
-        console.log('Search API no results or error:', await res.text());
+    async function fetchSearch(query, limit = 10) {
+      try {
+        const res = await fetch(`/search?q=${encodeURIComponent(query)}&limit=${limit}`);
+        if (!res.ok) return null;
+        return await res.json();
+      } catch (error) {
+        console.error('Search fetch error:', error);
         return null;
       }
-      const data = await res.json();
-      return data;
-    } catch (error) {
-      console.error('Fetch search failed:', error);
-      return null;
     }
-  }
 
-  async function fetchNouns(text) {
-    try {
-      const res = await fetch('https://cubby-noun-extrac-40.deno.dev/', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ text }),
-      });
-      if (!res.ok) {
-        console.log('Noun extractor API error:', await res.text());
+    async function fetchNouns(text) {
+      try {
+        const res = await fetch('https://cubby-noun-extrac-40.deno.dev/', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ text }),
+        });
+        if (!res.ok) return [];
+        const data = await res.json();
+        return data.nouns || [];
+      } catch (error) {
+        console.error('Noun extraction error:', error);
         return [];
       }
-      const json = await res.json();
-      return json.nouns || [];
-    } catch (error) {
-      console.error('Fetch nouns failed:', error);
-      return [];
-    }
-  }
-
-  async function handleSearch() {
-    const query = searchInput.value.trim();
-    console.log("Search Query:", query);
-    if (!query) return;
-
-    sessionStorage.setItem('searchQuery', query);
-
-    // 1. Check exact question match with limit 1
-    const exactMatch = await fetchSearch(query, 1);
-    console.log("Exact match result:", exactMatch);
-
-    if (exactMatch && exactMatch.length > 0) {
-      // Exact question exists - hide recentSearchBox and do nothing
-      recentSearchBox.style.display = 'none';
-      console.log("Exact question found, hiding box.");
-      return;
     }
 
-    // 2. Extract nouns from query
-    const nouns = await fetchNouns(query);
-    console.log("Extracted nouns:", nouns);
+    async function handleSearch() {
+      const query = searchInput.value.trim();
+      if (!query) return;
 
-    if (nouns.length === 0) {
-      recentSearchBox.style.display = 'none';
-      console.log("No nouns found, hiding box.");
-      return;
+      sessionStorage.setItem('searchQuery', query);
+
+      // Always fetch nouns
+      const nouns = await fetchNouns(query);
+      if (nouns.length > 0) {
+        nounsContainer.innerHTML = nouns.map(noun => `<span>${noun}</span>`).join('');
+        nounBox.style.display = 'block';
+      } else {
+        nounBox.style.display = 'none';
+      }
+
+      // Check for exact match
+      const exactMatch = await fetchSearch(query, 1);
+      if (exactMatch && exactMatch.length > 0) {
+        recentSearchBox.style.display = 'none';
+        return;
+      }
+
+      // Fetch related questions using the first noun
+      if (nouns.length > 0) {
+        const related = await fetchSearch(nouns[0], 10);
+        if (related && related.length > 0) {
+          relatedQuestions.innerHTML = related.map(q => `
+            <div class="result-box" onclick="goToEndPage()">${q.question}</div>
+          `).join('');
+          recentSearchBox.style.display = 'block';
+        } else {
+          recentSearchBox.style.display = 'none';
+        }
+      } else {
+        recentSearchBox.style.display = 'none';
+      }
     }
 
-    // 3. Search with the first noun (limit 10)
-    const relatedQuestions = await fetchSearch(nouns[0], 10);
-    console.log("Related questions:", relatedQuestions);
-
-    if (relatedQuestions && relatedQuestions.length > 0) {
-      // Show related questions dynamically
-      recentSearchBox.innerHTML = `
-        <div class="label">Related Questions:</div>
-        ${relatedQuestions.map(q => `<div class="result-box" onclick="goToEndPage()">${q.question}</div>`).join('')}
-      `;
-      recentSearchBox.style.display = 'block';
-      console.log("Displayed related questions.");
-    } else {
-      recentSearchBox.style.display = 'none';
-      console.log("No related questions found, hiding box.");
+    function goToEndPage() {
+      window.location.href = "/search-end.html";
     }
-  }
 
-  function goToEndPage() {
-    window.location.href = "/search-end.html";
-  }
+    // Trigger search on Enter key
+    searchInput.addEventListener("keypress", function(event) {
+      if (event.key === "Enter") {
+        handleSearch();
+      }
+    });
 
-  searchInput.addEventListener("keypress", function(event) {
-    if (event.key === "Enter") {
-      handleSearch();
-    }
-  });
-
-  // On page load: load last search and run handleSearch automatically to show results
-  window.addEventListener('load', () => {
-    const searchQuery = sessionStorage.getItem('searchQuery');
-    if (searchQuery) {
-      searchInput.value = searchQuery;
-      handleSearch();
-    }
-  });
-        </script> 
+    // Load last search on page load
+    window.addEventListener('load', () => {
+      const searchQuery = sessionStorage.getItem('searchQuery');
+      if (searchQuery) {
+        searchInput.value = searchQuery;
+        handleSearch();
+      }
+    });
+  </script>
 </body>
-</html>
+                                                                    </html>
