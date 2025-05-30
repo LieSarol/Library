@@ -3,10 +3,80 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Search Page - GenZ</title>
+  <title>Search Page</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
   <style>
-    /* ... [Your existing styles remain unchanged] ... */
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: #0d1117;
+      color: #c9d1d9;
+      margin: 0;
+      padding: 0;
+    }
+
+    .topbar {
+      display: flex;
+      align-items: center;
+      background-color: #161b22;
+      padding: 10px 20px;
+    }
+
+    .back-btn {
+      color: #58a6ff;
+      font-size: 20px;
+      text-decoration: none;
+      margin-right: 15px;
+    }
+
+    .search-bar {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      background-color: #21262d;
+      padding: 6px 12px;
+      border-radius: 8px;
+    }
+
+    .search-bar input {
+      flex: 1;
+      border: none;
+      background: transparent;
+      color: #c9d1d9;
+      font-size: 16px;
+      outline: none;
+    }
+
+    .search-bar .search-icon {
+      color: #58a6ff;
+      font-size: 18px;
+      cursor: pointer;
+      margin-left: 10px;
+    }
+
+    .container {
+      padding: 20px;
+    }
+
+    .result-box {
+      background-color: #161b22;
+      border: 1px solid #30363d;
+      padding: 12px 16px;
+      margin-top: 10px;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background-color 0.2s;
+    }
+
+    .result-box:hover {
+      background-color: #1f2937;
+    }
+
+    .label {
+      font-weight: bold;
+      font-size: 14px;
+      color: #58a6ff;
+      margin-top: 20px;
+    }
 
     .noun-box {
       margin-top: 20px;
@@ -16,13 +86,6 @@
       border-radius: 12px;
       max-width: 600px;
       width: 90%;
-    }
-
-    .noun-box .label {
-      font-weight: bold;
-      font-size: 14px;
-      color: #58a6ff;
-      margin-bottom: 10px;
     }
 
     .noun-box .nouns {
@@ -51,15 +114,16 @@
     </div>
   </div>
 
-  <!-- Result Section -->
+  <!-- Results -->
   <div class="container">
-    <div id="recentSearchBox" style="display:none; width: 100%;">
-      <div class="label">Related Questions:</div>
-      <div id="relatedQuestions"></div>
-    </div>
     <div id="nounBox" class="noun-box" style="display:none;">
       <div class="label">Extracted Nouns:</div>
       <div class="nouns" id="nounsContainer"></div>
+    </div>
+
+    <div id="recentSearchBox" style="display:none;">
+      <div class="label">Related Questions:</div>
+      <div id="relatedQuestions"></div>
     </div>
   </div>
 
@@ -72,7 +136,7 @@
 
     async function fetchSearch(query, limit = 10) {
       try {
-        const res = await fetch(`/search?q=${encodeURIComponent(query)}&limit=${limit}`);
+        const res = await fetch(`https://library-of-knowledge.vercel.app/search?q=${encodeURIComponent(query)}&limit=${limit}`);
         if (!res.ok) return null;
         return await res.json();
       } catch (error) {
@@ -103,23 +167,24 @@
 
       sessionStorage.setItem('searchQuery', query);
 
-      // Always fetch nouns
+      // Always extract nouns
       const nouns = await fetchNouns(query);
       if (nouns.length > 0) {
-        nounsContainer.innerHTML = nouns.map(noun => `<span>${noun}</span>`).join('');
+        nounsContainer.innerHTML = nouns.map(n => `<span>${n}</span>`).join('');
         nounBox.style.display = 'block';
       } else {
+        nounsContainer.innerHTML = '';
         nounBox.style.display = 'none';
       }
 
-      // Check for exact match
+      // Check if the exact question exists
       const exactMatch = await fetchSearch(query, 1);
       if (exactMatch && exactMatch.length > 0) {
-        recentSearchBox.style.display = 'none';
+        recentSearchBox.style.display = 'none'; // don't show related if exact match exists
         return;
       }
 
-      // Fetch related questions using the first noun
+      // If not, show related from first noun (if any)
       if (nouns.length > 0) {
         const related = await fetchSearch(nouns[0], 10);
         if (related && related.length > 0) {
@@ -128,10 +193,9 @@
           `).join('');
           recentSearchBox.style.display = 'block';
         } else {
+          relatedQuestions.innerHTML = '';
           recentSearchBox.style.display = 'none';
         }
-      } else {
-        recentSearchBox.style.display = 'none';
       }
     }
 
@@ -139,14 +203,12 @@
       window.location.href = "/search-end.html";
     }
 
-    // Trigger search on Enter key
     searchInput.addEventListener("keypress", function(event) {
       if (event.key === "Enter") {
         handleSearch();
       }
     });
 
-    // Load last search on page load
     window.addEventListener('load', () => {
       const searchQuery = sessionStorage.getItem('searchQuery');
       if (searchQuery) {
@@ -156,4 +218,4 @@
     });
   </script>
 </body>
-                                                                    </html>
+  </html>
