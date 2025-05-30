@@ -115,90 +115,107 @@
   </div>
 
   <script>
-    const searchInput = document.getElementById('searchInput');
-const recentSearchBox = document.getElementById('recentSearchBox');
-const recentSearchText = document.getElementById('recentSearchText');
+  const searchInput = document.getElementById('searchInput');
+  const recentSearchBox = document.getElementById('recentSearchBox');
 
-async function fetchSearch(query, limit = 1) {
-  const res = await fetch(`https://library-of-knowledge.vercel.app/search?q=${encodeURIComponent(query)}&limit=${limit}`);
-  if (!res.ok) {
-    return null;
+  async function fetchSearch(query, limit = 10) {
+    try {
+      const res = await fetch(`https://library-of-knowledge.vercel.app/search-page.html/search?q=${encodeURIComponent(query)}&limit=${limit}`);
+      if (!res.ok) {
+        console.log('Search API no results or error:', await res.text());
+        return null;
+      }
+      const data = await res.json();
+      return data;
+    } catch (error) {
+      console.error('Fetch search failed:', error);
+      return null;
+    }
   }
-  const data = await res.json();
-  return data;
-}
 
-async function fetchNouns(text) {
-  const res = await fetch('https://cubby-noun-extrac-40.deno.dev/', {
-    method: 'POST', // Assuming POST, change if GET
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ text }),
+  async function fetchNouns(text) {
+    try {
+      const res = await fetch('https://cubby-noun-extrac-40.deno.dev/', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ text }),
+      });
+      if (!res.ok) {
+        console.log('Noun extractor API error:', await res.text());
+        return [];
+      }
+      const json = await res.json();
+      return json.nouns || [];
+    } catch (error) {
+      console.error('Fetch nouns failed:', error);
+      return [];
+    }
+  }
+
+  async function handleSearch() {
+    const query = searchInput.value.trim();
+    console.log("Search Query:", query);
+    if (!query) return;
+
+    sessionStorage.setItem('searchQuery', query);
+
+    // 1. Check exact question match with limit 1
+    const exactMatch = await fetchSearch(query, 1);
+    console.log("Exact match result:", exactMatch);
+
+    if (exactMatch && exactMatch.length > 0) {
+      // Exact question exists - hide recentSearchBox and do nothing
+      recentSearchBox.style.display = 'none';
+      console.log("Exact question found, hiding box.");
+      return;
+    }
+
+    // 2. Extract nouns from query
+    const nouns = await fetchNouns(query);
+    console.log("Extracted nouns:", nouns);
+
+    if (nouns.length === 0) {
+      recentSearchBox.style.display = 'none';
+      console.log("No nouns found, hiding box.");
+      return;
+    }
+
+    // 3. Search with the first noun (limit 10)
+    const relatedQuestions = await fetchSearch(nouns[0], 10);
+    console.log("Related questions:", relatedQuestions);
+
+    if (relatedQuestions && relatedQuestions.length > 0) {
+      // Show related questions dynamically
+      recentSearchBox.innerHTML = `
+        <div class="label">Related Questions:</div>
+        ${relatedQuestions.map(q => `<div class="result-box" onclick="goToEndPage()">${q.question}</div>`).join('')}
+      `;
+      recentSearchBox.style.display = 'block';
+      console.log("Displayed related questions.");
+    } else {
+      recentSearchBox.style.display = 'none';
+      console.log("No related questions found, hiding box.");
+    }
+  }
+
+  function goToEndPage() {
+    window.location.href = "/search-end.html";
+  }
+
+  searchInput.addEventListener("keypress", function(event) {
+    if (event.key === "Enter") {
+      handleSearch();
+    }
   });
-  if (!res.ok) {
-    console.error("Cubby API failed");
-    return [];
-  }
-  const data = await res.json();
-  // Assuming Cubby returns { nouns: ["noun1", "noun2"] }
-  return data.nouns || [];
-}
 
-async function handleSearch() {
-  const query = searchInput.value.trim();
-  if (!query) return;
-
-  sessionStorage.setItem('searchQuery', query);
-
-  // 1. Check if exact question exists (limit=1)
-  const exactMatch = await fetchSearch(query, 1);
-
-  if (exactMatch && exactMatch.length > 0) {
-    // Exact question exists → hide box, no related questions needed
-    recentSearchBox.style.display = 'none';
-    return;
-  }
-
-  // 2. Exact question NOT found → call Cubby API to extract nouns
-  const nouns = await fetchNouns(query);
-
-  if (!nouns.length) {
-    // No nouns found, hide box and bail out
-    recentSearchBox.style.display = 'none';
-    return;
-  }
-
-  // 3. Use nouns to search related questions (limit=10)
-  // You can search each noun separately or join nouns with OR logic in backend
-  // For simplicity, search first noun only:
-  const relatedResults = await fetchSearch(nouns[0], 10);
-
-  if (relatedResults && relatedResults.length > 0) {
-    // Build result list inside container dynamically
-    recentSearchBox.innerHTML = `<div class="label">Related Questions:</div>` +
-      relatedResults.map(r => `<div class="result-box" onclick="goToEndPage()">${r.question}</div>`).join('');
-    recentSearchBox.style.display = 'block';
-  } else {
-    recentSearchBox.style.display = 'none';
-  }
-}
-
-function goToEndPage() {
-  window.location.href = "/search-end.html";
-}
-
-// On page load, fill input and auto-search if previous query exists
-const savedQuery = sessionStorage.getItem('searchQuery');
-if (savedQuery) {
-  searchInput.value = savedQuery;
-  handleSearch();
-}
-
-// Enter key triggers search
-searchInput.addEventListener('keypress', (e) => {
-  if (e.key === 'Enter') {
-    handleSearch();
-  }
-});
-  </script>
+  // On page load: load last search and run handleSearch automatically to show results
+  window.addEventListener('load', () => {
+    const searchQuery = sessionStorage.getItem('searchQuery');
+    if (searchQuery) {
+      searchInput.value = searchQuery;
+      handleSearch();
+    }
+  });
+        </script> 
 </body>
 </html>
