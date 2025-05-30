@@ -1,163 +1,133 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Cubby Search Assistant</title>
+  <meta charset="UTF-8">
+  <title>Ask Cubby</title>
   <style>
+    * {
+      font-family: sans-serif;
+      box-sizing: border-box;
+    }
+
     body {
-      font-family: 'Arial', sans-serif;
-      background: #f4f4f8;
-      margin: 0;
-      padding: 2rem;
-      text-align: center;
+      background: white;
+      padding: 20px;
     }
 
     input[type="text"] {
-      padding: 0.6rem 1rem;
-      width: 80%;
-      max-width: 400px;
-      font-size: 1rem;
-      border: 2px solid #ccc;
-      border-radius: 10px;
+      width: 100%;
+      padding: 10px;
+      margin-bottom: 15px;
+      font-size: 16px;
+    }
+
+    .box {
+      background: #f3f3f3;
+      padding: 12px;
+      border-radius: 8px;
+      margin-bottom: 10px;
+      cursor: pointer;
     }
 
     .label {
       font-weight: bold;
-      margin-top: 1.5rem;
-      margin-bottom: 0.5rem;
-      font-size: 1.1rem;
+      margin-top: 20px;
+      margin-bottom: 5px;
     }
 
-    .result-box {
-      background-color: #fff;
-      border-radius: 12px;
-      padding: 0.75rem;
-      margin: 0.5rem auto;
-      width: 80%;
-      max-width: 500px;
-      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-      cursor: pointer;
-      transition: transform 0.1s ease;
-    }
-
-    .result-box:hover {
-      transform: scale(1.02);
-    }
-
-    span {
+    .noun-box span {
       display: inline-block;
-      background-color: #d9eaff;
-      border-radius: 8px;
-      padding: 0.4rem 0.8rem;
-      margin: 0.2rem;
-      font-size: 0.9rem;
+      background: #eee;
+      margin: 4px;
+      padding: 4px 8px;
+      border-radius: 6px;
+      font-size: 14px;
     }
   </style>
 </head>
 <body>
-  <h1>🐻 Ask Cubby Anything!</h1>
 
-  <input type="text" id="searchInput" placeholder="Type your question..." onkeypress="if(event.key==='Enter') handleSearch()" />
+  <input type="text" id="searchInput" placeholder="Ask me something..." onkeypress="if(event.key==='Enter') handleSearch()" />
 
-  <!-- Noun Extractor Box -->
-  <div id="nounBox" style="display:none;">
-    <div class="label">Nouns Found:</div>
-    <div id="nounsContainer"></div>
-  </div>
+  <div class="label" id="originalLabel" style="display:none;">Your question:</div>
+  <div id="originalBox" class="box" style="display:none;"></div>
 
-  <!-- Original Search Display Box -->
-  <div id="originalSearchBox" style="display:none;">
-    <div class="label">Your Question:</div>
-    <div id="originalQuestion" class="result-box"></div>
-  </div>
+  <div class="label" id="nounLabel" style="display:none;">Nouns found:</div>
+  <div class="noun-box" id="nounBox" style="display:none;"></div>
 
-  <!-- Related Search Results -->
-  <div id="recentSearchBox" style="display:none;">
-    <div class="label">Related Questions:</div>
-    <div id="relatedQuestions"></div>
-  </div>
+  <div class="label" id="relatedLabel" style="display:none;">Related questions:</div>
+  <div id="resultsContainer"></div>
 
   <script>
-    const searchInput = document.getElementById('searchInput');
-    const nounBox = document.getElementById('nounBox');
-    const nounsContainer = document.getElementById('nounsContainer');
-    const recentSearchBox = document.getElementById('recentSearchBox');
-    const relatedQuestions = document.getElementById('relatedQuestions');
-    const originalSearchBox = document.getElementById('originalSearchBox');
-    const originalQuestion = document.getElementById('originalQuestion');
-
-    async function fetchNouns(text) {
-      try {
-        const res = await fetch('https://cubby-noun-extrac-40.deno.dev/', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ text }),
-        });
-        const data = await res.json();
-        return data.nouns || [];
-      } catch (err) {
-        console.error('Noun extraction failed:', err);
-        return [];
-      }
-    }
-
-    async function fetchSearch(q, limit = 10) {
-      try {
-        const res = await fetch(`https://library-of-knowledge.vercel.app/search?query=${encodeURIComponent(q)}&limit=${limit}`);
-        const data = await res.json();
-        return data || [];
-      } catch (err) {
-        console.error('Search fetch failed:', err);
-        return [];
-      }
-    }
-
     async function handleSearch() {
-      const query = searchInput.value.trim();
+      const query = document.getElementById("searchInput").value.trim();
       if (!query) return;
 
-      sessionStorage.setItem('searchQuery', query);
+      sessionStorage.setItem("searchQuery", query);
 
-      // Reset all displays
-      nounBox.style.display = 'none';
-      recentSearchBox.style.display = 'none';
-      originalSearchBox.style.display = 'none';
+      // Reset boxes
+      document.getElementById("originalBox").style.display = "none";
+      document.getElementById("originalLabel").style.display = "none";
+      document.getElementById("nounBox").style.display = "none";
+      document.getElementById("nounLabel").style.display = "none";
+      document.getElementById("resultsContainer").innerHTML = "";
+      document.getElementById("relatedLabel").style.display = "none";
 
-      // Extract nouns from Cubby's extractor
-      const nouns = await fetchNouns(query);
-      if (nouns.length > 0) {
-        nounsContainer.innerHTML = nouns.map(n => `<span>${n}</span>`).join('');
-        nounBox.style.display = 'block';
-      }
+      // Check if exact question exists in DB
+      const exists = await fetch(`https://library-of-knowledge.vercel.app/search?query=${encodeURIComponent(query)}&limit=1`)
+        .then(res => res.json())
+        .then(data => data.length > 0)
+        .catch(() => false);
 
-      // Check if the exact question exists
-      const exactMatches = await fetchSearch(query, 1);
-      const exists = exactMatches && exactMatches.length > 0;
-
+      // Show original question only if it DOESN'T exist
       if (!exists) {
-        // Show original question if not found in DB
-        originalQuestion.textContent = query;
-        originalSearchBox.style.display = 'block';
+        const originalBox = document.getElementById("originalBox");
+        originalBox.textContent = query;
+        originalBox.style.display = "block";
+        document.getElementById("originalLabel").style.display = "block";
       }
 
-      // Try to find related questions using the first noun
+      // Get nouns from Cubby
+      const nouns = await fetch("https://cubby-noun-extrac-40.deno.dev/", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ text: query })
+      })
+      .then(res => res.json())
+      .then(data => data.nouns || [])
+      .catch(() => []);
+
       if (nouns.length > 0) {
-        const related = await fetchSearch(nouns[0], 10);
-        if (related && related.length > 0) {
-          relatedQuestions.innerHTML = related.map(q =>
-            `<div class="result-box" onclick="goToEndPage('${q.question}')">${q.question}</div>`
-          ).join('');
-          recentSearchBox.style.display = 'block';
+        const nounBox = document.getElementById("nounBox");
+        nounBox.innerHTML = nouns.map(n => `<span>${n}</span>`).join('');
+        nounBox.style.display = "block";
+        document.getElementById("nounLabel").style.display = "block";
+
+        // Now search using the FIRST noun
+        const related = await fetch(`https://your-api.com/search?query=${encodeURIComponent(nouns[0])}&limit=10`)
+          .then(res => res.json())
+          .catch(() => []);
+
+        if (related.length > 0) {
+          const container = document.getElementById("resultsContainer");
+          related.forEach(item => {
+            const div = document.createElement("div");
+            div.className = "box";
+            div.textContent = item.question;
+            div.onclick = () => goToEndPage(item.question);
+            container.appendChild(div);
+          });
+          document.getElementById("relatedLabel").style.display = "block";
         }
       }
     }
 
     function goToEndPage(question) {
-      console.log("Clicked question:", question);
-      // Add your own redirection logic if needed:
-      // window.location.href = `/end-page?q=${encodeURIComponent(question)}`;
+      console.log("Clicked:", question);
+      // You can update this if needed:
+      // location.href = `/end-page?q=${encodeURIComponent(question)}`;
     }
   </script>
+
 </body>
 </html>
