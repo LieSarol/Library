@@ -3,147 +3,89 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Search Page</title>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+  <title>Cubby Search Assistant</title>
   <style>
     body {
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      background-color: #0d1117;
-      color: #c9d1d9;
+      font-family: 'Arial', sans-serif;
+      background: #f4f4f8;
       margin: 0;
-      padding: 0;
+      padding: 2rem;
+      text-align: center;
     }
 
-    .topbar {
-      display: flex;
-      align-items: center;
-      background-color: #161b22;
-      padding: 10px 20px;
-    }
-
-    .back-btn {
-      color: #58a6ff;
-      font-size: 20px;
-      text-decoration: none;
-      margin-right: 15px;
-    }
-
-    .search-bar {
-      flex: 1;
-      display: flex;
-      align-items: center;
-      background-color: #21262d;
-      padding: 6px 12px;
-      border-radius: 8px;
-    }
-
-    .search-bar input {
-      flex: 1;
-      border: none;
-      background: transparent;
-      color: #c9d1d9;
-      font-size: 16px;
-      outline: none;
-    }
-
-    .search-bar .search-icon {
-      color: #58a6ff;
-      font-size: 18px;
-      cursor: pointer;
-      margin-left: 10px;
-    }
-
-    .container {
-      padding: 20px;
-    }
-
-    .result-box {
-      background-color: #161b22;
-      border: 1px solid #30363d;
-      padding: 12px 16px;
-      margin-top: 10px;
-      border-radius: 8px;
-      cursor: pointer;
-      transition: background-color 0.2s;
-    }
-
-    .result-box:hover {
-      background-color: #1f2937;
+    input[type="text"] {
+      padding: 0.6rem 1rem;
+      width: 80%;
+      max-width: 400px;
+      font-size: 1rem;
+      border: 2px solid #ccc;
+      border-radius: 10px;
     }
 
     .label {
       font-weight: bold;
-      font-size: 14px;
-      color: #58a6ff;
-      margin-top: 20px;
+      margin-top: 1.5rem;
+      margin-bottom: 0.5rem;
+      font-size: 1.1rem;
     }
 
-    .noun-box {
-      margin-top: 20px;
-      background-color: #0d1117;
-      border: 1px solid #30363d;
-      padding: 16px 24px;
+    .result-box {
+      background-color: #fff;
       border-radius: 12px;
-      max-width: 600px;
-      width: 90%;
+      padding: 0.75rem;
+      margin: 0.5rem auto;
+      width: 80%;
+      max-width: 500px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+      cursor: pointer;
+      transition: transform 0.1s ease;
     }
 
-    .noun-box .nouns {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 8px;
+    .result-box:hover {
+      transform: scale(1.02);
     }
 
-    .noun-box .nouns span {
-      background-color: #21262d;
-      padding: 6px 12px;
-      border-radius: 20px;
-      font-size: 14px;
-      color: #c9d1d9;
+    span {
+      display: inline-block;
+      background-color: #d9eaff;
+      border-radius: 8px;
+      padding: 0.4rem 0.8rem;
+      margin: 0.2rem;
+      font-size: 0.9rem;
     }
   </style>
 </head>
 <body>
+  <h1>🐻 Ask Cubby Anything!</h1>
 
-  <!-- Top Row with Back and Search -->
-  <div class="topbar">
-    <a href="/" class="back-btn"><i class="fas fa-arrow-left"></i></a>
-    <div class="search-bar">
-      <input type="text" id="searchInput" placeholder="Search..." />
-      <i class="fas fa-search search-icon" onclick="handleSearch()"></i>
-    </div>
+  <input type="text" id="searchInput" placeholder="Type your question..." onkeypress="if(event.key==='Enter') handleSearch()" />
+
+  <!-- Noun Extractor Box -->
+  <div id="nounBox" style="display:none;">
+    <div class="label">Nouns Found:</div>
+    <div id="nounsContainer"></div>
   </div>
 
-  <!-- Results -->
-  <div class="container">
-    <div id="nounBox" class="noun-box" style="display:none;">
-      <div class="label">Extracted Nouns:</div>
-      <div class="nouns" id="nounsContainer"></div>
-    </div>
+  <!-- Original Search Display Box -->
+  <div id="originalSearchBox" style="display:none;">
+    <div class="label">Your Question:</div>
+    <div id="originalQuestion" class="result-box"></div>
+  </div>
 
-    <div id="recentSearchBox" style="display:none;">
-      <div class="label">Related Questions:</div>
-      <div id="relatedQuestions"></div>
-    </div>
+  <!-- Related Search Results -->
+  <div id="recentSearchBox" style="display:none;">
+    <div class="label">Related Questions:</div>
+    <div id="relatedQuestions"></div>
   </div>
 
   <script>
     const searchInput = document.getElementById('searchInput');
-    const recentSearchBox = document.getElementById('recentSearchBox');
-    const relatedQuestions = document.getElementById('relatedQuestions');
     const nounBox = document.getElementById('nounBox');
     const nounsContainer = document.getElementById('nounsContainer');
-
-    async function fetchSearch(query, limit = 10) {
-      try {
-        const res = await fetch(`https://library-of-knowledge.vercel.app/search?q=${encodeURIComponent(query)}&limit=${limit}`);
-        if (!res.ok) return null;
-        return await res.json();
-      } catch (error) {
-        console.error('Search fetch error:', error);
-        return null;
-      }
-    }
+    const recentSearchBox = document.getElementById('recentSearchBox');
+    const relatedQuestions = document.getElementById('relatedQuestions');
+    const originalSearchBox = document.getElementById('originalSearchBox');
+    const originalQuestion = document.getElementById('originalQuestion');
 
     async function fetchNouns(text) {
       try {
@@ -152,11 +94,21 @@
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ text }),
         });
-        if (!res.ok) return [];
         const data = await res.json();
         return data.nouns || [];
-      } catch (error) {
-        console.error('Noun extraction error:', error);
+      } catch (err) {
+        console.error('Noun extraction failed:', err);
+        return [];
+      }
+    }
+
+    async function fetchSearch(q, limit = 10) {
+      try {
+        const res = await fetch(`https://library-of-knowledge.vercel.app/search?query=${encodeURIComponent(q)}&limit=${limit}`);
+        const data = await res.json();
+        return data || [];
+      } catch (err) {
+        console.error('Search fetch failed:', err);
         return [];
       }
     }
@@ -167,55 +119,45 @@
 
       sessionStorage.setItem('searchQuery', query);
 
-      // Always extract nouns
+      // Reset all displays
+      nounBox.style.display = 'none';
+      recentSearchBox.style.display = 'none';
+      originalSearchBox.style.display = 'none';
+
+      // Extract nouns from Cubby's extractor
       const nouns = await fetchNouns(query);
       if (nouns.length > 0) {
         nounsContainer.innerHTML = nouns.map(n => `<span>${n}</span>`).join('');
         nounBox.style.display = 'block';
-      } else {
-        nounsContainer.innerHTML = '';
-        nounBox.style.display = 'none';
       }
 
       // Check if the exact question exists
-      const exactMatch = await fetchSearch(query, 1);
-      if (exactMatch && exactMatch.length > 0) {
-        recentSearchBox.style.display = 'none'; // don't show related if exact match exists
-        return;
+      const exactMatches = await fetchSearch(query, 1);
+      const exists = exactMatches && exactMatches.length > 0;
+
+      if (!exists) {
+        // Show original question if not found in DB
+        originalQuestion.textContent = query;
+        originalSearchBox.style.display = 'block';
       }
 
-      // If not, show related from first noun (if any)
+      // Try to find related questions using the first noun
       if (nouns.length > 0) {
         const related = await fetchSearch(nouns[0], 10);
         if (related && related.length > 0) {
-          relatedQuestions.innerHTML = related.map(q => `
-            <div class="result-box" onclick="goToEndPage()">${q.question}</div>
-          `).join('');
+          relatedQuestions.innerHTML = related.map(q =>
+            `<div class="result-box" onclick="goToEndPage('${q.question}')">${q.question}</div>`
+          ).join('');
           recentSearchBox.style.display = 'block';
-        } else {
-          relatedQuestions.innerHTML = '';
-          recentSearchBox.style.display = 'none';
         }
       }
     }
 
-    function goToEndPage() {
-      window.location.href = "/search-end.html";
+    function goToEndPage(question) {
+      console.log("Clicked question:", question);
+      // Add your own redirection logic if needed:
+      // window.location.href = `/end-page?q=${encodeURIComponent(question)}`;
     }
-
-    searchInput.addEventListener("keypress", function(event) {
-      if (event.key === "Enter") {
-        handleSearch();
-      }
-    });
-
-    window.addEventListener('load', () => {
-      const searchQuery = sessionStorage.getItem('searchQuery');
-      if (searchQuery) {
-        searchInput.value = searchQuery;
-        handleSearch();
-      }
-    });
   </script>
 </body>
-  </html>
+</html>
