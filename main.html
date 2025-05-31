@@ -93,26 +93,31 @@
   <div id="responseBox">Tutorial will appear here...</div>  
   
   <script>  
-    const query = sessionStorage.getItem("searchQuery") || "No query found.";  
     const selectedXataId = sessionStorage.getItem("selectedXataId") || "";  
-    document.getElementById("queryText").innerText = "🔎 " + query;  
   
     window.onload = async () => {  
       const responseBox = document.getElementById("responseBox");  
+      const queryText = document.getElementById("queryText");  
       responseBox.innerHTML = "Loading...";  
   
       if (!selectedXataId) {  
-        responseBox.innerText = "No tutorial ID found.";  
+        queryText.innerText = "❌ No tutorial ID found.";  
+        responseBox.innerText = "Unable to load tutorial.";  
         return;  
       }  
   
       try {  
-        const response = await fetch(`https://library-of-knowledge.vercel.app/data/${selectedXataId}`);  
+        const response = await fetch(`/data/${selectedXataId}`);  
         const data = await response.json();  
-        const raw = data.answer || "No result returned.";  
-        responseBox.innerHTML = formatText(raw);  
+  
+        const question = data.question || "Unknown query";  
+        const answer = data.answer || "No result returned.";  
+  
+        queryText.innerText = "🔎 " + question;  
+        responseBox.innerHTML = formatText(answer);  
       } catch (err) {  
         console.error(err);  
+        queryText.innerText = "❌ Failed to load question.";  
         responseBox.innerText = "Error fetching response.";  
       }  
     }  
