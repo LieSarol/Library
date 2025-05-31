@@ -1,47 +1,161 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <title>Session Storage Viewer</title>
-  <style>
-    body {
-      font-family: "Comic Sans MS", cursive, sans-serif;
-      padding: 2rem;
-      background: #f0f0ff;
-      color: #333;
-    }
-    h1 {
-      color: #5a00b3;
-    }
-    .item {
-      margin-bottom: 1rem;
-      padding: 1rem;
-      border: 2px dashed #5a00b3;
-      border-radius: 8px;
-      background: #fff;
-    }
-  </style>
-</head>
-<body>
-  <h1>🧠 Session Storage Data</h1>
-  <div id="output"></div>
-
-  <script>
-    const outputDiv = document.getElementById("output");
-
-    if (sessionStorage.length === 0) {
-      outputDiv.innerHTML = "<p>No sessionStorage data found 😢</p>";
-    } else {
-      for (let i = 0; i < sessionStorage.length; i++) {
-        const key = sessionStorage.key(i);
-        const value = sessionStorage.getItem(key);
-
-        const itemDiv = document.createElement("div");
-        itemDiv.className = "item";
-        itemDiv.innerHTML = `<strong>${key}:</strong> <pre>${value}</pre>`;
-        outputDiv.appendChild(itemDiv);
-      }
-    }
-  </script>
-</body>
+<!DOCTYPE html>  
+<html lang="en">  
+<head>  
+  <meta charset="UTF-8" />  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>  
+  <title>Tutorial Page</title>  
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>  
+  <style>  
+    * {  
+      box-sizing: border-box;  
+    }  
+  
+    body {  
+      margin: 0;  
+      font-family: 'Segoe UI', sans-serif;  
+      background: linear-gradient(135deg, #0d0d0d, #1a1a1a);  
+      color: #f0f0f0;  
+      padding: 20px;  
+    }  
+  
+    .topbar {  
+      display: flex;  
+      align-items: center;  
+      justify-content: space-between;  
+      margin-bottom: 20px;  
+    }  
+  
+    .back-btn {  
+      color: #ffffff;  
+      font-size: 22px;  
+      text-decoration: none;  
+    }  
+  
+    h2, .query {  
+      font-weight: bold;  
+      font-size: 24px;  
+      color: #ffffff;  
+    }  
+  
+    #responseBox {  
+      background: #0f0f0f;  
+      padding: 20px;  
+      border-radius: 10px;  
+      border: 1px solid #30363d;  
+    }  
+  
+    .code-block {  
+      background-color: #161b22;  
+      padding: 15px;  
+      margin: 15px 0;  
+      border-radius: 10px;  
+      position: relative;  
+      font-family: monospace;  
+      white-space: pre-wrap;  
+      overflow-x: auto;  
+    }  
+  
+    .copy-icon {  
+      position: absolute;  
+      top: 10px;  
+      right: 10px;  
+      color: #8b949e;  
+      cursor: pointer;  
+    }  
+  
+    .copy-icon:hover {  
+      color: #ffffff;  
+    }  
+  
+    strong {  
+      color: #ffffff;  
+    }  
+  
+    code {  
+      background-color: #222;  
+      padding: 2px 6px;  
+      border-radius: 6px;  
+      font-family: monospace;  
+      font-size: 14px;  
+      color: #c9d1d9;  
+    }  
+  </style>  
+</head>  
+<body>  
+  
+  <div class="topbar">  
+    <a href="search-page.html" class="back-btn"><i class="fas fa-arrow-left"></i></a>  
+    <h2>Tutorial</h2>  
+  </div>  
+  
+  <div class="query" id="queryText">Loading query...</div>  
+  
+  <div id="responseBox">Tutorial will appear here...</div>  
+  
+  <script>  
+    const query = sessionStorage.getItem("searchQuery") || "No query found.";  
+    const selectedXataId = sessionStorage.getItem("selectedXataId") || "";  
+    document.getElementById("queryText").innerText = "🔎 " + query;  
+  
+    window.onload = async () => {  
+      const responseBox = document.getElementById("responseBox");  
+      responseBox.innerHTML = "Loading...";  
+  
+      if (!selectedXataId) {  
+        responseBox.innerText = "No tutorial ID found.";  
+        return;  
+      }  
+  
+      try {  
+        const response = await fetch(`/data/${selectedXataId}`);  
+        const data = await response.json();  
+        const raw = data.answer || "No result returned.";  
+        responseBox.innerHTML = formatText(raw);  
+      } catch (err) {  
+        console.error(err);  
+        responseBox.innerText = "Error fetching response.";  
+      }  
+    }  
+  
+    function formatText(text) {  
+      const lines = text.split('\n');  
+      let html = '';  
+      let insideCode = false;  
+      let codeBuffer = [];  
+  
+      lines.forEach(line => {  
+        if (line.trim().startsWith("```")) {  
+          if (!insideCode) {  
+            insideCode = true;  
+            codeBuffer = [];  
+          } else {  
+            insideCode = false;  
+            const code = codeBuffer.join('\n');  
+            html += `  
+              <div class="code-block">  
+                <i class="fas fa-copy copy-icon" onclick="copyToClipboard(\`${code.replace(/`/g, "\\`")}\`)"></i>  
+                ${code.replace(/</g, "&lt;").replace(/>/g, "&gt;")}  
+              </div>`;  
+          }  
+        } else if (insideCode) {  
+          codeBuffer.push(line);  
+        } else {  
+          const formatted = line  
+            .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')  
+            .replace(/`([^`]+)`/g, '<code>$1</code>');  
+          html += `<p>${formatted}</p>`;  
+        }  
+      });  
+  
+      return html;  
+    }  
+  
+    function copyToClipboard(code) {  
+      navigator.clipboard.writeText(code).then(() => {  
+        alert("Copied!");  
+      });  
+    }  
+  </script>  
+  
+</body>  
 </html>
