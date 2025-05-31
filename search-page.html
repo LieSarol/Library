@@ -31,9 +31,16 @@
       color: #fff;
     }
 
+    .section-title {
+      text-align: center;
+      font-size: 1.2rem;
+      margin-top: 30px;
+      color: #aaa;
+    }
+
     .result-box {
-      margin: 30px auto;
-      padding: 20px;
+      margin: 15px auto;
+      padding: 15px;
       background-color: #1e1e1e;
       width: 80%;
       border-radius: 10px;
@@ -41,6 +48,8 @@
     }
 
     .result-box a {
+      display: inline-block;
+      margin-top: 10px;
       color: #00bfff;
       text-decoration: none;
       font-weight: bold;
@@ -64,47 +73,82 @@
     <input type="text" id="searchInput" placeholder="Search..." readonly />
   </div>
 
-  <div id="resultContainer"></div>
+  <div class="section-title">🔎 Results for Your Search</div>
+  <div id="queryResults"></div>
+
+  <div class="section-title">🧠 Related Results (Based on Noun)</div>
+  <div id="nounResults"></div>
 
   <script>
     const searchInput = document.getElementById('searchInput');
-    const resultContainer = document.getElementById('resultContainer');
+    const queryResults = document.getElementById('queryResults');
+    const nounResults = document.getElementById('nounResults');
 
-    // Get the search query from sessionStorage
-    const query = sessionStorage.getItem('searchQuery');
-    searchInput.value = query || '';
+    const searchQuery = sessionStorage.getItem('searchQuery');
+    searchInput.value = searchQuery || '';
 
-    if (!query) {
-      resultContainer.innerHTML = '<div class="no-result">No search query found.</div>';
-    } else {
-      fetch(`https://library-of-knowledge.vercel.app/search?q=${encodeURIComponent(query)}&limit=5`)
-        .then(async res => {
-          if (res.status === 404) return null;
-          if (!res.ok) throw new Error("API Error");
-          return await res.json();
-        })
-        .then(data => {
-          if (!data) {
-            resultContainer.innerHTML = `
-              <div class="result-box">
-                <p>No exact match found for <strong>${query}</strong>.</p>
-                <a href="dynamic.html?q=${encodeURIComponent(query)}">Go to dynamic result</a>
-              </div>`;
-          } else {
-            const exactMatch = data.find(item => item.question.toLowerCase() === query.toLowerCase());
-            const link = exactMatch ? 'main.html' : 'dynamic.html';
+    // Helper to render result boxes
+    function renderResults(container, data) {
+      container.innerHTML = data.map(item => `
+        <div class="result-box">
+          <div>${item.question}</div>
+          <a href="main.html?q=${encodeURIComponent(item.question)}">Open</a>
+        </div>
+      `).join('');
+    }
 
-            resultContainer.innerHTML = `
-              <div class="result-box">
-                <p>Found result for: <strong>${query}</strong></p>
-                <a href="${link}?q=${encodeURIComponent(query)}">Open Result</a>
-              </div>`;
-          }
-        })
-        .catch(err => {
-          console.error(err);
-          resultContainer.innerHTML = '<div class="no-result">Something went wrong. Try again later.</div>';
+    // Fetch from your API
+    async function fetchSearchResults(query, container) {
+      try {
+        const res = await fetch(`https://library-of-knowledge.vercel.app/search?q=${encodeURIComponent(query)}&limit=5`);
+        if (!res.ok) {
+          container.innerHTML = '<div class="no-result">No results found.</div>';
+          return;
+        }
+
+        const data = await res.json();
+        renderResults(container, data);
+      } catch (err) {
+        console.error('Search failed:', err);
+        container.innerHTML = '<div class="no-result">Error loading results.</div>';
+      }
+    }
+
+    // Fetch noun from Cubby’s AI
+    async function fetchNoun(query) {
+      try {
+        const res = await fetch('https://cubby-noun-extrac-40.deno.dev/', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ text: query })
         });
+
+        const data = await res.json();
+        return data.noun || null;
+      } catch (err) {
+        console.error('Noun extraction failed:', err);
+        return null;
+      }
+    }
+
+    // Let's go!
+    if (searchQuery) {
+      // First, show results based on the original query
+      fetchSearchResults(searchQuery, queryResults);
+
+      // Then get the noun and search again
+      fetchNoun(searchQuery).then(noun => {
+        if (noun) {
+          console.log('Extracted noun:', noun);
+          fetchSearchResults(noun, nounResults);
+        } else {
+          nounResults.innerHTML = '<div class="no-result">Couldn’t find a related noun.</div>';
+        }
+      });
+    } else {
+      queryResults.innerHTML = '<div class="no-result">No search query found.</div>';
     }
   </script>
 
