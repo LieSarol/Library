@@ -159,13 +159,17 @@
       fetchExactSearchResults(query, queryResults);
 
       // Also fetch noun-based results for related
-      fetchNoun(query).then(noun => {
-        if (noun) {
-          fetchSearchResults(noun, nounResults);
-        } else {
-          nounResults.innerHTML = '<div class="no-result">Couldn’t find a related noun.</div>';
-        }
-      });
+      fetchNoun(query).then(nouns => {
+  if (nouns && nouns.length > 0) {
+    document.getElementById('nounResultsTitle').style.display = 'block';
+    nounResults.innerHTML = ''; // Clear old results
+    nouns.forEach(noun => {
+      fetchSearchResults(noun, nounResults); // Append each noun result
+    });
+  } else {
+    nounResults.innerHTML = '<div class="no-result">Couldn’t find related nouns.</div>';
+  }
+});
     }
 
     searchIcon.addEventListener('click', triggerSearch);
