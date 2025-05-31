@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Session Storage Viewer</title>
+  <style>
+    body {
+      font-family: "Comic Sans MS", cursive, sans-serif;
+      padding: 2rem;
+      background: #f0f0ff;
+      color: #333;
+    }
+    h1 {
+      color: #5a00b3;
+    }
+    .item {
+      margin-bottom: 1rem;
+      padding: 1rem;
+      border: 2px dashed #5a00b3;
+      border-radius: 8px;
+      background: #fff;
+    }
+  </style>
+</head>
+<body>
+  <h1>🧠 Session Storage Data</h1>
+  <div id="output"></div>
+
+  <script>
+    const outputDiv = document.getElementById("output");
+
+    if (sessionStorage.length === 0) {
+      outputDiv.innerHTML = "<p>No sessionStorage data found 😢</p>";
+    } else {
+      for (let i = 0; i < sessionStorage.length; i++) {
+        const key = sessionStorage.key(i);
+        const value = sessionStorage.getItem(key);
+
+        const itemDiv = document.createElement("div");
+        itemDiv.className = "item";
+        itemDiv.innerHTML = `<strong>${key}:</strong> <pre>${value}</pre>`;
+        outputDiv.appendChild(itemDiv);
+      }
+    }
+  </script>
+</body>
+</html>
