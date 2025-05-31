@@ -2,9 +2,15 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Search Page</title>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+
+  <!-- Font Awesome for icons -->
+  <link
+    rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
+  />
+
   <style>
     body {
       background-color: #121212;
@@ -14,45 +20,59 @@
       padding: 0;
     }
 
+    /* Container for back button and search bar */
     .top-bar {
       display: flex;
       align-items: center;
       background-color: #1f1f1f;
-      padding: 20px;
+      padding: 15px 20px;
       box-shadow: 0 2px 5px rgba(0,0,0,0.3);
     }
 
+    /* Back button style */
     .back-button {
-      color: #ccc;
-      font-size: 1.2rem;
-      margin-right: 15px;
+      color: #00bfff;
+      font-size: 1.5rem;
       cursor: pointer;
+      margin-right: 15px;
+      user-select: none;
     }
 
+    .back-button:hover {
+      color: #3399ff;
+    }
+
+    /* Search bar container with icon */
     .search-bar {
       flex: 1;
       display: flex;
       align-items: center;
       background-color: #2a2a2a;
       border-radius: 8px;
-      padding: 5px 10px;
+      padding: 8px 12px;
+      box-shadow: inset 0 0 5px rgba(0,191,255,0.5);
     }
 
-    .search-bar i {
-      color: #888;
+    /* Search icon inside the input */
+    .search-icon {
+      color: #00bfff;
+      font-size: 1.2rem;
+      cursor: pointer;
       margin-right: 10px;
+      user-select: none;
     }
 
     .search-bar input {
       width: 100%;
-      padding: 10px;
       border: none;
       background: transparent;
       color: #fff;
       font-size: 1rem;
       outline: none;
+      user-select: text;
     }
 
+    /* Section title styling */
     .section-title {
       text-align: center;
       font-size: 1.2rem;
@@ -60,22 +80,32 @@
       color: #aaa;
     }
 
+    /* Hiding the "Related Results (Based on Noun)" title only */
+    #nounResultsTitle {
+      display: none;
+    }
+
+    /* Result box styles, now clickable */
     .result-box {
       margin: 15px auto;
-      padding: 15px;
+      padding: 15px 20px;
       background-color: #1e1e1e;
       width: 80%;
       border-radius: 10px;
       box-shadow: 0 4px 10px rgba(0,0,0,0.5);
       cursor: pointer;
-      transition: background-color 0.2s ease;
-      text-decoration: none;
-      color: inherit;
+      transition: background-color 0.3s ease;
+      color: #fff;
+      text-decoration: none; /* Remove underline */
+      display: block; /* To make the whole div clickable */
     }
 
     .result-box:hover {
-      background-color: #2c2c2c;
+      background-color: #00bfff33;
     }
+
+    /* Remove the separate link styles because the box itself is clickable */
+    /* No separate <a> tags inside result-box now */
 
     .no-result {
       text-align: center;
@@ -88,81 +118,94 @@
 <body>
 
   <div class="top-bar">
-    <i class="fas fa-arrow-left back-button" onclick="window.history.back()"></i>
+    <!-- Back button -->
+    <i class="fa-solid fa-arrow-left back-button" id="backBtn" title="Go Back"></i>
+
+    <!-- Search bar with icon -->
     <div class="search-bar">
-      <i class="fas fa-search"></i>
-      <input type="text" id="searchInput" placeholder="Search..." readonly />
+      <i class="fa-solid fa-magnifying-glass search-icon" id="searchIcon" title="Search"></i>
+      <input type="text" id="searchInput" placeholder="Search..." />
     </div>
   </div>
 
   <div class="section-title">🔎 Results for Your Search</div>
   <div id="queryResults"></div>
 
+  <div class="section-title" id="nounResultsTitle">🧠 Related Results (Based on Noun)</div>
+  <div id="nounResults"></div>
+
   <script>
-    const searchInput = document.getElementById('searchInput');
-    const queryResults = document.getElementById('queryResults');
+  const searchInput = document.getElementById('searchInput');
+  const queryResults = document.getElementById('queryResults');
 
-    const searchQuery = sessionStorage.getItem('searchQuery');
-    searchInput.value = searchQuery || '';
+  const searchQuery = sessionStorage.getItem('searchQuery');
+  searchInput.value = searchQuery || '';
 
-    function renderResults(container, data) {
-      container.innerHTML = data.map(item => `
-        <a href="main.html" class="result-box" data-id="${item.xata_id}">
+  function renderResults(container, data) {
+    container.innerHTML = data.map(item => `
+      <div class="result-box">
+        <a href="main.html" class="result-link" data-id="${item.xata_id}">
           <div>${item.question}</div>
         </a>
-      `).join('');
-    }
+      </div>
+    `).join('');
+  }
 
-    async function fetchExactSearchResults(query, container) {
-      try {
-        const res = await fetch(`https://library-of-knowledge.vercel.app/search?q=${encodeURIComponent(query)}&limit=5`);
-        
-        if (!res.ok) {
-          if (res.status === 404) {
-            container.innerHTML = `
-              <a href="dynamic.html" class="result-box">
+  async function fetchExactSearchResults(query, container) {
+    try {
+      const res = await fetch(`https://library-of-knowledge.vercel.app/search?q=${encodeURIComponent(query)}&limit=5`);
+      
+      if (!res.ok) {
+        if (res.status === 404) {
+          container.innerHTML = `
+            <div class="result-box">
+              <a href="dynamic.html">
                 <div>${query}</div>
               </a>
-            `;
-          } else {
-            container.innerHTML = '<div class="no-result">No results found.</div>';
-          }
-          return;
+            </div>
+          `;
+        } else {
+          container.innerHTML = '<div class="no-result">No results found.</div>';
         }
+        return;
+      }
 
-        const data = await res.json();
+      const data = await res.json();
 
-        if (data.length === 0) {
-          container.innerHTML = `
-            <a href="dynamic.html" class="result-box">
+      if (data.length === 0) {
+        container.innerHTML = `
+          <div class="result-box">
+            <a href="dynamic.html">
               <div>${query}</div>
             </a>
-          `;
-          return;
-        }
+          </div>
+        `;
+        return;
+      }
 
-        renderResults(container, data);
-      } catch (err) {
-        console.error('Search failed:', err);
-        container.innerHTML = '<div class="no-result">Error loading results.</div>';
+      renderResults(container, data);
+    } catch (err) {
+      console.error('Search failed:', err);
+      container.innerHTML = '<div class="no-result">Error loading results.</div>';
+    }
+  }
+
+  if (searchQuery) {
+    fetchExactSearchResults(searchQuery, queryResults);
+  } else {
+    queryResults.innerHTML = '<div class="no-result">No search query found.</div>';
+  }
+
+  // Save xata_id to sessionStorage when user clicks DB results (main.html only)
+  document.addEventListener('click', function(e) {
+    const link = e.target.closest('.result-link');
+    if (link && link.getAttribute('href') === 'main.html') {
+      const xataId = link.getAttribute('data-id');
+      if (xataId) {
+        sessionStorage.setItem('xata_id', xataId);
       }
     }
-
-    if (searchQuery) {
-      fetchExactSearchResults(searchQuery, queryResults);
-    } else {
-      queryResults.innerHTML = '<div class="no-result">No search query found.</div>';
-    }
-
-    document.addEventListener('click', function(e) {
-      const box = e.target.closest('.result-box');
-      if (box && box.getAttribute('href') === 'main.html') {
-        const xataId = box.getAttribute('data-id');
-        if (xataId) {
-          sessionStorage.setItem('xata_id', xataId);
-        }
-      }
-    });
+  });
   </script>
 
 </body>
