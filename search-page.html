@@ -207,7 +207,7 @@
 
     console.log("Search response:", data);
 
-    // 💡 Check if response contains that "message"
+    // If no results at all, just show dynamic box
     if (data.message === 'No matching questions found.' || !Array.isArray(data) || data.length === 0) {
       container.innerHTML = `
         <a href="dynamic.html" class="result-box">
@@ -217,13 +217,27 @@
       return;
     }
 
+    // Check if exact question exists in results (case insensitive)
+    const exactExists = data.some(item => item.question.toLowerCase() === query.toLowerCase());
+
+    // Render existing results
     renderResults(container, data);
+
+    // If exact question NOT found, add the dynamic box below results
+    if (!exactExists) {
+      container.insertAdjacentHTML('beforeend', `
+        <a href="dynamic.html" class="result-box" style="background-color: #333; border: 2px dashed #00bfff; margin-top: 15px;">
+          <div>Create new entry: <strong>${query}</strong></div>
+        </a>
+      `);
+    }
+
   } catch (err) {
     console.error('Search failed:', err);
     container.innerHTML = '<div class="no-result">Error loading results.</div>';
   }
     } 
-
+    
     async function fetchSearchResults(query, container) {
       try {
         const res = await fetch(`https://library-of-knowledge.vercel.app/search?q=${encodeURIComponent(query)}&limit=5`);
