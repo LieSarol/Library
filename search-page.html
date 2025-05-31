@@ -204,24 +204,15 @@
   try {
     const res = await fetch(`https://library-of-knowledge.vercel.app/search?q=${encodeURIComponent(query)}&limit=5`);
 
-    if (!res.ok) {
-      if (res.status === 404) {
-        // Show dynamic box fallback ONLY here
-        container.innerHTML = `
-          <a href="dynamic.html" class="result-box">
-            <div>${query}</div>
-          </a>
-        `;
-      } else {
-        container.innerHTML = '<div class="no-result">No results found.</div>';
-      }
-      return;
+    const isNotFound = res.status === 404;
+
+    let data = [];
+    if (!isNotFound) {
+      data = await res.json();
     }
 
-    const data = await res.json();
-
-    if (data.length === 0) {
-      // Show dynamic box fallback ONLY here
+    if (isNotFound || !Array.isArray(data) || data.length === 0) {
+      // 💡 Fallback box here!
       container.innerHTML = `
         <a href="dynamic.html" class="result-box">
           <div>${query}</div>
@@ -230,6 +221,7 @@
       return;
     }
 
+    // ✅ Results found
     renderResults(container, data);
   } catch (err) {
     console.error('Search failed:', err);
