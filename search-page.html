@@ -1,131 +1,110 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>Ask Cubby</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Search Page</title>
   <style>
-    * {
-      font-family: sans-serif;
-      box-sizing: border-box;
-    }
-
     body {
-      background: white;
+      background-color: #121212;
+      color: #fff;
+      font-family: 'Segoe UI', sans-serif;
+      margin: 0;
+      padding: 0;
+    }
+
+    .search-bar {
+      background-color: #1f1f1f;
       padding: 20px;
+      display: flex;
+      justify-content: center;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.3);
     }
 
-    input[type="text"] {
-      width: 100%;
+    .search-bar input {
+      width: 50%;
       padding: 10px;
-      margin-bottom: 15px;
-      font-size: 16px;
-    }
-
-    .box {
-      background: #f3f3f3;
-      padding: 12px;
+      border: none;
       border-radius: 8px;
-      margin-bottom: 10px;
-      cursor: pointer;
+      font-size: 1rem;
+      background-color: #2a2a2a;
+      color: #fff;
     }
 
-    .label {
+    .result-box {
+      margin: 30px auto;
+      padding: 20px;
+      background-color: #1e1e1e;
+      width: 80%;
+      border-radius: 10px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+    }
+
+    .result-box a {
+      color: #00bfff;
+      text-decoration: none;
       font-weight: bold;
-      margin-top: 20px;
-      margin-bottom: 5px;
     }
 
-    .noun-box span {
-      display: inline-block;
-      background: #eee;
-      margin: 4px;
-      padding: 4px 8px;
-      border-radius: 6px;
-      font-size: 14px;
+    .result-box a:hover {
+      text-decoration: underline;
+    }
+
+    .no-result {
+      text-align: center;
+      margin-top: 50px;
+      font-size: 1.2rem;
+      color: #bbb;
     }
   </style>
 </head>
 <body>
 
-  <input type="text" id="searchInput" placeholder="Ask me something..." onkeypress="if(event.key==='Enter') handleSearch()" />
+  <div class="search-bar">
+    <input type="text" id="searchInput" placeholder="Search..." readonly />
+  </div>
 
-  <div class="label" id="originalLabel" style="display:none;">Your question:</div>
-  <div id="originalBox" class="box" style="display:none;"></div>
-
-  <div class="label" id="nounLabel" style="display:none;">Nouns found:</div>
-  <div class="noun-box" id="nounBox" style="display:none;"></div>
-
-  <div class="label" id="relatedLabel" style="display:none;">Related questions:</div>
-  <div id="resultsContainer"></div>
+  <div id="resultContainer"></div>
 
   <script>
-    async function handleSearch() {
-      const query = document.getElementById("searchInput").value.trim();
-      if (!query) return;
+    const searchInput = document.getElementById('searchInput');
+    const resultContainer = document.getElementById('resultContainer');
 
-      sessionStorage.setItem("searchQuery", query);
+    // Get the search query from sessionStorage
+    const query = sessionStorage.getItem('searchQuery');
+    searchInput.value = query || '';
 
-      // Reset boxes
-      document.getElementById("originalBox").style.display = "none";
-      document.getElementById("originalLabel").style.display = "none";
-      document.getElementById("nounBox").style.display = "none";
-      document.getElementById("nounLabel").style.display = "none";
-      document.getElementById("resultsContainer").innerHTML = "";
-      document.getElementById("relatedLabel").style.display = "none";
+    if (!query) {
+      resultContainer.innerHTML = '<div class="no-result">No search query found.</div>';
+    } else {
+      fetch(`https://library-of-knowledge.vercel.app/search?q=${encodeURIComponent(query)}&limit=5`)
+        .then(async res => {
+          if (res.status === 404) return null;
+          if (!res.ok) throw new Error("API Error");
+          return await res.json();
+        })
+        .then(data => {
+          if (!data) {
+            resultContainer.innerHTML = `
+              <div class="result-box">
+                <p>No exact match found for <strong>${query}</strong>.</p>
+                <a href="dynamic.html?q=${encodeURIComponent(query)}">Go to dynamic result</a>
+              </div>`;
+          } else {
+            const exactMatch = data.find(item => item.question.toLowerCase() === query.toLowerCase());
+            const link = exactMatch ? 'main.html' : 'dynamic.html';
 
-      // Check if exact question exists in DB
-      const exists = await fetch(`https://library-of-knowledge.vercel.app/search?query=${encodeURIComponent(query)}&limit=1`)
-        .then(res => res.json())
-        .then(data => data.length > 0)
-        .catch(() => false);
-
-      // Show original question only if it DOESN'T exist
-      if (!exists) {
-        const originalBox = document.getElementById("originalBox");
-        originalBox.textContent = query;
-        originalBox.style.display = "block";
-        document.getElementById("originalLabel").style.display = "block";
-      }
-
-      // Get nouns from Cubby
-      const nouns = await fetch("https://cubby-noun-extrac-40.deno.dev/", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ text: query })
-      })
-      .then(res => res.json())
-      .then(data => data.nouns || [])
-      .catch(() => []);
-
-      if (nouns.length > 0) {
-        const nounBox = document.getElementById("nounBox");
-        nounBox.innerHTML = nouns.map(n => `<span>${n}</span>`).join('');
-        nounBox.style.display = "block";
-        document.getElementById("nounLabel").style.display = "block";
-
-        // Now search using the FIRST noun
-        const related = await fetch(`https://your-api.com/search?query=${encodeURIComponent(nouns[0])}&limit=10`)
-          .then(res => res.json())
-          .catch(() => []);
-
-        if (related.length > 0) {
-          const container = document.getElementById("resultsContainer");
-          related.forEach(item => {
-            const div = document.createElement("div");
-            div.className = "box";
-            div.textContent = item.question;
-            div.onclick = () => goToEndPage(item.question);
-            container.appendChild(div);
-          });
-          document.getElementById("relatedLabel").style.display = "block";
-        }
-      }
-    }
-
-    function goToEndPage(question) {
-      console.log("Clicked:", question);
-      // You can update this if needed:
-      // location.href = `/end-page?q=${encodeURIComponent(question)}`;
+            resultContainer.innerHTML = `
+              <div class="result-box">
+                <p>Found result for: <strong>${query}</strong></p>
+                <a href="${link}?q=${encodeURIComponent(query)}">Open Result</a>
+              </div>`;
+          }
+        })
+        .catch(err => {
+          console.error(err);
+          resultContainer.innerHTML = '<div class="no-result">Something went wrong. Try again later.</div>';
+        });
     }
   </script>
 
