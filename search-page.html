@@ -203,16 +203,12 @@
     async function fetchExactSearchResults(query, container) {
   try {
     const res = await fetch(`https://library-of-knowledge.vercel.app/search?q=${encodeURIComponent(query)}&limit=5`);
+    const data = await res.json();
 
-    const isNotFound = res.status === 404;
+    console.log("Search response:", data);
 
-    let data = [];
-    if (!isNotFound) {
-      data = await res.json();
-    }
-
-    if (isNotFound || !Array.isArray(data) || data.length === 0) {
-      // 💡 Fallback box here!
+    // 💡 Check if response contains that "message"
+    if (data.message === 'No matching questions found.' || !Array.isArray(data) || data.length === 0) {
       container.innerHTML = `
         <a href="dynamic.html" class="result-box">
           <div>${query}</div>
@@ -221,13 +217,12 @@
       return;
     }
 
-    // ✅ Results found
     renderResults(container, data);
   } catch (err) {
     console.error('Search failed:', err);
     container.innerHTML = '<div class="no-result">Error loading results.</div>';
   }
-    }
+    } 
 
     async function fetchSearchResults(query, container) {
       try {
