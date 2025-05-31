@@ -135,77 +135,146 @@
   <div id="nounResults"></div>
 
   <script>
-  const searchInput = document.getElementById('searchInput');
-  const queryResults = document.getElementById('queryResults');
+    const searchInput = document.getElementById('searchInput');
+    const queryResults = document.getElementById('queryResults');
+    const nounResults = document.getElementById('nounResults');
+    const backBtn = document.getElementById('backBtn');
+    const searchIcon = document.getElementById('searchIcon');
 
-  const searchQuery = sessionStorage.getItem('searchQuery');
-  searchInput.value = searchQuery || '';
+    // Load initial search query from sessionStorage
+    const searchQuery = sessionStorage.getItem('searchQuery') || '';
+    searchInput.value = searchQuery;
 
-  function renderResults(container, data) {
-    container.innerHTML = data.map(item => `
-      <div class="result-box">
-        <a href="main.html" class="result-link" data-id="${item.xata_id}">
-          <div>${item.question}</div>
-        </a>
-      </div>
-    `).join('');
-  }
+    // Clicking back button takes user back in history
+    backBtn.addEventListener('click', () => {
+      window.history.back();
+    });
 
-  async function fetchExactSearchResults(query, container) {
-    try {
-      const res = await fetch(`https://library-of-knowledge.vercel.app/search?q=${encodeURIComponent(query)}&limit=5`);
-      
-      if (!res.ok) {
-        if (res.status === 404) {
-          container.innerHTML = `
-            <div class="result-box">
-              <a href="dynamic.html">
+    // Trigger search on clicking the search icon or pressing Enter in input
+    function triggerSearch() {
+      const query = searchInput.value.trim();
+      if (!query) return;
+
+      sessionStorage.setItem('searchQuery', query);
+      fetchExactSearchResults(query, queryResults);
+
+      // Also fetch noun-based results for related
+      fetchNoun(query).then(noun => {
+        if (noun) {
+          fetchSearchResults(noun, nounResults);
+        } else {
+          nounResults.innerHTML = '<div class="no-result">Couldn’t find a related noun.</div>';
+        }
+      });
+    }
+
+    searchIcon.addEventListener('click', triggerSearch);
+    searchInput.addEventListener('keydown', e => {
+      if (e.key === 'Enter') triggerSearch();
+    });
+
+    // Render results with clickable boxes
+    function renderResults(container, data) {
+  container.innerHTML = data.map(item => `
+    <a href="main.html" class="result-box" data-xata-id="${item.xata_id}">
+      <div>${item.question}</div>
+    </a>
+  `).join('');
+
+  // After rendering, attach click listeners to each box
+  container.querySelectorAll('.result-box').forEach(box => {
+    box.addEventListener('click', e => {
+      const xataId = box.getAttribute('data-xata-id');
+      if (xataId) {
+        sessionStorage.setItem('selectedXataId', xataId);
+        console.log('Saved xata_id:', xataId); // optional for debugging
+      }
+    });
+  });
+    }
+
+    async function fetchExactSearchResults(query, container) {
+      try {
+        const res = await fetch(`https://library-of-knowledge.vercel.app/search?q=${encodeURIComponent(query)}&limit=5`);
+
+        if (!res.ok) {
+          if (res.status === 404) {
+            container.innerHTML = `
+              <a href="dynamic.html" class="result-box">
                 <div>${query}</div>
               </a>
-            </div>
-          `;
-        } else {
-          container.innerHTML = '<div class="no-result">No results found.</div>';
+            `;
+          } else {
+            container.innerHTML = '<div class="no-result">No results found.</div>';
+          }
+          return;
         }
-        return;
-      }
 
-      const data = await res.json();
+        const data = await res.json();
 
-      if (data.length === 0) {
-        container.innerHTML = `
-          <div class="result-box">
-            <a href="dynamic.html">
+        if (data.length === 0) {
+          container.innerHTML = `
+            <a href="dynamic.html" class="result-box">
               <div>${query}</div>
             </a>
-          </div>
-        `;
-        return;
-      }
+          `;
+          return;
+        }
 
-      renderResults(container, data);
-    } catch (err) {
-      console.error('Search failed:', err);
-      container.innerHTML = '<div class="no-result">Error loading results.</div>';
-    }
-  }
-
-  if (searchQuery) {
-    fetchExactSearchResults(searchQuery, queryResults);
-  } else {
-    queryResults.innerHTML = '<div class="no-result">No search query found.</div>';
-  }
-
-  // Save xata_id to sessionStorage when user clicks DB results (main.html only)
-  document.addEventListener('click', function(e) {
-    const link = e.target.closest('.result-link');
-    if (link && link.getAttribute('href') === 'main.html') {
-      const xataId = link.getAttribute('data-id');
-      if (xataId) {
-        sessionStorage.setItem('xata_id', xataId);
+        renderResults(container, data);
+      } catch (err) {
+        console.error('Search failed:', err);
+        container.innerHTML = '<div class="no-result">Error loading results.</div>';
       }
     }
-  });
+
+    async function fetchSearchResults(query, container) {
+      try {
+        const res = await fetch(`https://library-of-knowledge.vercel.app/search?q=${encodeURIComponent(query)}&limit=5`);
+        if (!res.ok) {
+          container.innerHTML = '<div class="no-result">No results found.</div>';
+          return;
+        }
+
+        const data = await res.json();
+        renderResults(container, data);
+      } catch (err) {
+        console.error('Search failed:', err);
+        container.innerHTML = '<div class="no-result">Error loading results.</div>';
+      }
+    }
+
+    async function fetchNoun(query) {
+      try {
+        const res = await fetch('https://cubby-noun-extrac-40.deno.dev/', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ text: query })
+        });
+        const data = await res.json();
+        if (data.nouns && data.nouns.length > 0) {
+          return data.nouns[0];
+        }
+        return null;
+      } catch (err) {
+        console.error('Noun extraction failed:', err);
+        return null;
+      }
+    }
+
+    // Initial load with session query
+    if (searchQuery) {
+      fetchExactSearchResults(searchQuery, queryResults);
+      fetchNoun(searchQuery).then(noun => {
+        if (noun) {
+          fetchSearchResults(noun, nounResults);
+        } else {
+          nounResults.innerHTML = '<div class="no-result">Couldn’t find a related noun.</div>';
+        }
+      });
+    } else {
+      queryResults.innerHTML = '<div class="no-result">No search query found.</div>';
+    }
   </script>
 
 </body>
