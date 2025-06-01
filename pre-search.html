@@ -79,11 +79,17 @@ Only return the names of the top 1-3 matching niches. Be accurate, short, and cl
             'Content-Type': 'application/json'
           },
           body: JSON.stringify({
-            messages: [
-              { role: "system", content: systemPrompt },
-              { role: "user", content: searchQuery }
-            ]
-          })
+  messages: [
+    {
+      role: "user",
+      content: `Given the following query: "${searchQuery}"
+Which of these niches does it belong to? List 1 to 3 max. Only give the niche names and nothing else:
+
+${optionsList}`
+    }
+  ],
+  model: 'meta-llama/llama-4-scout-17b-16e-instruct'
+})
         });
 
         const data = await response.json();
