@@ -82,7 +82,7 @@ Only return the names of the top 1-3 matching niches. Be accurate, short, and cl
   messages: [
     {
       role: "user",
-      content: `Given the following query: "${searchQuery}"
+      content: `IMPORTANT: Only output 1 to 3 of the niche names from the list. Do NOT explain anything. Given the following query: "${searchQuery}"
 Which of these niches does it belong to? List 1 to 3 max. Only give the niche names and nothing else:
 
 ${optionsList}`
