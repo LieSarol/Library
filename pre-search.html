@@ -79,7 +79,7 @@ Only return the names of the top 1-3 matching niches. Be accurate, short, and cl
             'Content-Type': 'application/json'
           },
           body: JSON.stringify({
-            message: [
+            messages: [
               { role: "system", content: systemPrompt },
               { role: "user", content: searchQuery }
             ]
