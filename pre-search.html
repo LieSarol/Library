@@ -2,10 +2,69 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Category Classifier</title>
+  <title>Analyzing...</title>
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      background: radial-gradient(ellipse at center, #0a0a23 0%, #000010 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #c0caff;
+      font-family: 'Segoe UI', sans-serif;
+      font-size: 20px;
+      overflow: hidden;
+    }
+
+    .loader {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      animation: fadeIn 1s ease-in-out;
+    }
+
+    .dot-flash {
+      display: flex;
+      gap: 8px;
+      margin-top: 12px;
+    }
+
+    .dot-flash div {
+      width: 10px;
+      height: 10px;
+      background: #c0caff;
+      border-radius: 50%;
+      animation: pulse 1s infinite ease-in-out;
+    }
+
+    .dot-flash div:nth-child(2) {
+      animation-delay: 0.2s;
+    }
+
+    .dot-flash div:nth-child(3) {
+      animation-delay: 0.4s;
+    }
+
+    @keyframes pulse {
+      0%, 80%, 100% { transform: scale(0.6); opacity: 0.4; }
+      40% { transform: scale(1); opacity: 1; }
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+  </style>
 </head>
 <body>
-  <pre id="output">Classifying...</pre>
+  <div class="loader">
+    <div>Analyzing your question...</div>
+    <div class="dot-flash">
+      <div></div><div></div><div></div>
+    </div>
+  </div>
 
   <script>
     const CATEGORIES = [
@@ -21,8 +80,7 @@
       "Foreign Cultures & Travel", "Astronomy", "Biology", "Chemistry", "Physics", "Environmental Studies"
     ];
 
-    const output = document.getElementById('output');
-    const query = sessionStorage.getItem('searchQuery') || 'What is quantum computing?';
+    const query = sessionStorage.getItem('searchQuery') || '';
 
     const prompt = `
 Classify the following question into ONE of the categories below. ONLY return the category name exactly as written:
@@ -42,10 +100,12 @@ Category:
     .then(res => res.json())
     .then(data => {
       const reply = data.choices?.[0]?.message?.content?.trim();
-      output.textContent = `Query: ${query}\n\nCategory: ${reply || 'Unable to classify'}`;
+      if (reply) {
+        sessionStorage.setItem('nicheQuery', reply);
+      }
     })
-    .catch(err => {
-      output.textContent = 'Error fetching response.';
+    .finally(() => {
+      window.location.href = 'search-page.html';
     });
   </script>
 </body>
