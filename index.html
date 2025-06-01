@@ -1,4 +1,5 @@
-<!DOCTYPE html><html lang="en">
+<!DOCTYPE html>
+<html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -196,15 +197,17 @@ footer {
     right: 0;
     width: 100%;
     padding: 1rem;
+    z-index: 9999;
   }
 
-  #nav.active {
-    display: flex !important; /* <-- HERE'S THE FIX */
+  nav.active {
+    display: flex !important;
   }
 
   .hamburger {
     display: flex;
   }
+}
 
   .hero-text h2 {
     font-size: 1.8rem;
@@ -215,17 +218,16 @@ footer {
 </head>
 <body>
   <header>
-    <img src="https://cdn.pixabay.com/photo/2020/05/25/10/33/open-book-5218061_1280.png" alt="Logo" class="logo-img">
-    <div class="hamburger" onclick="toggleMenu()">
-      <div></div><div></div><div></div>
-    </div>
-    <nav id="navbar">
-      <a href="#about">About</a>
-      <a href="#features">Features</a>
-      <a href="#images">Gallery</a>
-      <a href="#contact">Contact</a>
-    </nav>
-  </header>  <section class="hero">
+  <img src="logo.png" class="logo-img" />
+  <div class="hamburger">
+    <div></div><div></div><div></div>
+  </div>
+  <nav id="navbar">
+    <a href="#">About</a>
+    <a href="#">Features</a>
+    <a href="#">Contact</a>
+  </nav>
+</header>  <section class="hero">
     <img src="https://cdn.pixabay.com/photo/2014/12/07/09/30/milky-way-559641_1280.jpg" alt="AI Hero Image">
     <div class="hero-text">
       <h2>Explore Knowledge. Powered by AI.</h2>
@@ -302,9 +304,10 @@ footer {
       <p>&copy; 2025 Liemar's AI Library. All rights reserved.</p>
     </div>
   </footer>  <script>
-    function toggleMenu() {
-      const nav = document.getElementById("navbar");
-      nav.classList.toggle("active");
-    }
-  </script></body>
-</html>
+  document.addEventListener("DOMContentLoaded", () => {
+    document.querySelector(".hamburger").addEventListener("click", () => {
+      document.getElementById("navbar").classList.toggle("active");
+    });
+  });
+</script> </body>
+             </html>
