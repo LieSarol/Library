@@ -104,6 +104,7 @@
     responseBox.innerHTML = "Loading...";
 
     try {
+      // 🧠 1. Get Answer from AI
       const response = await fetch("https://library-of-knowledge.vercel.app/groq", {
         method: "POST",
         headers: {
@@ -116,16 +117,80 @@
       const raw = data.choices?.[0]?.message?.content || "No result returned.";
       responseBox.innerHTML = formatText(raw);
 
-      // Sneaky insert into DB 😏
+      // 🧠 2. Ask AI to detect niches
+      const nichePrompt = `
+From the user's question: "${query}", return the top 3 most relevant niche names as a JSON array. Pick ONLY from this list:
+
+1. Language Learning
+2. Mathematics
+3. Science
+4. Technology
+5. Engineering
+6. Art
+7. Music
+8. History
+9. Geography
+10. Philosophy
+11. Psychology
+12. Literature
+13. Writing & Communication
+14. Business & Entrepreneurship
+15. Finance & Investing
+16. Economics
+17. Marketing
+18. Sales
+19. Public Speaking
+20. Critical Thinking
+21. Coding / Programming
+22. Graphic Design
+23. Web Development
+24. App Development
+25. Game Development
+26. Animation
+27. Video Production
+28. Photography
+29. Data Science
+30. Artificial Intelligence
+31. Cybersecurity
+32. Robotics
+33. Mechanics / Auto Repair
+34. Architecture
+35. Interior Design
+36. Fashion Design
+37. Cooking & Culinary Arts
+38. Baking
+39. Fitness & Exercise
+40. Yoga & Mindfulness
+41. Health & Nutrition
+42. Self-Improvement
+43. Time Management
+44. Parenting Skills
+45. Foreign Cultures & Travel
+46. Astronomy
+47. Biology
+48. Chemistry
+49. Physics
+50. Environmental Studies
+`;
+
+      const nicheResponse = await fetch("https://library-of-knowledge.vercel.app/groq", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ message: nichePrompt })
+      });
+
+      const nicheData = await nicheResponse.json();
+      const nicheArray = JSON.parse(nicheData.choices?.[0]?.message?.content || "[]");
+
+      // 🧠 3. Insert into database
       await fetch("https://library-of-knowledge.vercel.app/insert", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           table: "qa_docs",
           question: query,
-          answer: raw
+          answer: raw,
+          niche: nicheArray
         })
       });
 
@@ -133,7 +198,7 @@
       console.error(err);
       responseBox.innerText = "Error fetching response.";
     }
-  }
+  };
 
   function formatText(text) {
     const lines = text.split('\n');
