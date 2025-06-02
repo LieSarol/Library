@@ -183,7 +183,7 @@
     // Render results with clickable boxes
     function renderResults(container, data) {
   container.innerHTML = data.map(item => `
-    <a href="main.html" class="result-box" data-xata-id="${item.xata_id}">
+    <a href="redirect.html" class="result-box" data-xata-id="${item.xata_id}">
       <div>${item.question}</div>
     </a>
   `).join('');
