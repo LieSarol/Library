@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Logging in progress...</title>
+  <script>
+    document.addEventListener('DOMContentLoaded', async () => {
+      const xataId = sessionStorage.getItem('selectedXataId');
+
+      if (!xataId) {
+        console.warn('No xata_id found in sessionStorage!');
+        // You could redirect somewhere else or show an error
+        return;
+      }
+
+      try {
+        await fetch('https://library-of-knowledge.vercel.app/sync', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ xata_id: xataId, count: 1 })
+        });
+
+        console.log(`Logged 1 view for xata_id: ${xataId}`);
+      } catch (err) {
+        console.error('Logging failed:', err);
+        // Optional: fail silently or redirect anyway
+      }
+
+      // Sneaky teleport to the real page
+      window.location.href = 'main.html';
+    });
+  </script>
+</head>
+<body>
+  <p>Redirecting you... 🌀</p>
+</body>
+</html>
