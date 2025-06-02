@@ -15,7 +15,7 @@
       }
 
       try {
-        await fetch('https://library-of-knowledge.vercel.app/sync', {
+        await fetch('https://library-of-knowledge.vercel.app/count', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ xata_id: xataId, count: 1 })
