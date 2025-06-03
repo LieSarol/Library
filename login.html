@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Log In | Library Account</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+</head>
+<body class="bg-[#1E293B] text-gray-300 min-h-screen flex items-center justify-center font-sans relative">
+
+  <!-- Back Icon -->
+  <button onclick="history.back()" class="absolute top-5 left-5 text-gray-400 hover:text-white text-2xl">
+  <i class="fas fa-arrow-left"></i>
+  </button>
+
+  <div class="flex flex-col items-center">
+    <!-- Logo -->
+    <img src="logo.png" alt="Logo" class="w-5 h-5 mb-6 drop-shadow-lg" />
+
+    <!-- Form Container -->
+    <main
+      id="login-container"
+      class="bg-gray-800 p-8 rounded-3xl shadow-xl max-w-md w-full"
+    >
+      <h1 class="text-3xl font-bold mb-6 text-blue-400 text-center">Welcome Back</h1>
+      <form id="login-form" class="flex flex-col space-y-5">
+        <input type="text" id="username" placeholder="Username" required
+          class="p-4 rounded-xl bg-gray-700 text-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500" />
+        <input type="password" id="password" placeholder="Password" required
+          class="p-4 rounded-xl bg-gray-700 text-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500" />
+        <button type="submit"
+          class="bg-blue-600 hover:bg-blue-700 text-white py-3 rounded-xl font-semibold transition-colors">
+          Log In
+        </button>
+      </form>
+      <p class="mt-6 text-center text-gray-400">
+        Don’t have an account?
+        <a href="signup.html" class="text-blue-400 hover:underline">Sign Up</a>
+      </p>
+      <p id="message" class="mt-4 text-center text-red-500"></p>
+    </main>
+  </div>
+
+  <script>
+    const form = document.getElementById("login-form");
+    const message = document.getElementById("message");
+
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      message.textContent = "";
+
+      const username = form.username.value.trim();
+      const password = form.password.value.trim();
+
+      if (!username || !password) {
+        message.textContent = "Please fill out all fields!";
+        return;
+      }
+
+      try {
+        const res = await fetch("https://library-account.vercel.app/signin", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ username, password }),
+          credentials: 'include'
+        });
+
+        const data = await res.json();
+
+        if (res.ok) {
+          message.style.color = "#34d399";
+          message.textContent = data.message || "Login successful!";
+          setTimeout(() => {
+            window.location.href = "/dashboard";
+          }, 1500);
+        } else {
+          message.style.color = "#f87171";
+          message.textContent = data.error || "Login failed.";
+        }
+      } catch (error) {
+        message.style.color = "#f87171";
+        message.textContent = "Network error, try again.";
+      }
+    });
+  </script>
+</body>
+</html>
