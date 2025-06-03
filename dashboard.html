@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Fancy Dashboard</title>
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Heroicons -->
+  <script src="https://unpkg.com/feather-icons"></script>
+  <!-- SwiperJS for horizontal scrolling cards -->
+  <link rel="stylesheet" href="https://unpkg.com/swiper/swiper-bundle.min.css" />
+  <script src="https://unpkg.com/swiper/swiper-bundle.min.js"></script>
+  <style>
+    body {
+      background-color: #1E293B;
+    }
+    .swiper-container {
+      padding: 1rem 0;
+    }
+    .swiper-slide {
+      width: 250px;
+    }
+    .card-img {
+      position: relative;
+      overflow: hidden;
+      border-radius: 0.75rem;
+    }
+    .card-overlay {
+      position: absolute;
+      bottom: 0;
+      width: 100%;
+      background: linear-gradient(to top, rgba(0, 0, 0, 0.7), transparent);
+      padding: 1rem;
+      color: white;
+    }
+  </style>
+</head>
+<body class="text-white">
+  <!-- Header -->
+  <header class="flex items-center justify-between p-4 bg-[#1E293B] shadow">
+    <div class="flex items-center space-x-4">
+      <button id="menu-btn" class="text-white focus:outline-none">
+        <i data-feather="menu"></i>
+      </button>
+      <img src="logo.png" alt="Logo" class="h-10 w-10 rounded-full" />
+    </div>
+    <h1 class="text-xl font-bold">My Dashboard</h1>
+  </header>  <!-- Sidebar Menu (hidden by default) -->  <aside id="sidebar" class="fixed top-0 left-0 h-full w-64 bg-[#111827] shadow-lg transform -translate-x-full transition-transform duration-300 z-50">
+    <div class="p-4 text-lg font-semibold">Menu</div>
+    <ul class="p-4 space-y-2">
+      <li><a href="#" class="block px-4 py-2 rounded hover:bg-[#2563ea]">Home</a></li>
+      <li><a href="#" class="block px-4 py-2 rounded hover:bg-[#2563ea]">Profile</a></li>
+      <li><a href="#" class="block px-4 py-2 rounded hover:bg-[#2563ea]">Settings</a></li>
+    </ul>
+  </aside>  <!-- Overlay -->  <div id="overlay" class="hidden fixed inset-0 bg-black bg-opacity-50 z-40"></div>  <!-- Main Content -->  <main class="p-4 space-y-10 max-w-7xl mx-auto">
+    <!-- Category A -->
+    <section>
+      <h2 class="text-2xl font-semibold mb-2">Category A</h2>
+      <div class="swiper-container">
+        <div class="swiper-wrapper">
+          <!-- Repeat 5 cards -->
+          <div class="swiper-slide">
+            <div class="card-img">
+              <img src="https://via.placeholder.com/250x150" class="w-full h-40 object-cover" alt="Card A1" />
+              <div class="card-overlay">Card A1</div>
+            </div>
+          </div>
+          <div class="swiper-slide">
+            <div class="card-img">
+              <img src="https://via.placeholder.com/250x150" class="w-full h-40 object-cover" alt="Card A2" />
+              <div class="card-overlay">Card A2</div>
+            </div>
+          </div>
+          <div class="swiper-slide">
+            <div class="card-img">
+              <img src="https://via.placeholder.com/250x150" class="w-full h-40 object-cover" alt="Card A3" />
+              <div class="card-overlay">Card A3</div>
+            </div>
+          </div>
+          <div class="swiper-slide">
+            <div class="card-img">
+              <img src="https://via.placeholder.com/250x150" class="w-full h-40 object-cover" alt="Card A4" />
+              <div class="card-overlay">Card A4</div>
+            </div>
+          </div>
+          <div class="swiper-slide">
+            <div class="card-img">
+              <img src="https://via.placeholder.com/250x150" class="w-full h-40 object-cover" alt="Card A5" />
+              <div class="card-overlay">Card A5</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section><!-- Category B -->
+<section>
+  <h2 class="text-2xl font-semibold mb-2">Category B</h2>
+  <div class="swiper-container">
+    <div class="swiper-wrapper">
+      <!-- Repeat 5 cards -->
+      <div class="swiper-slide">
+        <div class="card-img">
+          <img src="https://via.placeholder.com/250x150" class="w-full h-40 object-cover" alt="Card B1" />
+          <div class="card-overlay">Card B1</div>
+        </div>
+      </div>
+      <div class="swiper-slide">
+        <div class="card-img">
+          <img src="https://via.placeholder.com/250x150" class="w-full h-40 object-cover" alt="Card B2" />
+          <div class="card-overlay">Card B2</div>
+        </div>
+      </div>
+      <div class="swiper-slide">
+        <div class="card-img">
+          <img src="https://via.placeholder.com/250x150" class="w-full h-40 object-cover" alt="Card B3" />
+          <div class="card-overlay">Card B3</div>
+        </div>
+      </div>
+      <div class="swiper-slide">
+        <div class="card-img">
+          <img src="https://via.placeholder.com/250x150" class="w-full h-40 object-cover" alt="Card B4" />
+          <div class="card-overlay">Card B4</div>
+        </div>
+      </div>
+      <div class="swiper-slide">
+        <div class="card-img">
+          <img src="https://via.placeholder.com/250x150" class="w-full h-40 object-cover" alt="Card B5" />
+          <div class="card-overlay">Card B5</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Category C -->
+<section>
+  <h2 class="text-2xl font-semibold mb-2">Category C</h2>
+  <div class="swiper-container">
+    <div class="swiper-wrapper">
+      <!-- Repeat 5 cards -->
+      <div class="swiper-slide">
+        <div class="card-img">
+          <img src="https://via.placeholder.com/250x150" class="w-full h-40 object-cover" alt="Card C1" />
+          <div class="card-overlay">Card C1</div>
+        </div>
+      </div>
+      <div class="swiper-slide">
+        <div class="card-img">
+          <img src="https://via.placeholder.com/250x150" class="w-full h-40 object-cover" alt="Card C2" />
+          <div class="card-overlay">Card C2</div>
+        </div>
+      </div>
+      <div class="swiper-slide">
+        <div class="card-img">
+          <img src="https://via.placeholder.com/250x150" class="w-full h-40 object-cover" alt="Card C3" />
+          <div class="card-overlay">Card C3</div>
+        </div>
+      </div>
+      <div class="swiper-slide">
+        <div class="card-img">
+          <img src="https://via.placeholder.com/250x150" class="w-full h-40 object-cover" alt="Card C4" />
+          <div class="card-overlay">Card C4</div>
+        </div>
+      </div>
+      <div class="swiper-slide">
+        <div class="card-img">
+          <img src="https://via.placeholder.com/250x150" class="w-full h-40 object-cover" alt="Card C5" />
+          <div class="card-overlay">Card C5</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+  </main>  <script>
+    feather.replace();
+
+    const menuBtn = document.getElementById('menu-btn');
+    const sidebar = document.getElementById('sidebar');
+    const overlay = document.getElementById('overlay');
+
+    menuBtn.addEventListener('click', () => {
+      sidebar.classList.toggle('-translate-x-full');
+      overlay.classList.toggle('hidden');
+    });
+
+    overlay.addEventListener('click', () => {
+      sidebar.classList.add('-translate-x-full');
+      overlay.classList.add('hidden');
+    });
+
+    document.querySelectorAll('.swiper-container').forEach(container => {
+      new Swiper(container, {
+        slidesPerView: 'auto',
+        spaceBetween: 15,
+      });
+    });
+  </script></body>
+</html>
