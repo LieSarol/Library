@@ -1,200 +1,288 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Fancy Dashboard</title>
-  <!-- Tailwind CSS -->
-  <script src="https://cdn.tailwindcss.com"></script>
-  <!-- Heroicons -->
-  <script src="https://unpkg.com/feather-icons"></script>
-  <!-- SwiperJS for horizontal scrolling cards -->
-  <link rel="stylesheet" href="https://unpkg.com/swiper/swiper-bundle.min.css" />
-  <script src="https://unpkg.com/swiper/swiper-bundle.min.js"></script>
+  <meta charset="UTF-8">
+  <title>✨ Fancy Dashboard ✨</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <!-- Google Fonts for some Gen Z vibes -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@500;700&display=swap" rel="stylesheet">
+  <!-- Material Icons for hamburger and extras -->
+  <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+  <!-- SwiperJS for horizontal card scroll -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css"/>
   <style>
-    body {
-      background-color: #1E293B;
+    :root {
+      --bg: #1E293B;
+      --primary: #2563ea;
+      --primary-hover: #1d4ed8;
+      --card-bg: #273549;
+      --card-text: #fff;
+      --accent: #38bdf8;
+      --radius: 18px;
+      --shadow: 0 8px 32px 0 rgba(31, 41, 55, 0.25);
     }
-    .swiper-container {
-  padding: 1rem 0;
-  width: 100%;
+    html, body {
+      height: 100%;
+      margin: 0;
+      font-family: 'Inter', sans-serif;
+      background: var(--bg);
+      color: #f1f5f9;
+    }
+    body {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+    header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 22px 32px 14px 32px;
+      background: var(--bg);
+      box-shadow: 0 2px 16px rgba(30,41,59,0.12);
+      position: sticky;
+      top: 0;
+      z-index: 20;
+    }
+    .logo {
+      font-size: 1.7rem;
+      font-weight: 700;
+      letter-spacing: 1px;
+      color: var(--primary);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .hamburger {
+      background: none;
+      border: none;
+      color: var(--accent);
+      font-size: 2rem;
+      cursor: pointer;
+      outline: none;
+      transition: color 0.2s;
+    }
+    .hamburger:hover {
+      color: var(--primary);
+    }
+    .menu {
+      background: var(--card-bg);
+      color: var(--card-text);
+      position: absolute;
+      right: 32px;
+      top: 70px;
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 12px 16px;
+      display: none;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .menu a {
+      text-decoration: none;
+      color: var(--card-text);
+      font-size: 1rem;
+      transition: color 0.2s;
+    }
+    .menu a:hover {
+      color: var(--primary);
+    }
+    .dashboard-title {
+      margin: 32px 0 18px 32px;
+      font-size: 2rem;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+    }
+    .category-block {
+      margin-bottom: 38px;
+    }
+    .category-title {
+      margin-left: 32px;
+      margin-bottom: 12px;
+      font-size: 1.15rem;
+      font-weight: 600;
+      letter-spacing: .3px;
+      color: var(--accent);
+      text-shadow: 0 2px 8px rgba(56,189,248,0.12);
+    }
+    /* Swiper */
+    .swiper {
+      padding-left: 32px;
+      padding-bottom: 5px;
     }
     .swiper-slide {
-      width: 250px;
-    }
-    .card-img {
+      background: var(--card-bg);
+      color: var(--card-text);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      min-width: 250px;
+      max-width: 272px;
+      height: 175px;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+      padding: 24px 20px 18px 20px;
+      margin-right: 22px;
       position: relative;
       overflow: hidden;
-      border-radius: 0.75rem;
+      transition: transform 0.16s;
+      cursor: pointer;
     }
-    .card-overlay {
+    .swiper-slide:hover {
+      transform: translateY(-6px) scale(1.04);
+      box-shadow: 0 12px 30px 0 rgba(37,99,234,0.22);
+    }
+    .card-image {
       position: absolute;
-      bottom: 0;
+      top: 0;
+      left: 0;
       width: 100%;
-      background: linear-gradient(to top, rgba(0, 0, 0, 0.7), transparent);
-      padding: 1rem;
-      color: white;
+      height: 100%;
+      object-fit: cover;
+      filter: brightness(0.6);
+      z-index: 1;
+    }
+    .card-content {
+      position: relative;
+      z-index: 2;
+    }
+    .card-title {
+      font-size: 1.18rem;
+      font-weight: 700;
+      margin-bottom: 2px;
+      color: var(--primary);
+    }
+    .card-desc {
+      font-size: 0.97rem;
+      color: #e0e7ef;
+      margin-bottom: 16px;
+    }
+    .card-btn {
+      padding: 7px 16px;
+      background: var(--primary);
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      font-weight: 600;
+      letter-spacing: .2px;
+      font-size: .98rem;
+      box-shadow: 0 2px 8px rgba(37,99,234,0.12);
+      cursor: pointer;
+      transition: background .18s;
+      text-decoration: none;
+      display: inline-block;
+    }
+    .card-btn:hover {
+      background: var(--primary-hover);
+    }
+    /* Swiper navigation dots */
+    .swiper-pagination-bullet {
+      background: var(--accent);
+      opacity: 0.4;
+    }
+    .swiper-pagination-bullet-active {
+      background: var(--primary);
+      opacity: 1;
+    }
+    /* Responsive */
+    @media (max-width: 700px) {
+      .dashboard-title {
+        font-size: 1.2rem;
+        margin-left: 20px;
+      }
+      .category-title {
+        margin-left: 20px;
+      }
+      .swiper {
+        padding-left: 20px;
+      }
+      header {
+        padding: 18px 16px 10px 16px;
+      }
     }
   </style>
 </head>
-<body class="text-white">
-  <!-- Header -->
-  <header class="flex items-center justify-between p-4 bg-[#1E293B] shadow">
-    <div class="flex items-center space-x-4">
-      <button id="menu-btn" class="text-white focus:outline-none">
-        <i data-feather="menu"></i>
-      </button>
-      <img src="logo.png" alt="Logo" class="h-10 w-10 rounded-full" />
+<body>
+  <header>
+    <span class="logo">
+      <span class="material-icons" style="font-size:1.8rem;">dashboard</span>
+      DashVibe
+    </span>
+    <button class="hamburger" aria-label="Open menu">
+      <span class="material-icons">menu</span>
+    </button>
+    <div class="menu">
+      <a href="#productivity">Productivity</a>
+      <a href="#social">Social</a>
+      <a href="#personal">Personal</a>
     </div>
-    <h1 class="text-xl sm:text-2xl md:text-3xl font-bold">My Dashboard</h1>
-  </header>  <!-- Sidebar Menu (hidden by default) -->  <aside id="sidebar" class="fixed top-0 left-0 h-full w-64 bg-[#111827] shadow-lg transform -translate-x-full transition-transform duration-300 z-50">
-    <div class="p-4 text-lg font-semibold">Menu</div>
-    <ul class="p-4 space-y-2">
-      <li><a href="#" class="block px-4 py-2 rounded hover:bg-[#2563ea]">Home</a></li>
-      <li><a href="#" class="block px-4 py-2 rounded hover:bg-[#2563ea]">Profile</a></li>
-      <li><a href="#" class="block px-4 py-2 rounded hover:bg-[#2563ea]">Settings</a></li>
-    </ul>
-  </aside>  <!-- Overlay -->  <div id="overlay" class="hidden fixed inset-0 bg-black bg-opacity-50 z-40"></div>  <!-- Main Content -->  <main class="p-4 space-y-10 w-full max-w-screen-lg mx-auto">
-    <!-- Category A -->
-    <section>
-      <h2 class="text-2xl font-semibold mb-2">Category A</h2>
-      <div class="swiper-container">
-        <div class="swiper-wrapper">
-          <!-- Repeat 5 cards -->
-          <div class="swiper-slide">
-            <div class="card-img">
-              <img src="https://cdn.pixabay.com/photo/2022/04/15/07/58/sunset-7133867_1280.jpg" class="w-full h-40 object-cover" alt="Card A1" />
-              <div class="card-overlay">Card A1</div>
-            </div>
+  </header>
+  <div class="dashboard-title">Welcome back, legend 🦄</div>
+
+  <!-- Category 1 -->
+  <div class="category-block" id="productivity">
+    <div class="category-title">Productivity</div>
+    <div class="swiper swiper-prod">
+      <div class="swiper-wrapper">
+        <div class="swiper-slide">
+          <img src="https://cdn.pixabay.com/photo/2024/12/27/14/58/owl-9294302_1280.jpg" alt="Focus" class="card-image">
+          <div class="card-content">
+            <div class="card-title">🔥 Top Focus</div>
+            <div class="card-desc">Track your main task and crush it. No distractions, just vibes.</div>
+            <a href="#" class="card-btn">View Focus</a>
           </div>
-          <div class="swiper-slide">
-            <div class="card-img">
-              <img src="https://cdn.pixabay.com/photo/2024/12/27/14/58/owl-9294302_1280.jpg" class="w-full h-40 object-cover" alt="Card A2" />
-              <div class="card-overlay">Card A2</div>
-            </div>
+        </div>
+        <div class="swiper-slide">
+          <img src="https://cdn.pixabay.com/photo/2022/04/15/07/58/sunset-7133867_1280.jpg" alt="Calendar" class="card-image">
+          <div class="card-content">
+            <div class="card-title">🗓️ Calendar</div>
+            <div class="card-desc">Peep your upcoming schedule and never miss a beat.</div>
+            <a href="#" class="card-btn">Open Calendar</a>
           </div>
-          <div class="swiper-slide">
-            <div class="card-img">
-              <img src="https://via.placeholder.com/250x150" class="w-full h-40 object-cover" alt="Card A3" />
-              <div class="card-overlay">Card A3</div>
-            </div>
-          </div>
-          <div class="swiper-slide">
-            <div class="card-img">
-              <img src="https://via.placeholder.com/250x150" class="w-full h-40 object-cover" alt="Card A4" />
-              <div class="card-overlay">Card A4</div>
-            </div>
-          </div>
-          <div class="swiper-slide">
-            <div class="card-img">
-              <img src="https://via.placeholder.com/250x150" class="w-full h-40 object-cover" alt="Card A5" />
-              <div class="card-overlay">Card A5</div>
-            </div>
+        </div>
+        <div class="swiper-slide">
+          <img src="https://via.placeholder.com/272x175" alt="Pomodoro" class="card-image">
+          <div class="card-content">
+            <div class="card-title">⏰ Pomodoro</div>
+            <div class="card-desc">Time sprints with break reminders. Work hard, play hard.</div>
+            <a href="#" class="card-btn">Start Timer</a>
           </div>
         </div>
       </div>
-    </section><!-- Category B -->
-<section>
-  <h2 class="text-2xl font-semibold mb-2">Category B</h2>
-  <div class="swiper-container">
-    <div class="swiper-wrapper">
-      <!-- Repeat 5 cards -->
-      <div class="swiper-slide">
-        <div class="card-img">
-          <img src="https://via.placeholder.com/250x150" class="w-full h-40 object-cover" alt="Card B1" />
-          <div class="card-overlay">Card B1</div>
-        </div>
-      </div>
-      <div class="swiper-slide">
-        <div class="card-img">
-          <img src="https://via.placeholder.com/250x150" class="w-full h-40 object-cover" alt="Card B2" />
-          <div class="card-overlay">Card B2</div>
-        </div>
-      </div>
-      <div class="swiper-slide">
-        <div class="card-img">
-          <img src="https://via.placeholder.com/250x150" class="w-full h-40 object-cover" alt="Card B3" />
-          <div class="card-overlay">Card B3</div>
-        </div>
-      </div>
-      <div class="swiper-slide">
-        <div class="card-img">
-          <img src="https://via.placeholder.com/250x150" class="w-full h-40 object-cover" alt="Card B4" />
-          <div class="card-overlay">Card B4</div>
-        </div>
-      </div>
-      <div class="swiper-slide">
-        <div class="card-img">
-          <img src="https://via.placeholder.com/250x150" class="w-full h-40 object-cover" alt="Card B5" />
-          <div class="card-overlay">Card B5</div>
-        </div>
-      </div>
+      <div class="swiper-pagination"></div>
     </div>
   </div>
-</section>
+  
+  <!-- Add additional categories similarly -->
 
-<!-- Category C -->
-<section>
-  <h2 class="text-2xl font-semibold mb-2">Category C</h2>
-  <div class="swiper-container">
-    <div class="swiper-wrapper">
-      <!-- Repeat 5 cards -->
-      <div class="swiper-slide">
-        <div class="card-img">
-          <img src="https://via.placeholder.com/250x150" class="w-full h-40 object-cover" alt="Card C1" />
-          <div class="card-overlay">Card C1</div>
-        </div>
-      </div>
-      <div class="swiper-slide">
-        <div class="card-img">
-          <img src="https://via.placeholder.com/250x150" class="w-full h-40 object-cover" alt="Card C2" />
-          <div class="card-overlay">Card C2</div>
-        </div>
-      </div>
-      <div class="swiper-slide">
-        <div class="card-img">
-          <img src="https://via.placeholder.com/250x150" class="w-full h-40 object-cover" alt="Card C3" />
-          <div class="card-overlay">Card C3</div>
-        </div>
-      </div>
-      <div class="swiper-slide">
-        <div class="card-img">
-          <img src="https://via.placeholder.com/250x150" class="w-full h-40 object-cover" alt="Card C4" />
-          <div class="card-overlay">Card C4</div>
-        </div>
-      </div>
-      <div class="swiper-slide">
-        <div class="card-img">
-          <img src="https://via.placeholder.com/250x150" class="w-full h-40 object-cover" alt="Card C5" />
-          <div class="card-overlay">Card C5</div>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
-
-  </main>  <script>
-    feather.replace();
-
-    const menuBtn = document.getElementById('menu-btn');
-    const sidebar = document.getElementById('sidebar');
-    const overlay = document.getElementById('overlay');
-
-    menuBtn.addEventListener('click', () => {
-      sidebar.classList.toggle('-translate-x-full');
-      overlay.classList.toggle('hidden');
-    });
-
-    overlay.addEventListener('click', () => {
-      sidebar.classList.add('-translate-x-full');
-      overlay.classList.add('hidden');
-    });
-
-    document.querySelectorAll('.swiper-container').forEach(container => {
-      new Swiper(container, {
+  <!-- SwiperJS -->
+  <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+  <script>
+    // Init all Swipers
+    document.querySelectorAll('.swiper').forEach(function(swiperEl) {
+      new Swiper(swiperEl, {
         slidesPerView: 'auto',
-        spaceBetween: 15,
+        spaceBetween: 0,
+        pagination: {
+          el: swiperEl.querySelector('.swiper-pagination'),
+          clickable: true,
+        },
+        freeMode: true,
+        breakpoints: {
+          0: { slidesPerView: 1.1 },
+          500: { slidesPerView: 1.5 },
+          700: { slidesPerView: 2.2 },
+          1100: { slidesPerView: 3.2 }
+        }
       });
     });
-  </script></body>
-</html>
+
+    // Hamburger menu toggle
+    const menu = document.querySelector('.menu');
+    const hamburger = document.querySelector('.hamburger');
+    hamburger.addEventListener('click', () => {
+      menu.style.display = menu.style.display === 'flex' ? 'none' : 'flex';
+    });
+  </script>
+</body>
+  </html>
