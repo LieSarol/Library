@@ -6,185 +6,162 @@
   <title>Tutorial Page</title>  
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>  
   <style>  
-    * { box-sizing: border-box; }  
-    body {
-      margin: 0;
-      font-family: 'Segoe UI', sans-serif;
-      background: linear-gradient(135deg, #0d0d0d, #1a1a1a);
-      color: #f0f0f0;
-      padding: 20px;
-    }
-    .topbar {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      margin-bottom: 20px;
-    }
-    .back-btn {
-      color: #ffffff;
-      font-size: 22px;
-      text-decoration: none;
-    }
-    h2, .query {
-      font-weight: bold;
-      font-size: 24px;
-      color: #ffffff;
-    }
-    #responseBox {
-      background: #0f0f0f;
-      padding: 20px;
-      border-radius: 10px;
-      border: 1px solid #30363d;
-      margin-top: 20px;
-    }
-    .code-block {
-      background-color: #161b22;
-      padding: 15px;
-      margin: 15px 0;
-      border-radius: 10px;
-      position: relative;
-      font-family: monospace;
-      white-space: pre-wrap;
-      overflow-x: auto;
-    }
-    .copy-icon {
-      position: absolute;
-      top: 10px;
-      right: 10px;
-      color: #8b949e;
-      cursor: pointer;
-    }
-    .copy-icon:hover {
-      color: #ffffff;
-    }
-    strong { color: #ffffff; }
-    code {
-      background-color: #222;
-      padding: 2px 6px;
-      border-radius: 6px;
-      font-family: monospace;
-      font-size: 14px;
-      color: #c9d1d9;
-    }
-    #sendBtn {
-      margin-top: 15px;
-      padding: 10px 15px;
-      font-size: 16px;
-      background-color: #3a3f47;
-      border: none;
-      border-radius: 8px;
-      color: #fff;
-      cursor: pointer;
-    }
-    #sendBtn:hover {
-      background-color: #505861;
-    }
-    #bodyPreview {
-      font-family: monospace;
-      background-color: #1c1c1c;
-      padding: 10px;
-      border-radius: 8px;
-      white-space: pre-wrap;
-      border: 1px solid #30363d;
-    }
+    * {  
+      box-sizing: border-box;  
+    }  
+  
+    body {  
+      margin: 0;  
+      font-family: 'Segoe UI', sans-serif;  
+      background: linear-gradient(135deg, #0d0d0d, #1a1a1a);  
+      color: #f0f0f0;  
+      padding: 20px;  
+    }  
+  
+    .topbar {  
+      display: flex;  
+      align-items: center;  
+      justify-content: space-between;  
+      margin-bottom: 20px;  
+    }  
+  
+    .back-btn {  
+      color: #ffffff;  
+      font-size: 22px;  
+      text-decoration: none;  
+    }  
+  
+    h2, .query {  
+      font-weight: bold;  
+      font-size: 24px;  
+      color: #ffffff;  
+    }  
+  
+    #responseBox {  
+      background: #0f0f0f;  
+      padding: 20px;  
+      border-radius: 10px;  
+      border: 1px solid #30363d;  
+    }  
+  
+    .code-block {  
+      background-color: #161b22;  
+      padding: 15px;  
+      margin: 15px 0;  
+      border-radius: 10px;  
+      position: relative;  
+      font-family: monospace;  
+      white-space: pre-wrap;  
+      overflow-x: auto;  
+    }  
+  
+    .copy-icon {  
+      position: absolute;  
+      top: 10px;  
+      right: 10px;  
+      color: #8b949e;  
+      cursor: pointer;  
+    }  
+  
+    .copy-icon:hover {  
+      color: #ffffff;  
+    }  
+  
+    strong {  
+      color: #ffffff;  
+    }  
+  
+    code {  
+      background-color: #222;  
+      padding: 2px 6px;  
+      border-radius: 6px;  
+      font-family: monospace;  
+      font-size: 14px;  
+      color: #c9d1d9;  
+    }  
   </style>  
 </head>  
 <body>  
-
+  
   <div class="topbar">  
     <a href="search-page.html" class="back-btn"><i class="fas fa-arrow-left"></i></a>  
     <h2>Tutorial</h2>  
   </div>  
-
-  <div class="query" id="queryText">Loading request preview...</div>  
-  <div id="bodyPreview"></div>
-  <button id="sendBtn">🚀 Send Request</button>
-  <div id="responseBox">Awaiting request...</div>
-
+  
+  <div class="query" id="queryText">Loading query...</div>  
+  
+  <div id="responseBox">Tutorial will appear here...</div>  
+  
   <script>  
-    const selectedXataId = sessionStorage.getItem("selectedXataId") || "";
-
-    const queryText = document.getElementById("queryText");  
-    const bodyPreview = document.getElementById("bodyPreview");  
-    const responseBox = document.getElementById("responseBox");  
-    const sendBtn = document.getElementById("sendBtn");
-
-    const apiUrl = `https://library-of-knowledge.vercel.app/data/${selectedXataId}`;  
-
-    window.onload = () => {
-      if (!selectedXataId) {
-        queryText.innerText = "❌ No tutorial ID found.";
-        bodyPreview.innerText = "No request body to preview.";
-        responseBox.innerText = "Unable to proceed without ID.";
-        sendBtn.disabled = true;
-        return;
-      }
-
-      const requestBody = {
-        method: "GET",
-        credentials: "include"
-      };
-
-      queryText.innerText = "📦 Request Preview";
-      bodyPreview.innerText = JSON.stringify(requestBody, null, 2);
-    };
-
-    sendBtn.onclick = async () => {
-      responseBox.innerText = "Loading...";
-      try {
-        const response = await fetch(apiUrl, { credentials: "include" });
+    const selectedXataId = sessionStorage.getItem("selectedXataId") || "";  
+  
+    window.onload = async () => {  
+      const responseBox = document.getElementById("responseBox");  
+      const queryText = document.getElementById("queryText");  
+      responseBox.innerHTML = "Loading...";  
+  
+      if (!selectedXataId) {  
+        queryText.innerText = "❌ No tutorial ID found.";  
+        responseBox.innerText = "Unable to load tutorial.";  
+        return;  
+      }  
+  
+      try {  
+        const response = await fetch(`https://library-of-knowledge.vercel.app/data/${selectedXataId}`);  
         const data = await response.json();
-
+        credentials: "include"
+  
         const question = data.question || "Unknown query";  
         const answer = data.answer || "No result returned.";  
-
+  
         queryText.innerText = "🔎 " + question;  
-        responseBox.innerHTML = formatText(answer);
-      } catch (err) {
-        console.error(err);
-        responseBox.innerText = "❌ Error fetching response.";
-      }
-    };
-
+        responseBox.innerHTML = formatText(answer);  
+      } catch (err) {  
+        console.error(err);  
+        queryText.innerText = "❌ Failed to load question.";  
+        responseBox.innerText = "Error fetching response.";  
+      }  
+    }  
+  
     function formatText(text) {  
       const lines = text.split('\n');  
       let html = '';  
       let insideCode = false;  
       let codeBuffer = [];  
-
-      lines.forEach(line => {
-        if (line.trim().startsWith("```")) {
-          if (!insideCode) {
-            insideCode = true;
-            codeBuffer = [];
-          } else {
-            insideCode = false;
-            const code = codeBuffer.join('\n');
-            html += `
-              <div class="code-block">
-                <i class="fas fa-copy copy-icon" onclick="copyToClipboard(\`${code.replace(/`/g, "\\`")}\`)"></i>
-                ${code.replace(/</g, "&lt;").replace(/>/g, "&gt;")}
-              </div>`;
-          }
-        } else if (insideCode) {
-          codeBuffer.push(line);
-        } else {
-          const formatted = line
-            .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
-            .replace(/`([^`]+)`/g, '<code>$1</code>');
-          html += `<p>${formatted}</p>`;
-        }
-      });
-
-      return html;
-    }
-
-    function copyToClipboard(code) {
-      navigator.clipboard.writeText(code).then(() => {
-        alert("Copied!");
-      });
-    }
+  
+      lines.forEach(line => {  
+        if (line.trim().startsWith("```")) {  
+          if (!insideCode) {  
+            insideCode = true;  
+            codeBuffer = [];  
+          } else {  
+            insideCode = false;  
+            const code = codeBuffer.join('\n');  
+            html += `  
+              <div class="code-block">  
+                <i class="fas fa-copy copy-icon" onclick="copyToClipboard(\`${code.replace(/`/g, "\\`")}\`)"></i>  
+                ${code.replace(/</g, "&lt;").replace(/>/g, "&gt;")}  
+              </div>`;  
+          }  
+        } else if (insideCode) {  
+          codeBuffer.push(line);  
+        } else {  
+          const formatted = line  
+            .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')  
+            .replace(/`([^`]+)`/g, '<code>$1</code>');  
+          html += `<p>${formatted}</p>`;  
+        }  
+      });  
+  
+      return html;  
+    }  
+  
+    function copyToClipboard(code) {  
+      navigator.clipboard.writeText(code).then(() => {  
+        alert("Copied!");  
+      });  
+    }  
   </script>  
-
+  
 </body>  
 </html>
