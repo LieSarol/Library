@@ -3,51 +3,52 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Niche Playlist Vibes 🎶</title>
+  <title>Niche Playlist</title>
 
-  <!-- Google Fonts -->
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
-
-  <!-- Font Awesome for icons -->
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
-
-  <!-- Animate.css for flair -->
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
-
-  <!-- TailwindCSS via CDN (Flowbite-style) -->
+  <!-- TailwindCSS CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- Font Awesome for Back Icon -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
 
   <style>
     body {
-      font-family: 'Poppins', sans-serif;
       background-color: #1E293B;
       color: white;
+      font-family: 'Arial', sans-serif;
     }
 
-    .playlist-item:hover {
-      box-shadow: 0 0 20px rgba(37, 99, 234, 0.4);
-      transition: 0.3s ease-in-out;
-    }
-
-    .btn {
+    .btn-blue {
       background-color: #2563ea;
     }
 
-    .btn:hover {
+    .btn-blue:hover {
       background-color: #1e4cd4;
+    }
+
+    .playlist-item:hover {
+      box-shadow: 0 0 10px rgba(37, 99, 234, 0.3);
+      transform: scale(1.02);
     }
   </style>
 </head>
-<body class="min-h-screen p-6 flex flex-col items-center justify-start">
+<body class="min-h-screen p-4">
 
-  <!-- Thumbnail Banner -->
-  <div class="w-full max-w-3xl mb-6 rounded-lg overflow-hidden animate__animated animate__fadeInDown">
-    <img src="https://via.placeholder.com/800x400.png?text=🎨+Your+Playlist+Thumbnail" alt="Top Thumbnail"
-         class="w-full h-auto object-cover" />
+  <!-- Back Button -->
+  <div class="mb-6">
+    <button onclick="history.back()" class="text-white text-xl hover:text-blue-400">
+      <i class="fas fa-arrow-left"></i> Back
+    </button>
   </div>
 
-  <!-- Playlist Container -->
-  <div id="playlist" class="w-full max-w-3xl space-y-5 animate__animated animate__fadeInUp"></div>
+  <!-- Thumbnail -->
+  <div class="mb-6 w-full max-w-3xl mx-auto rounded-lg overflow-hidden">
+    <img src="https://via.placeholder.com/800x300?text=Playlist+Thumbnail" alt="Thumbnail"
+         class="w-full h-auto object-cover rounded">
+  </div>
+
+  <!-- Playlist Items -->
+  <div id="playlist" class="space-y-4 max-w-3xl mx-auto"></div>
 
   <script>
     function getCookieValue(name) {
@@ -61,47 +62,35 @@
       const playlist = document.getElementById("playlist");
 
       if (!niche) {
-        playlist.innerHTML = "<p class='text-center text-red-400'>🍪 Niche cookie missing. Set niche1 in cookies first!</p>";
+        playlist.innerHTML = "<p class='text-red-400'>Cookie 'niche1' not set.</p>";
         return;
       }
 
       try {
-        const limit = 10;
-        const res = await fetch(`https://library-of-knowledge.vercel.app/data/niche/${encodeURIComponent(niche)}?limit=${limit}`);
+        const res = await fetch(`/data/niche/${encodeURIComponent(niche)}?limit=20`);
         const data = await res.json();
 
         if (!Array.isArray(data) || data.length === 0) {
-          playlist.innerHTML = "<p class='text-center text-yellow-400'>😬 No results found for this niche.</p>";
+          playlist.innerHTML = "<p class='text-yellow-400'>No results found for this niche.</p>";
           return;
         }
 
-        playlist.innerHTML = ""; // Clear old stuff
+        playlist.innerHTML = "";
 
         data.forEach(item => {
-          const card = document.createElement("div");
-          card.className = "playlist-item bg-slate-800 p-5 rounded-lg shadow-md transition-transform duration-200 hover:scale-105";
+          const div = document.createElement("a");
+          div.href = "main.html";
+          div.className = "block playlist-item bg-slate-800 p-4 rounded-lg transition duration-200 hover:cursor-pointer";
 
-          card.innerHTML = `
-            <h3 class="text-lg font-semibold mb-2">${item.title || "Untitled"}</h3>
-            <p class="mb-4 text-sm text-slate-300">${item.description || "No description available."}</p>
-            <button class="btn px-4 py-2 rounded text-white flex items-center gap-2">
-              <i class="fas fa-play"></i> View
-            </button>
+          div.innerHTML = `
+            <h3 class="text-lg font-medium">${item.question || "Untitled question"}</h3>
           `;
 
-          card.querySelector("button").onclick = () => {
-            if (item.link) {
-              window.location.href = item.link;
-            } else {
-              alert("No link provided for this item.");
-            }
-          };
-
-          playlist.appendChild(card);
+          playlist.appendChild(div);
         });
       } catch (err) {
-        console.error("API error:", err);
-        playlist.innerHTML = `<p class="text-red-500">🔥 Oops, something went wrong: ${err.message}</p>`;
+        console.error(err);
+        playlist.innerHTML = `<p class="text-red-500">Error fetching data: ${err.message}</p>`;
       }
     }
 
