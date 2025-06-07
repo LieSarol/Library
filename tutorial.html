@@ -67,7 +67,7 @@
       }
 
       try {
-        const res = await fetch(`/data/niche/${encodeURIComponent(niche)}?limit=20`);
+        const res = await fetch(`https://library-of-knowledge.vercel.app/data/niche/${encodeURIComponent(niche)}?limit=20`);
         const data = await res.json();
 
         if (!Array.isArray(data) || data.length === 0) {
