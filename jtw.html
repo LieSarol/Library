@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>JWT_SECRET Strength Checker</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-900 text-white flex items-center justify-center min-h-screen p-4">
+  <div class="bg-gray-800 rounded-2xl shadow-lg p-6 w-full max-w-md">
+    <h1 class="text-2xl font-bold mb-4 text-center">🔐 JWT_SECRET Strength Checker</h1>
+    <input id="secretInput" type="text" placeholder="Enter your JWT_SECRET..."
+      class="w-full p-3 rounded-xl bg-gray-700 border border-gray-600 focus:outline-none focus:ring-2 focus:ring-purple-500" />
+    <button onclick="checkSecret()" class="w-full mt-4 bg-purple-600 hover:bg-purple-700 text-white font-semibold py-2 px-4 rounded-xl transition">
+      Check Strength
+    </button>
+    <div id="result" class="mt-4 text-center text-lg font-semibold"></div>
+  </div>
+
+  <script>
+    function checkSecret() {
+      const input = document.getElementById("secretInput").value;
+      const result = document.getElementById("result");
+
+      const weakSecrets = ["secret", "mysecret", "123456", "password", "jwtsecret", "changeme"];
+      const lengthScore = input.length >= 32;
+      const hasSymbols = /[^a-zA-Z0-9]/.test(input);
+      const isCommon = weakSecrets.includes(input.toLowerCase());
+
+      let strength = "";
+      let message = "";
+
+      if (input.length === 0) {
+        strength = "⚠️";
+        message = "Type something muna 😤";
+      } else if (isCommon || input.length < 12) {
+        strength = "🍅 Weak sauce";
+        message = "Way too easy. Try again with more chaos.";
+      } else if (!hasSymbols || input.length < 32) {
+        strength = "😐 Mid";
+        message = "Not bad, but symbols & longer secrets are better.";
+      } else if (lengthScore && hasSymbols && !isCommon) {
+        strength = "💪 Cracked out";
+        message = "Now *this* is hacker-proof energy.";
+      } else {
+        strength = "🤔 Hmm";
+        message = "Something's off, try again maybe?";
+      }
+
+      result.innerHTML = `<div class="mt-2">${strength}</div><div class="text-sm text-gray-400">${message}</div>`;
+    }
+  </script>
+</body>
+</html>
