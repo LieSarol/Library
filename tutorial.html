@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Niche Playlist Vibes 🎶</title>
+
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+
+  <!-- Font Awesome for icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+
+  <!-- Animate.css for flair -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
+
+  <!-- TailwindCSS via CDN (Flowbite-style) -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <style>
+    body {
+      font-family: 'Poppins', sans-serif;
+      background-color: #1E293B;
+      color: white;
+    }
+
+    .playlist-item:hover {
+      box-shadow: 0 0 20px rgba(37, 99, 234, 0.4);
+      transition: 0.3s ease-in-out;
+    }
+
+    .btn {
+      background-color: #2563ea;
+    }
+
+    .btn:hover {
+      background-color: #1e4cd4;
+    }
+  </style>
+</head>
+<body class="min-h-screen p-6 flex flex-col items-center justify-start">
+
+  <!-- Thumbnail Banner -->
+  <div class="w-full max-w-3xl mb-6 rounded-lg overflow-hidden animate__animated animate__fadeInDown">
+    <img src="https://via.placeholder.com/800x400.png?text=🎨+Your+Playlist+Thumbnail" alt="Top Thumbnail"
+         class="w-full h-auto object-cover" />
+  </div>
+
+  <!-- Playlist Container -->
+  <div id="playlist" class="w-full max-w-3xl space-y-5 animate__animated animate__fadeInUp"></div>
+
+  <script>
+    function getCookieValue(name) {
+      const value = `; ${document.cookie}`;
+      const parts = value.split(`; ${name}=`);
+      if (parts.length === 2) return parts.pop().split(';').shift();
+    }
+
+    async function fetchPlaylist() {
+      const niche = getCookieValue("niche1");
+      const playlist = document.getElementById("playlist");
+
+      if (!niche) {
+        playlist.innerHTML = "<p class='text-center text-red-400'>🍪 Niche cookie missing. Set niche1 in cookies first!</p>";
+        return;
+      }
+
+      try {
+        const limit = 10;
+        const res = await fetch(`https://library-of-knowledge.vercel.app/data/niche/${encodeURIComponent(niche)}?limit=${limit}`);
+        const data = await res.json();
+
+        if (!Array.isArray(data) || data.length === 0) {
+          playlist.innerHTML = "<p class='text-center text-yellow-400'>😬 No results found for this niche.</p>";
+          return;
+        }
+
+        playlist.innerHTML = ""; // Clear old stuff
+
+        data.forEach(item => {
+          const card = document.createElement("div");
+          card.className = "playlist-item bg-slate-800 p-5 rounded-lg shadow-md transition-transform duration-200 hover:scale-105";
+
+          card.innerHTML = `
+            <h3 class="text-lg font-semibold mb-2">${item.title || "Untitled"}</h3>
+            <p class="mb-4 text-sm text-slate-300">${item.description || "No description available."}</p>
+            <button class="btn px-4 py-2 rounded text-white flex items-center gap-2">
+              <i class="fas fa-play"></i> View
+            </button>
+          `;
+
+          card.querySelector("button").onclick = () => {
+            if (item.link) {
+              window.location.href = item.link;
+            } else {
+              alert("No link provided for this item.");
+            }
+          };
+
+          playlist.appendChild(card);
+        });
+      } catch (err) {
+        console.error("API error:", err);
+        playlist.innerHTML = `<p class="text-red-500">🔥 Oops, something went wrong: ${err.message}</p>`;
+      }
+    }
+
+    fetchPlaylist();
+  </script>
+</body>
+</html>
