@@ -30,25 +30,36 @@
       box-shadow: 0 0 10px rgba(37, 99, 234, 0.3);
       transform: scale(1.02);
     }
+
+    .overlay-text {
+      background: rgba(0, 0, 0, 0.5);
+      backdrop-filter: blur(4px);
+    }
   </style>
 </head>
 <body class="min-h-screen p-4">
 
   <!-- Back Button -->
-  <div class="mb-6">
+  <div class="mb-4">
     <button onclick="history.back()" class="text-white text-xl hover:text-blue-400">
       <i class="fas fa-arrow-left"></i> Back
     </button>
   </div>
 
-  <!-- Thumbnail -->
-  <div class="mb-6 w-full max-w-3xl mx-auto rounded-lg overflow-hidden">
-    <img src="https://cdn.pixabay.com/photo/2025/05/30/17/16/mountain-9631830_1280.jpg" alt="Thumbnail"
-         class="w-full h-auto object-cover rounded">
+  <!-- Playlist Thumbnail with overlay -->
+  <div class="relative mb-8 w-full max-w-4xl mx-auto rounded-lg overflow-hidden shadow-lg">
+    <img src="https://cdn.pixabay.com/photo/2025/05/30/17/16/mountain-9631830_1280.jpg" alt="Playlist Thumbnail"
+         class="w-full h-auto object-cover">
+
+    <!-- Overlay Text -->
+    <div class="absolute bottom-0 left-0 w-full p-6 overlay-text text-white">
+      <h1 class="text-2xl md:text-3xl font-bold">Your Curated Playlist</h1>
+      <p class="text-sm md:text-base text-gray-300">Based on niche: <span id="niche-name" class="font-semibold"></span></p>
+    </div>
   </div>
 
   <!-- Playlist Items -->
-  <div id="playlist" class="space-y-4 max-w-3xl mx-auto"></div>
+  <div id="playlist" class="space-y-4 max-w-4xl mx-auto"></div>
 
   <script>
     function getCookieValue(name) {
@@ -60,11 +71,14 @@
     async function fetchPlaylist() {
       const niche = getCookieValue("niche1");
       const playlist = document.getElementById("playlist");
+      const nicheLabel = document.getElementById("niche-name");
 
       if (!niche) {
         playlist.innerHTML = "<p class='text-red-400'>Cookie 'niche1' not set.</p>";
         return;
       }
+
+      nicheLabel.textContent = niche;
 
       try {
         const res = await fetch(`https://library-of-knowledge.vercel.app/data/niche/${encodeURIComponent(niche)}?limit=20`);
@@ -77,13 +91,16 @@
 
         playlist.innerHTML = "";
 
-        data.forEach(item => {
+        data.forEach((item, index) => {
           const div = document.createElement("a");
           div.href = "main.html";
           div.className = "block playlist-item bg-slate-800 p-4 rounded-lg transition duration-200 hover:cursor-pointer";
 
           div.innerHTML = `
-            <h3 class="text-lg font-medium">${item.question || "Untitled question"}</h3>
+            <div class="flex items-center gap-4">
+              <div class="text-blue-400 text-lg font-bold">#${index + 1}</div>
+              <div class="text-white text-base font-medium">${item.question || "Untitled question"}</div>
+            </div>
           `;
 
           playlist.appendChild(div);
