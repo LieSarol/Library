@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Cookie Manager 🍪</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      padding: 2rem;
+      background: #fefefe;
+      color: #333;
+    }
+    h1 { color: #996633; }
+    input, button {
+      padding: 0.5rem;
+      margin: 0.3rem;
+      border-radius: 5px;
+      border: 1px solid #ccc;
+    }
+    button {
+      cursor: pointer;
+      background-color: #ffe0b3;
+    }
+    .cookie-list {
+      margin-top: 1rem;
+      padding: 1rem;
+      border: 1px dashed #ccc;
+      background: #fff8e1;
+    }
+  </style>
+</head>
+<body>
+  <h1>🍪 Cookie Manager</h1>
+
+  <div>
+    <input type="text" id="cookieName" placeholder="Cookie Name">
+    <input type="text" id="cookieValue" placeholder="Cookie Value">
+    <input type="number" id="cookieDays" placeholder="Days to Expire (optional)">
+    <button onclick="addCookie()">Add Cookie</button>
+  </div>
+
+  <div>
+    <input type="text" id="deleteName" placeholder="Name to Delete">
+    <button onclick="deleteCookie()">Delete Cookie</button>
+  </div>
+
+  <h2>📜 Current Cookies</h2>
+  <div class="cookie-list" id="cookieList"></div>
+
+  <script>
+    function setCookie(name, value, days) {
+      let expires = "";
+      if (days) {
+        let date = new Date();
+        date.setTime(date.getTime() + (days*24*60*60*1000));
+        expires = "; expires=" + date.toUTCString();
+      }
+      document.cookie = name + "=" + (value || "") + expires + "; path=/";
+    }
+
+    function getCookies() {
+      const cookieList = document.cookie.split(";").map(cookie => cookie.trim());
+      return cookieList;
+    }
+
+    function deleteCookie(name) {
+      document.cookie = name + "=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+      refreshCookies();
+    }
+
+    function addCookie() {
+      const name = document.getElementById("cookieName").value;
+      const value = document.getElementById("cookieValue").value;
+      const days = parseInt(document.getElementById("cookieDays").value);
+      if (!name || !value) {
+        alert("Name and value are required!");
+        return;
+      }
+      setCookie(name, value, isNaN(days) ? undefined : days);
+      refreshCookies();
+    }
+
+    function refreshCookies() {
+      const listDiv = document.getElementById("cookieList");
+      const cookies = getCookies();
+      listDiv.innerHTML = cookies.length ? cookies.join("<br>") : "No cookies set yet!";
+    }
+
+    // Initial load
+    refreshCookies();
+  </script>
+</body>
+</html>
