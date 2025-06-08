@@ -75,11 +75,14 @@
         // Send xata_id and status to Turso endpoint
         const { xata_id, status } = data;
 
-        await fetch("https://turso-db.onrender.com/insert", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ xata_id, status })
-        });
+// Convert status to 0 or 1 numeric
+const numericStatus = status ? 1 : 0;
+
+await fetch("https://turso-db.onrender.com/insert", {
+  method: "POST",
+  headers: { "Content-Type": "application/json" },
+  body: JSON.stringify({ xata_id, status: numericStatus })
+});
 
         // Redirect to dashboard
         setTimeout(() => {
