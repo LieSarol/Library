@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Insert Entry ✨</title>
+  <style>
+    body {
+      font-family: 'Comic Sans MS', cursive, sans-serif;
+      background-color: #f0f8ff;
+      padding: 2rem;
+      text-align: center;
+    }
+
+    input, select, button {
+      padding: 10px;
+      margin: 0.5rem;
+      font-size: 1rem;
+    }
+
+    .status-select {
+      width: 120px;
+    }
+
+    #responseBox {
+      margin-top: 1rem;
+      padding: 1rem;
+      border-radius: 10px;
+      display: none;
+    }
+  </style>
+</head>
+<body>
+  <h1>📥 Insert into DB</h1>
+
+  <input id="xata_id" type="text" placeholder="Enter xata_id" />
+  <select id="status" class="status-select">
+    <option value="true">true ✅</option>
+    <option value="false">false ❌</option>
+  </select>
+  <br>
+  <button onclick="sendRequest()">Send it 🚀</button>
+
+  <div id="responseBox"></div>
+
+  <script>
+    async function sendRequest() {
+      const xata_id = document.getElementById('xata_id').value;
+      const status = document.getElementById('status').value === 'true';
+
+      const resBox = document.getElementById('responseBox');
+      resBox.style.display = 'none';
+      resBox.innerHTML = '';
+
+      try {
+        const res = await fetch('https://turso-db.onrender.com/insert', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ xata_id, status })
+        });
+
+        const data = await res.json();
+        resBox.style.display = 'block';
+
+        if (res.ok) {
+          resBox.style.backgroundColor = '#d4edda';
+          resBox.innerHTML = `✅ Success: ${data.message}`;
+        } else {
+          resBox.style.backgroundColor = '#f8d7da';
+          resBox.innerHTML = `<strong>⚠️ Error:</strong><br>${JSON.stringify(data, null, 2)}`;
+        }
+      } catch (err) {
+        resBox.style.display = 'block';
+        resBox.style.backgroundColor = '#f8d7da';
+        resBox.innerHTML = `💥 Failed to send request:<br>${err.message}`;
+      }
+    }
+  </script>
+</body>
+</html>
