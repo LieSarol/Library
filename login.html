@@ -91,14 +91,18 @@
 
         logIt(`User info response: ${JSON.stringify(userInfo)}`);
         const { xata_id, status } = userInfo;
-        const numericStatus = status ? 1 : 0;
+logIt(`Raw status: ${status} (type: ${typeof status})`);
 
-        logIt(`Sending xata_id and numeric status: { xata_id: ${xata_id}, status: ${numericStatus} }`);
-        const tursoRes = await fetch("https://turso-db.onrender.com/insert", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ xata_id, status: numericStatus })
-        });
+// Convert true -> 1, false -> 0 (strictly)
+const numericStatus = (status === true || status === "true") ? 1 : 0;
+logIt(`Converted numeric status: ${numericStatus}`);
+
+logIt(`Sending xata_id and numeric status: { xata_id: ${xata_id}, status: ${numericStatus} }`);
+const tursoRes = await fetch("https://turso-db.onrender.com/insert", {
+  method: "POST",
+  headers: { "Content-Type": "application/json" },
+  body: JSON.stringify({ xata_id, status: numericStatus })
+});
 
         const tursoData = await tursoRes.text();
         logIt(`Turso DB response: ${tursoData}`);
