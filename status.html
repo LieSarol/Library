@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Fix Status Column</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      display: flex;
+      height: 100vh;
+      justify-content: center;
+      align-items: center;
+      background: #1a1a2e;
+      color: #eee;
+      flex-direction: column;
+      gap: 20px;
+    }
+    button {
+      padding: 12px 25px;
+      font-size: 18px;
+      border: none;
+      border-radius: 8px;
+      background: #4ecca3;
+      color: #1a1a2e;
+      cursor: pointer;
+      transition: background 0.3s ease;
+    }
+    button:hover {
+      background: #3ca98a;
+    }
+    #status {
+      font-weight: 600;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>Fix the "status" column 💾</h1>
+  <button id="fixBtn">Fix Status Column</button>
+  <div id="status"></div>
+
+  <script>
+    const btn = document.getElementById('fixBtn');
+    const status = document.getElementById('status');
+
+    btn.addEventListener('click', async () => {
+      status.textContent = '⏳ Working...';
+      try {
+        const res = await fetch('https://turso-db.onrender.com/fix-status', { method: 'POST' });
+        const text = await res.text();
+        status.textContent = `🎉 ${text}`;
+      } catch (err) {
+        status.textContent = '💥 Uh oh, something broke!';
+        console.error(err);
+      }
+    });
+  </script>
+
+</body>
+</html>
