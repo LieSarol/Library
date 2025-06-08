@@ -45,82 +45,62 @@
   </div>
 
   <script>
-  const form = document.getElementById("login-form");
-  const message = document.getElementById("message");
-  const logs = document.getElementById("logs");
+    const form = document.getElementById("login-form");
+    const message = document.getElementById("message");
+    const logs = document.getElementById("logs");
 
-  function logIt(text) {
-    const entry = document.createElement("p");
-    entry.textContent = `[LOG] ${text}`;
-    logs.appendChild(entry);
-    logs.scrollTop = logs.scrollHeight;
-  }
-
-  form.addEventListener("submit", async (e) => {
-    e.preventDefault();
-    message.textContent = "";
-    logs.innerHTML = '<p class="text-blue-400 font-bold mb-2">Debug Logs:</p>';
-
-    const username = form.username.value.trim();
-    const password = form.password.value.trim();
-
-    if (!username || !password) {
-      message.textContent = "Please fill out all fields!";
-      logIt("Form validation failed: missing username or password");
-      return;
+    function logIt(text) {
+      const entry = document.createElement("p");
+      entry.textContent = `[LOG] ${text}`;
+      logs.appendChild(entry);
+      logs.scrollTop = logs.scrollHeight;
     }
 
-    try {
-      logIt("Sending login request...");
-      const res = await fetch("https://library-account.vercel.app/signin", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ username, password })
-      });
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      message.textContent = "";
+      logs.innerHTML = '<p class="text-blue-400 font-bold mb-2">Debug Logs:</p>';
 
-      const data = await res.json();
-      logIt(`Login response received: ${JSON.stringify(data)}`);
+      const username = form.username.value.trim();
+      const password = form.password.value.trim();
 
-      if (res.ok) {
-        message.style.color = "#34d399";
-        message.textContent = data.message || "Login successful!";
-
-        logIt(`Fetching user info from /user-info/${username}...`);
-        const userInfoRes = await fetch(`https://library-account.vercel.app/user-info/${username}`);
-        const userInfo = await userInfoRes.json();
-
-        logIt(`User info response: ${JSON.stringify(userInfo)}`);
-        const { xata_id, status } = userInfo;
-logIt(`Raw status: ${status} (type: ${typeof status})`);
-
-// Convert true -> 1, false -> 0 (strictly)
-const numericStatus = (status === true || status === "true") ? 1 : 0;
-logIt(`Converted numeric status: ${numericStatus}`);
-
-logIt(`Sending xata_id and numeric status: { xata_id: ${xata_id}, status: ${numericStatus} }`);
-const tursoRes = await fetch("https://turso-db.onrender.com/insert", {
-  method: "POST",
-  headers: { "Content-Type": "application/json" },
-  body: JSON.stringify({ xata_id, status: numericStatus })
-});
-
-        const tursoData = await tursoRes.text();
-        logIt(`Turso DB response: ${tursoData}`);
-
-        setTimeout(() => {
-          window.location.href = "/dashboard";
-        }, 1500);
-      } else {
-        message.style.color = "#f87171";
-        message.textContent = data.error || "Login failed.";
-        logIt(`Login failed: ${data.error || 'Unknown error'}`);
+      if (!username || !password) {
+        message.textContent = "Please fill out all fields!";
+        logIt("Form validation failed: missing username or password");
+        return;
       }
-    } catch (error) {
-      message.style.color = "#f87171";
-      message.textContent = "Network error, try again.";
-      logIt(`Network error: ${error.message}`);
-    }
-  });
+
+      try {
+        logIt("Sending login request...");
+        const res = await fetch("https://library-account.vercel.app/signin", {
+          method: "POST",
+          credentials: "include", // 👈 include cookies
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ username, password })
+        });
+
+        const data = await res.json();
+        logIt(`Login response received: ${JSON.stringify(data)}`);
+
+        if (res.ok) {
+          message.style.color = "#34d399";
+          message.textContent = data.message || "Login successful!";
+          logIt("Login successful. Redirecting to dashboard...");
+
+          setTimeout(() => {
+            window.location.href = "/dashboard";
+          }, 1500);
+        } else {
+          message.style.color = "#f87171";
+          message.textContent = data.error || "Login failed.";
+          logIt(`Login failed: ${data.error || 'Unknown error'}`);
+        }
+      } catch (error) {
+        message.style.color = "#f87171";
+        message.textContent = "Network error, try again.";
+        logIt(`Network error: ${error.message}`);
+      }
+    });
   </script>
 </body>
   </html>
