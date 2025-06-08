@@ -7,11 +7,11 @@
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 </head>
-<body class="bg-[#1E293B] text-gray-300 min-h-screen flex items-center justify-center font-sans relative">
+<body class="bg-[#1E293B] text-gray-300 min-h-screen flex flex-col items-center justify-center font-sans relative">
 
   <!-- Back Icon -->
   <button onclick="history.back()" class="absolute top-5 left-5 text-gray-400 hover:text-white text-2xl">
-  <i class="fas fa-arrow-left"></i>
+    <i class="fas fa-arrow-left"></i>
   </button>
 
   <div class="flex flex-col items-center">
@@ -40,63 +40,82 @@
       </p>
       <p id="message" class="mt-4 text-center text-red-500"></p>
     </main>
+
+    <!-- Debug Logs -->
+    <div id="logs" class="bg-gray-900 mt-6 p-4 rounded-xl w-full max-w-md text-sm text-green-300 overflow-y-auto max-h-64">
+      <p class="text-blue-400 font-bold mb-2">Debug Logs:</p>
+    </div>
   </div>
 
   <script>
-  const form = document.getElementById("login-form");
-  const message = document.getElementById("message");
+    const form = document.getElementById("login-form");
+    const message = document.getElementById("message");
+    const logs = document.getElementById("logs");
 
-  form.addEventListener("submit", async (e) => {
-    e.preventDefault();
-    message.textContent = "";
-
-    const username = form.username.value.trim();
-    const password = form.password.value.trim();
-
-    if (!username || !password) {
-      message.textContent = "Please fill out all fields!";
-      return;
+    function logIt(text) {
+      const entry = document.createElement("p");
+      entry.textContent = `[LOG] ${text}`;
+      logs.appendChild(entry);
+      logs.scrollTop = logs.scrollHeight;
     }
 
-    try {
-      const res = await fetch("https://library-account.vercel.app/signin", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ username, password }),
-        credentials: 'include'
-      });
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      message.textContent = "";
+      logs.innerHTML = '<p class="text-blue-400 font-bold mb-2">Debug Logs:</p>';
 
-      const data = await res.json();
+      const username = form.username.value.trim();
+      const password = form.password.value.trim();
 
-      if (res.ok) {
-        message.style.color = "#34d399";
-        message.textContent = data.message || "Login successful!";
-
-        // Send xata_id and status to Turso endpoint
-        const { xata_id, status } = data;
-
-// Convert status to 0 or 1 numeric
-const numericStatus = status ? 1 : 0;
-
-await fetch("https://turso-db.onrender.com/insert", {
-  method: "POST",
-  headers: { "Content-Type": "application/json" },
-  body: JSON.stringify({ xata_id, status: numericStatus })
-});
-
-        // Redirect to dashboard
-        setTimeout(() => {
-          window.location.href = "/dashboard";
-        }, 1500);
-      } else {
-        message.style.color = "#f87171";
-        message.textContent = data.error || "Login failed.";
+      if (!username || !password) {
+        message.textContent = "Please fill out all fields!";
+        logIt("Form validation failed: missing username or password");
+        return;
       }
-    } catch (error) {
-      message.style.color = "#f87171";
-      message.textContent = "Network error, try again.";
-    }
-  });
+
+      try {
+        logIt("Sending login request...");
+        const res = await fetch("https://library-account.vercel.app/signin", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ username, password }),
+          credentials: 'include'
+        });
+
+        const data = await res.json();
+        logIt(`Login response received: ${JSON.stringify(data)}`);
+
+        if (res.ok) {
+          message.style.color = "#34d399";
+          message.textContent = data.message || "Login successful!";
+
+          const { xata_id, status } = data;
+          const numericStatus = status ? 1 : 0;
+
+          logIt(`Sending xata_id and numeric status: { xata_id: ${xata_id}, status: ${numericStatus} }`);
+          const tursoRes = await fetch("https://turso-db.onrender.com/insert", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ xata_id, status: numericStatus })
+          });
+
+          const tursoData = await tursoRes.text();
+          logIt(`Turso DB response: ${tursoData}`);
+
+          setTimeout(() => {
+            window.location.href = "/dashboard";
+          }, 1500);
+        } else {
+          message.style.color = "#f87171";
+          message.textContent = data.error || "Login failed.";
+          logIt(`Login failed: ${data.error || 'Unknown error'}`);
+        }
+      } catch (error) {
+        message.style.color = "#f87171";
+        message.textContent = "Network error, try again.";
+        logIt(`Network error: ${error.message}`);
+      }
+    });
   </script>
 </body>
-</html>
+  </html>
