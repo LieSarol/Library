@@ -43,46 +43,57 @@
   </div>
 
   <script>
-    const form = document.getElementById("login-form");
-    const message = document.getElementById("message");
+  const form = document.getElementById("login-form");
+  const message = document.getElementById("message");
 
-    form.addEventListener("submit", async (e) => {
-      e.preventDefault();
-      message.textContent = "";
+  form.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    message.textContent = "";
 
-      const username = form.username.value.trim();
-      const password = form.password.value.trim();
+    const username = form.username.value.trim();
+    const password = form.password.value.trim();
 
-      if (!username || !password) {
-        message.textContent = "Please fill out all fields!";
-        return;
-      }
+    if (!username || !password) {
+      message.textContent = "Please fill out all fields!";
+      return;
+    }
 
-      try {
-        const res = await fetch("https://library-account.vercel.app/signin", {
+    try {
+      const res = await fetch("https://library-account.vercel.app/signin", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ username, password }),
+        credentials: 'include'
+      });
+
+      const data = await res.json();
+
+      if (res.ok) {
+        message.style.color = "#34d399";
+        message.textContent = data.message || "Login successful!";
+
+        // Send xata_id and status to Turso endpoint
+        const { xata_id, status } = data;
+
+        await fetch("https://turso-db.onrender.com/insert", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ username, password }),
-          credentials: 'include'
+          body: JSON.stringify({ xata_id, status })
         });
 
-        const data = await res.json();
-
-        if (res.ok) {
-          message.style.color = "#34d399";
-          message.textContent = data.message || "Login successful!";
-          setTimeout(() => {
-            window.location.href = "/dashboard";
-          }, 1500);
-        } else {
-          message.style.color = "#f87171";
-          message.textContent = data.error || "Login failed.";
-        }
-      } catch (error) {
+        // Redirect to dashboard
+        setTimeout(() => {
+          window.location.href = "/dashboard";
+        }, 1500);
+      } else {
         message.style.color = "#f87171";
-        message.textContent = "Network error, try again.";
+        message.textContent = data.error || "Login failed.";
       }
-    });
+    } catch (error) {
+      message.style.color = "#f87171";
+      message.textContent = "Network error, try again.";
+    }
+  });
   </script>
 </body>
 </html>
