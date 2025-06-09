@@ -96,38 +96,50 @@
   const selectedXataId = sessionStorage.getItem("selectedXataId") || "";
 
   window.onload = async () => {
-    const responseBox = document.getElementById("responseBox");
-    const queryText = document.getElementById("queryText");
-    responseBox.innerHTML = "Loading...";
+  const responseBox = document.getElementById("responseBox");
+  const queryText = document.getElementById("queryText");
+  responseBox.innerHTML = "✨ Loading... but like... aesthetically ✨";
 
-    if (!selectedXataId) {
-      queryText.innerText = "❌ No tutorial ID found.";
-      responseBox.innerText = "Unable to load tutorial.";
-      return;
-    }
+  const selectedXataId = sessionStorage.getItem("selectedXataId") || "";
 
-    try {
-      const response = await fetch(`https://sky.leapcell.app/data/${selectedXataId}`, {
-        credentials: "include",
-        mode: "cors"
-      });
+  // 💀 Check for missing ID
+  if (!selectedXataId) {
+    queryText.innerText = "📛 Hold up, there's literally no tutorial ID.";
+    responseBox.innerText = "😩 IDK what you clicked, but nothing's here. Go back and pick something, please.";
+    return;
+  }
 
-      if (!response.ok) {
-        throw new Error(`Server returned ${response.status}`);
+  try {
+    const response = await fetch(`https://sky.leapcell.app/data/${selectedXataId}`, {
+      credentials: "include",
+      mode: "cors"
+    });
+
+    // 😶 Server ain’t vibing with you
+    if (!response.ok) {
+      if (response.status === 401) {
+        throw new Error("🙅‍♀️ Access Denied: You're not even logged in. Like, do you even go here?");
+      } else if (response.status === 404) {
+        throw new Error("👻 Not Found: The tutorial ghosted us.");
+      } else if (response.status === 500) {
+        throw new Error("💥 Server’s having a breakdown. Mood.");
+      } else {
+        throw new Error(`❓ Unexpected error: ${response.status}`);
       }
-
-      const data = await response.json();
-      const question = data.question || "Unknown query";
-      const answer = data.answer || "No result returned.";
-
-      queryText.innerText = "🔎 " + question;
-      responseBox.innerHTML = formatText(answer);
-    } catch (err) {
-      console.error("[Fetch Error]", err);
-      queryText.innerText = "❌ Failed to load question.";
-      responseBox.innerText = "⚠️ Error: You might not be logged in or the session expired.";
     }
-  };
+
+    const data = await response.json();
+    const question = data.question || "🙃 Unknown query. This ain't it chief.";
+    const answer = data.answer || "🥲 No tea, no shade, just no content.";
+
+    queryText.innerText = "🔍 " + question;
+    responseBox.innerHTML = formatText(answer);
+  } catch (err) {
+    console.error("[Fetch Error]", err);
+    queryText.innerText = "💔 Something went wrong. Probably not your fault… probably.";
+    responseBox.innerText = `${err.message} \n\n🔁 Try logging in again or refreshing like it’s your ex's Insta.`;
+  }
+};
 
   function formatText(text) {
     const lines = text.split('\n');
