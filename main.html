@@ -100,8 +100,6 @@
   const queryText = document.getElementById("queryText");
   responseBox.innerHTML = "✨ Loading... but like... aesthetically ✨";
 
-  const selectedXataId = sessionStorage.getItem("selectedXataId") || "";
-
   // 💀 Check for missing ID
   if (!selectedXataId) {
     queryText.innerText = "📛 Hold up, there's literally no tutorial ID.";
@@ -117,34 +115,41 @@
 
     // 😶 Server ain’t vibing with you
     if (!response.ok) {
-  if (response.status === 401) {
-    throw new Error("🔒 Login first, silly. You're not even in the system 😭");
-  } else if (response.status === 403) {
-    throw new Error("🛑 Premium content alert: This one’s locked tighter than your crush’s heart. Upgrade to unlock 👑");
-  } else if (response.status === 404) {
-    throw new Error("👻 This tutorial doesn’t exist. Like your will to study, maybe?");
-  } else if (response.status === 500) {
-    throw new Error("💥 Server’s having an identity crisis. Try again later.");
-  } else {
-    throw new Error(`❓ Unexpected error: ${response.status}`);
-  }
-    }
-  } catch (err) {
-  console.error("[Fetch Error]", err);
-  queryText.innerText = "💔 Something went wrong. Probably not your fault… probably.";
-  
-  // Add extra spice if it’s the premium tease
-  if (err.message.includes("Premium content alert")) {
-    responseBox.innerHTML = `
-      <p>${err.message}</p>
-      <p>✨ Wanna flex? <a href="/upgrade.html" style="color:#00afff; text-decoration:underline;">Upgrade to Premium</a> and unlock all the exclusive brain juice 💡</p>
-      <p>🎁 Bonus: Comes with 0% ads, 100% main character energy.</p>
-    `;
-  } else {
-    responseBox.innerText = `${err.message} \n\n🔁 Try logging in again or refreshing like it’s your ex's Insta.`;
-  }
+      if (response.status === 401) {
+        throw new Error("🔒 Login first, silly. You're not even in the system 😭");
+      } else if (response.status === 403) {
+        throw new Error("🛑 Premium content alert: This one’s locked tighter than your crush’s heart. Upgrade to unlock 👑");
+      } else if (response.status === 404) {
+        throw new Error("👻 This tutorial doesn’t exist. Like your will to study, maybe?");
+      } else if (response.status === 500) {
+        throw new Error("💥 Server’s having an identity crisis. Try again later.");
+      } else {
+        throw new Error(`❓ Unexpected error: ${response.status}`);
+      }
     }
 
+    const data = await response.json();
+    const question = data.question || "Unknown query";
+    const answer = data.answer || "No result returned.";
+
+    queryText.innerText = "🔎 " + question;
+    responseBox.innerHTML = formatText(answer);
+
+  } catch (err) {
+    console.error("[Fetch Error]", err);
+    queryText.innerText = "💔 Something went wrong. Probably not your fault… probably.";
+
+    if (err.message.includes("Premium content alert")) {
+      responseBox.innerHTML = `
+        <p>${err.message}</p>
+        <p>✨ Wanna flex? <a href="/upgrade.html" style="color:#00afff; text-decoration:underline;">Upgrade to Premium</a> and unlock all the exclusive brain juice 💡</p>
+        <p>🎁 Bonus: Comes with 0% ads, 100% main character energy.</p>
+      `;
+    } else {
+      responseBox.innerText = `${err.message} \n\n🔁 Try logging in again or refreshing like it’s your ex's Insta.`;
+    }
+  }
+};
   function formatText(text) {
     const lines = text.split('\n');
     let html = '';
