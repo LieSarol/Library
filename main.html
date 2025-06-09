@@ -117,29 +117,33 @@
 
     // 😶 Server ain’t vibing with you
     if (!response.ok) {
-      if (response.status === 401) {
-        throw new Error("🙅‍♀️ Access Denied: You're not even logged in. Like, do you even go here?");
-      } else if (response.status === 404) {
-        throw new Error("👻 Not Found: The tutorial ghosted us.");
-      } else if (response.status === 500) {
-        throw new Error("💥 Server’s having a breakdown. Mood.");
-      } else {
-        throw new Error(`❓ Unexpected error: ${response.status}`);
-      }
+  if (response.status === 401) {
+    throw new Error("🔒 Login first, silly. You're not even in the system 😭");
+  } else if (response.status === 403) {
+    throw new Error("🛑 Premium content alert: This one’s locked tighter than your crush’s heart. Upgrade to unlock 👑");
+  } else if (response.status === 404) {
+    throw new Error("👻 This tutorial doesn’t exist. Like your will to study, maybe?");
+  } else if (response.status === 500) {
+    throw new Error("💥 Server’s having an identity crisis. Try again later.");
+  } else {
+    throw new Error(`❓ Unexpected error: ${response.status}`);
+  }
     }
-
-    const data = await response.json();
-    const question = data.question || "🙃 Unknown query. This ain't it chief.";
-    const answer = data.answer || "🥲 No tea, no shade, just no content.";
-
-    queryText.innerText = "🔍 " + question;
-    responseBox.innerHTML = formatText(answer);
   } catch (err) {
-    console.error("[Fetch Error]", err);
-    queryText.innerText = "💔 Something went wrong. Probably not your fault… probably.";
+  console.error("[Fetch Error]", err);
+  queryText.innerText = "💔 Something went wrong. Probably not your fault… probably.";
+  
+  // Add extra spice if it’s the premium tease
+  if (err.message.includes("Premium content alert")) {
+    responseBox.innerHTML = `
+      <p>${err.message}</p>
+      <p>✨ Wanna flex? <a href="/upgrade.html" style="color:#00afff; text-decoration:underline;">Upgrade to Premium</a> and unlock all the exclusive brain juice 💡</p>
+      <p>🎁 Bonus: Comes with 0% ads, 100% main character energy.</p>
+    `;
+  } else {
     responseBox.innerText = `${err.message} \n\n🔁 Try logging in again or refreshing like it’s your ex's Insta.`;
   }
-};
+    }
 
   function formatText(text) {
     const lines = text.split('\n');
