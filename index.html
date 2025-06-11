@@ -121,18 +121,19 @@ nav a {
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
 }
 
-.images {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 1rem;
-  justify-content: center;
-}
-
 .images img {
   width: 100%;
   max-width: 300px;
-  border-radius: 8px;
-}
+  border-radius: 12px;
+  transition: transform 0.4s ease, box-shadow 0.4s ease;
+  box-shadow: 0 0 20px rgba(37, 99, 234, 0.3); /* initial aura */
+    }
+
+.images img:hover {
+  transform: scale(1.05);
+  box-shadow: 0 0 35px rgba(37, 99, 234, 0.6); /* glows more on hover */
+  cursor: pointer;
+  }
 
 footer {
   background: #1e293b;
