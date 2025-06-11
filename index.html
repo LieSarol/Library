@@ -135,6 +135,31 @@ nav a {
   cursor: pointer;
   }
 
+.image-container {
+  position: relative;
+  width: 100%;
+  max-width: 300px;
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.image-container img {
+  width: 100%;
+  display: block;
+  border-radius: 12px;
+}
+
+.image-container::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 40%; /* You can tweak this height */
+  background: linear-gradient(to top, rgba(0, 0, 0, 0.5), transparent);
+  pointer-events: none;
+  }
+
 footer {
   background: #1e293b;
   color: #cbd5e1;
@@ -257,8 +282,12 @@ footer {
   </section>  <section class="section" id="images">
     <h2>Visual Vibes</h2>
     <div class="images">
-      <img src="https://cdn.pixabay.com/photo/2021/11/10/18/21/woman-6784555_1280.jpg" alt="Woman reading">
-      <img src="https://cdn.pixabay.com/photo/2016/01/19/01/42/library-1147815_1280.jpg" alt="Library">
+  <div class="image-container">
+    <img src="https://cdn.pixabay.com/photo/2021/11/10/18/21/woman-6784555_1280.jpg" alt="Woman reading" />
+  </div>
+  <div class="image-container">
+    <img src="https://cdn.pixabay.com/photo/2016/01/19/01/42/library-1147815_1280.jpg" alt="Library" />
+  </div>
     </div>
   </section>  <footer id="contact">
     <div class="footer-content">
