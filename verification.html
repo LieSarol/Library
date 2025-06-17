@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Portal Verification</title>
+  <style>
+    body {
+      font-family: "Segoe UI", sans-serif;
+      background: #1a1a2e;
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      flex-direction: column;
+      text-align: center;
+      padding: 20px;
+    }
+    .message {
+      font-size: 1.5rem;
+      margin-bottom: 10px;
+    }
+    .status {
+      padding: 0.5em 1em;
+      background: #fff2;
+      border-radius: 12px;
+    }
+    .success {
+      color: #2fff73;
+    }
+    .error {
+      color: #ff4f4f;
+    }
+    .loading {
+      color: #ffc107;
+    }
+  </style>
+</head>
+<body>
+  <div class="message loading" id="statusMessage">⏳ Verifying through the portal...</div>
+  <div class="status" id="detailsMessage">Please hold on, we're poking the backend 😶‍🌫️</div>
+
+  <script>
+    async function verifyPortal() {
+      try {
+        const res = await fetch("https://sky.leapcell.app/portal/update", {
+          method: "PUT",
+          credentials: "include", // send the cookie!
+          headers: {
+            "Content-Type": "application/json"
+          }
+        });
+
+        const data = await res.json();
+
+        const status = document.getElementById("statusMessage");
+        const details = document.getElementById("detailsMessage");
+
+        if (res.ok) {
+          status.className = "message success";
+          status.textContent = "✅ You're now verified!";
+          details.textContent = data.message || "You're cleared to go 🚀";
+        } else {
+          status.className = "message error";
+          status.textContent = "❌ Verification failed";
+          details.textContent = data.error || "Something went wrong.";
+        }
+
+      } catch (err) {
+        console.error("Portal verification error:", err);
+        document.getElementById("statusMessage").className = "message error";
+        document.getElementById("statusMessage").textContent = "🔥 Server exploded (probably)";
+        document.getElementById("detailsMessage").textContent = "Try again later or poke the dev 👀";
+      }
+    }
+
+    window.addEventListener("DOMContentLoaded", verifyPortal);
+  </script>
+</body>
+</html>
