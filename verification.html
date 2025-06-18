@@ -19,11 +19,14 @@
     .message {
       font-size: 1.5rem;
       margin-bottom: 10px;
+      transition: all 0.3s ease;
     }
     .status {
       padding: 0.5em 1em;
       background: #fff2;
       border-radius: 12px;
+      transition: all 0.3s ease;
+      max-width: 90%;
     }
     .success {
       color: #2fff73;
@@ -41,36 +44,65 @@
   <div class="status" id="detailsMessage">Please hold on, we're poking the backend 😶‍🌫️</div>
 
   <script>
+    const statusEl = document.getElementById("statusMessage");
+    const detailsEl = document.getElementById("detailsMessage");
+
+    let tries = 0;
+    const maxTries = 10; // Try for 20 seconds (1 try every 2s)
+
     async function verifyPortal() {
       try {
         const res = await fetch("https://sky.leapcell.app/portal/update", {
           method: "PUT",
-          credentials: "include", // send the cookie!
+          credentials: "include",
           headers: {
             "Content-Type": "application/json"
           }
         });
 
-        const data = await res.json();
-
-        const status = document.getElementById("statusMessage");
-        const details = document.getElementById("detailsMessage");
+        const logStatus = `[${new Date().toLocaleTimeString()}] HTTP ${res.status}`;
 
         if (res.ok) {
-          status.className = "message success";
-          status.textContent = "✅ You're now verified!";
-          details.textContent = data.message || "You're cleared to go 🚀";
+          const data = await res.json();
+          console.log(`${logStatus} ✅`, data);
+
+          statusEl.className = "message success";
+          statusEl.textContent = "✅ You're now verified!";
+          detailsEl.textContent = data.message || "You're cleared to go 🚀";
         } else {
-          status.className = "message error";
-          status.textContent = "❌ Verification failed";
-          details.textContent = data.error || "Something went wrong.";
+          const errorData = await res.json();
+          console.warn(`${logStatus} ❌`, errorData);
+
+          statusEl.className = "message error";
+          statusEl.textContent = "❌ Verification failed";
+          detailsEl.textContent = errorData.error || "Something went wrong. Maybe too soon?";
+          
+          retry(); // Try again
         }
 
       } catch (err) {
-        console.error("Portal verification error:", err);
-        document.getElementById("statusMessage").className = "message error";
-        document.getElementById("statusMessage").textContent = "🔥 Server exploded (probably)";
-        document.getElementById("detailsMessage").textContent = "Try again later or poke the dev 👀";
+        console.error(`[${new Date().toLocaleTimeString()}] 💥 Network error:`, err);
+
+        statusEl.className = "message error";
+        statusEl.textContent = "🔥 Server exploded (probably)";
+        detailsEl.textContent = "Try again later or poke the dev 👀";
+
+        retry(); // Still retry even on network error
+      }
+    }
+
+    function retry() {
+      tries++;
+      if (tries < maxTries) {
+        statusEl.className = "message loading";
+        statusEl.textContent = `🔁 Retrying... (${tries}/${maxTries})`;
+        detailsEl.textContent = "We're still checking if the portal is open 🕵️‍♂️";
+
+        setTimeout(verifyPortal, 2000); // try again in 2s
+      } else {
+        statusEl.className = "message error";
+        statusEl.textContent = "⏱️ Timed out!";
+        detailsEl.textContent = "The portal didn’t open in time. Try again later!";
       }
     }
 
