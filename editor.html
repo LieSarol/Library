@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Lite Code Editor w/ Preview</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <style>
+    body {
+      margin: 0;
+      font-family: sans-serif;
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+    }
+    #editor {
+      flex: 1;
+      border-bottom: 2px solid #ccc;
+    }
+    iframe {
+      flex: 1;
+      border: none;
+      width: 100%;
+    }
+    button {
+      padding: 10px;
+      font-size: 16px;
+      background: #007BFF;
+      color: white;
+      border: none;
+      width: 100%;
+    }
+  </style>
+  <!-- CodeMirror basic -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/codemirror@5.65.15/lib/codemirror.min.css" />
+  <script src="https://cdn.jsdelivr.net/npm/codemirror@5.65.15/lib/codemirror.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/codemirror@5.65.15/mode/htmlmixed/htmlmixed.min.js"></script>
+</head>
+<body>
+
+  <div id="editor"></div>
+  <button onclick="resetEditor()">🔄 Reset</button>
+  <iframe id="preview"></iframe>
+
+  <script>
+    const defaultCode = `
+<!DOCTYPE html>
+<html>
+  <head><style>body { font-family: sans-serif; }</style></head>
+  <body>
+    <h1>Hello, World!</h1>
+    <p>This is a live preview 😎</p>
+  </body>
+</html>
+    `.trim();
+
+    const editor = CodeMirror(document.getElementById('editor'), {
+      value: defaultCode,
+      mode: "htmlmixed",
+      lineNumbers: true,
+    });
+
+    function updatePreview() {
+      const iframe = document.getElementById('preview');
+      const doc = iframe.contentDocument || iframe.contentWindow.document;
+      doc.open();
+      doc.write(editor.getValue());
+      doc.close();
+    }
+
+    editor.on("change", updatePreview);
+    updatePreview(); // Initial render
+
+    function resetEditor() {
+      editor.setValue(defaultCode);
+    }
+  </script>
+</body>
+</html>
