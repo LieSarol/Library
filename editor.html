@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Lite Code Editor w/ Preview</title>
+  <title>Code Editor + Live Preview</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <style>
     body {
@@ -21,16 +21,17 @@
       border: none;
       width: 100%;
     }
-    button {
+    #copy {
       padding: 10px;
       font-size: 16px;
-      background: #007BFF;
+      background: #4CAF50;
       color: white;
       border: none;
       width: 100%;
     }
   </style>
-  <!-- CodeMirror basic -->
+
+  <!-- CodeMirror -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/codemirror@5.65.15/lib/codemirror.min.css" />
   <script src="https://cdn.jsdelivr.net/npm/codemirror@5.65.15/lib/codemirror.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/codemirror@5.65.15/mode/htmlmixed/htmlmixed.min.js"></script>
@@ -38,23 +39,22 @@
 <body>
 
   <div id="editor"></div>
-  <button onclick="resetEditor()">🔄 Reset</button>
+  <button id="copy">📋 Copy Code</button>
   <iframe id="preview"></iframe>
 
   <script>
-    const defaultCode = `
-<!DOCTYPE html>
-<html>
-  <head><style>body { font-family: sans-serif; }</style></head>
-  <body>
-    <h1>Hello, World!</h1>
-    <p>This is a live preview 😎</p>
-  </body>
-</html>
-    `.trim();
-
     const editor = CodeMirror(document.getElementById('editor'), {
-      value: defaultCode,
+      value: `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>✨ Fancy Dashboard ✨</title>
+</head>
+<body>
+  <h1>Hello, World!</h1>
+  <p>This is a live preview 😎</p>
+</body>
+</html>`,
       mode: "htmlmixed",
       lineNumbers: true,
     });
@@ -68,11 +68,29 @@
     }
 
     editor.on("change", updatePreview);
-    updatePreview(); // Initial render
+    updatePreview(); // Initial preview
 
-    function resetEditor() {
-      editor.setValue(defaultCode);
-    }
+    // Copy to clipboard button
+    document.getElementById("copy").addEventListener("click", async () => {
+      try {
+        await navigator.clipboard.writeText(editor.getValue());
+        document.getElementById("copy").innerText = "✅ Copied!";
+        setTimeout(() => {
+          document.getElementById("copy").innerText = "📋 Copy Code";
+        }, 2000);
+      } catch (err) {
+        alert("❌ Failed to copy: " + err);
+      }
+    });
+
+    // 🧼 Prevent weird paste formatting
+    editor.getWrapperElement().addEventListener("paste", (e) => {
+      e.preventDefault();
+      const text = (e.clipboardData || window.clipboardData).getData("text/plain");
+      const cleanText = text.replace(/\r\n|\r|\n/g, '\n');
+      const cursor = editor.getCursor();
+      editor.replaceRange(cleanText, cursor);
+    });
   </script>
 </body>
 </html>
