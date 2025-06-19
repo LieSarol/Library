@@ -229,7 +229,7 @@
           <div class="card-content">
             <div class="card-title">🔥 Top Focus</div>
             <div class="card-desc">Track your main task and crush it. No distractions, just vibes.</div>
-            <a href="tutorial" class="card-btn">View Focus</a>
+            <a href="#" class="card-btn" data-niche="focus">View Focus</a>
           </div>
         </div>
         <div class="swiper-slide">
@@ -237,7 +237,7 @@
           <div class="card-content">
             <div class="card-title">🗓️ Calendar</div>
             <div class="card-desc">Peep your upcoming schedule and never miss a beat.</div>
-            <a href="#" class="card-btn">Open Calendar</a>
+            <a href="tutorial" class="card-btn" data-niche="focus">View Focus</a>
           </div>
         </div>
         <div class="swiper-slide">
@@ -351,6 +351,23 @@
     hamburger.addEventListener('click', () => {
       menu.style.display = menu.style.display === 'flex' ? 'none' : 'flex';
     });
+  </script>
+
+  <script>
+  // Function to set cookie
+  function setCookie(name, value, days) {
+    const expires = new Date(Date.now() + days * 864e5).toUTCString(); // days in ms
+    document.cookie = `${name}=${encodeURIComponent(value)}; expires=${expires}; path=/`;
+  }
+
+  // Attach click event to all .card-btn elements
+  document.querySelectorAll('.card-btn').forEach(btn => {
+    btn.addEventListener('click', function () {
+      const niche = this.dataset.niche || 'unknown';
+      setCookie('niche1', niche, 7); // Cookie lasts 7 days
+      console.log(`🍪 Cookie "niche1" set to: ${niche}`);
+    });
+  });
   </script>
 </body>
   </html>
