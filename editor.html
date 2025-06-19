@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Code Editor + Live Preview</title>
+  <title>Clean Code Editor + Live Preview</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <style>
     body {
@@ -31,7 +31,7 @@
     }
   </style>
 
-  <!-- CodeMirror -->
+  <!-- CodeMirror CDN -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/codemirror@5.65.15/lib/codemirror.min.css" />
   <script src="https://cdn.jsdelivr.net/npm/codemirror@5.65.15/lib/codemirror.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/codemirror@5.65.15/mode/htmlmixed/htmlmixed.min.js"></script>
@@ -70,26 +70,31 @@
     editor.on("change", updatePreview);
     updatePreview(); // Initial preview
 
-    // Copy to clipboard button
+    // 📋 Copy Code Button
     document.getElementById("copy").addEventListener("click", async () => {
       try {
         await navigator.clipboard.writeText(editor.getValue());
-        document.getElementById("copy").innerText = "✅ Copied!";
-        setTimeout(() => {
-          document.getElementById("copy").innerText = "📋 Copy Code";
-        }, 2000);
+        const btn = document.getElementById("copy");
+        btn.innerText = "✅ Copied!";
+        setTimeout(() => { btn.innerText = "📋 Copy Code"; }, 2000);
       } catch (err) {
-        alert("❌ Failed to copy: " + err);
+        alert("❌ Copy failed: " + err);
       }
     });
 
-    // 🧼 Prevent weird paste formatting
+    // 🧼 Fix paste from clipboard list (clean whitespace)
     editor.getWrapperElement().addEventListener("paste", (e) => {
       e.preventDefault();
-      const text = (e.clipboardData || window.clipboardData).getData("text/plain");
-      const cleanText = text.replace(/\r\n|\r|\n/g, '\n');
+      const raw = (e.clipboardData || window.clipboardData).getData("text/plain");
+
+      const cleaned = raw
+        .replace(/\r\n|\r|\n/g, '\n')               // Normalize newlines
+        .replace(/[ \t]+\n/g, '\n')                 // Remove trailing spaces before line breaks
+        .replace(/^\s+/gm, '')                      // Remove leading indent per line
+        .replace(/\n{2,}/g, '\n');                  // Remove extra empty lines
+
       const cursor = editor.getCursor();
-      editor.replaceRange(cleanText, cursor);
+      editor.replaceRange(cleaned, cursor);
     });
   </script>
 </body>
