@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Niche Playlist</title>
+  <title>Niche List</title>
 
   <!-- TailwindCSS CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
@@ -93,15 +93,20 @@
 
         data.forEach((item, index) => {
           const div = document.createElement("a");
-          div.href = "main.html";
-          div.className = "block playlist-item bg-slate-800 p-4 rounded-lg transition duration-200 hover:cursor-pointer";
+div.href = "main.html";
+div.className = "block playlist-item bg-slate-800 p-4 rounded-lg transition duration-200 hover:cursor-pointer";
 
-          div.innerHTML = `
-            <div class="flex items-center gap-4">
-              <div class="text-blue-400 text-lg font-bold">#${index + 1}</div>
-              <div class="text-white text-base font-medium">${item.question || "Untitled question"}</div>
-            </div>
-          `;
+// Save xata_id on click
+div.addEventListener("click", () => {
+  sessionStorage.setItem("selectedXataId", item.xata_id);
+});
+
+div.innerHTML = `
+  <div class="flex items-center gap-4">
+    <div class="text-blue-400 text-lg font-bold">#${index + 1}</div>
+    <div class="text-white text-base font-medium">${item.question || "Untitled question"}</div>
+  </div>
+`;
 
           playlist.appendChild(div);
         });
