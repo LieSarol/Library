@@ -148,3 +148,15 @@
     } else {
       queryResults.innerHTML = '<div class="no-result">No search query found.</div>';
     }
+
+// 🔙 Back Button Logic
+const backBtn = document.getElementById("backBtn");
+if (backBtn) {
+  backBtn.addEventListener("click", () => {
+    if (window.history.length > 1) {
+      window.history.back();
+    } else {
+      window.location.href = "search"; // Or whatever your fallback is
+    }
+  });
+}
