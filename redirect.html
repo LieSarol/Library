@@ -1,38 +1,66 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Logging in progress...</title>
-  <script>
-    document.addEventListener('DOMContentLoaded', async () => {
-      const xataId = sessionStorage.getItem('selectedXataId');
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Logging in...</title>
+    <script>
+      document.addEventListener('DOMContentLoaded', async () => {
+        const xataId = sessionStorage.getItem('selectedXataId');
 
-      if (!xataId) {
-        console.warn('No xata_id found in sessionStorage!');
-        // You could redirect somewhere else or show an error
-        return;
+        if (!xataId) {
+          console.warn('No id found in sessionStorage!');
+          return;
+        }
+
+        try {
+          await fetch('https://library-of-knowledge.vercel.app/count', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ xata_id: xataId, count: 1 }),
+          });
+
+          console.log(`Logged 1 view for xata_id: ${xataId}`);
+        } catch (err) {
+          console.error('Logging failed:', err);
+        }
+
+        window.location.href = 'main.html';
+      });
+    </script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+      @keyframes glitch {
+        0% {
+          transform: translate(0);
+        }
+        20% {
+          transform: translate(-2px, 2px);
+        }
+        40% {
+          transform: translate(-1px, -1px);
+        }
+        60% {
+          transform: translate(2px, 1px);
+        }
+        80% {
+          transform: translate(-1px, 1px);
+        }
+        100% {
+          transform: translate(0);
+        }
       }
+    </style>
+  </head>
+  <body class="bg-gradient-to-br from-gray-900 via-blue-950 to-gray-900 text-white h-screen flex items-center justify-center">
+    <div class="flex flex-col items-center gap-4 text-center">
+      <svg class="w-12 h-12 animate-spin text-blue-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"></path>
+      </svg>
 
-      try {
-        await fetch('https://library-of-knowledge.vercel.app/count', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ xata_id: xataId, count: 1 })
-        });
-
-        console.log(`Logged 1 view for xata_id: ${xataId}`);
-      } catch (err) {
-        console.error('Logging failed:', err);
-        // Optional: fail silently or redirect anyway
-      }
-
-      // Sneaky teleport to the real page
-      window.location.href = 'main.html';
-    });
-  </script>
-</head>
-<body>
-  <p>Redirecting you... 🌀</p>
-</body>
+      <p class="text-lg md:text-xl font-mono text-blue-300 animate-pulse">Logging you in...</p>
+      <p class="text-sm text-gray-400 italic glitchy" style="animation: glitch 1s infinite">Decrypting your vibes... 🔓🧠</p>
+    </div>
+  </body>
 </html>
