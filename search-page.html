@@ -1,291 +1,73 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="scroll-smooth">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Search Page</title>
+  <title>Nexix — Search</title>
 
-  <!-- Font Awesome for icons -->
-  <link
-    rel="stylesheet"
-    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
-  />
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet" />
 
   <style>
     body {
-      background-color: #121212;
-      color: #fff;
-      font-family: 'Segoe UI', sans-serif;
-      margin: 0;
-      padding: 0;
+      font-family: 'Inter', sans-serif;
+      background: linear-gradient(to bottom right, #0f172a, #111827);
     }
-
-    /* Container for back button and search bar */
-    .top-bar {
-      display: flex;
-      align-items: center;
-      background-color: #1f1f1f;
-      padding: 15px 20px;
-      box-shadow: 0 2px 5px rgba(0,0,0,0.3);
-    }
-
-    /* Back button style */
-    .back-button {
-      color: #00bfff;
-      font-size: 1.5rem;
-      cursor: pointer;
-      margin-right: 15px;
-      user-select: none;
-    }
-
-    .back-button:hover {
-      color: #3399ff;
-    }
-
-    /* Search bar container with icon */
-    .search-bar {
-      flex: 1;
-      display: flex;
-      align-items: center;
-      background-color: #2a2a2a;
-      border-radius: 8px;
-      padding: 8px 12px;
-      box-shadow: inset 0 0 5px rgba(0,191,255,0.5);
-    }
-
-    /* Search icon inside the input */
-    .search-icon {
-      color: #00bfff;
-      font-size: 1.2rem;
-      cursor: pointer;
-      margin-right: 10px;
-      user-select: none;
-    }
-
-    .search-bar input {
-      width: 100%;
-      border: none;
-      background: transparent;
-      color: #fff;
-      font-size: 1rem;
-      outline: none;
-      user-select: text;
-    }
-
-    /* Section title styling */
-    .section-title {
-      text-align: center;
-      font-size: 1.2rem;
-      margin-top: 30px;
-      color: #aaa;
-    }
-
-    /* Hiding the "Related Results (Based on Noun)" title only */
-    #nounResultsTitle {
-      display: none;
-    }
-
-    /* Result box styles, now clickable */
-    .result-box {
-      margin: 15px auto;
-      padding: 15px 20px;
-      background-color: #1e1e1e;
-      width: 80%;
-      border-radius: 10px;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.5);
-      cursor: pointer;
-      transition: background-color 0.3s ease;
-      color: #fff;
-      text-decoration: none; /* Remove underline */
-      display: block; /* To make the whole div clickable */
-    }
-
-    .result-box:hover {
-      background-color: #00bfff33;
-    }
-
-    /* Remove the separate link styles because the box itself is clickable */
-    /* No separate <a> tags inside result-box now */
-
-    .no-result {
-      text-align: center;
-      margin-top: 50px;
-      font-size: 1.2rem;
-      color: #bbb;
+    .glass {
+      backdrop-filter: blur(20px);
+      background-color: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.1);
     }
   </style>
 </head>
-<body>
 
-  <div class="top-bar">
-    <!-- Back button -->
-    <i class="fa-solid fa-arrow-left back-button" id="backBtn" title="Go Back"></i>
+<body class="text-white min-h-screen flex flex-col items-center px-4 py-8">
 
-    <!-- Search bar with icon -->
-    <div class="search-bar">
-      <i class="fa-solid fa-magnifying-glass search-icon" id="searchIcon" title="Search"></i>
-      <input type="text" id="searchInput" placeholder="Search..." />
-    </div>
+  <!-- 🔍 Glass Top Bar -->
+<div class="w-full max-w-3xl glass rounded-xl p-4 shadow-lg flex items-center gap-4 mb-8">
+  <!-- 🔙 Back Button -->
+  <button id="backBtn" class="text-blue-400 hover:text-blue-300 transition text-xl">
+    <i class="fa-solid fa-arrow-left"></i>
+  </button>
+
+  <!-- 🔍 Search Input -->
+  <div class="flex items-center flex-1 gap-3">
+    <i class="fa-solid fa-magnifying-glass text-blue-400 text-lg"></i>
+    <input
+      type="text"
+      id="searchInput"
+      placeholder="Search AI-powered topics..."
+      class="bg-transparent text-white placeholder-gray-400 flex-1 text-lg focus:outline-none"
+    />
   </div>
+</div>
 
-  <div class="section-title">🔎 Results for Your Search</div>
-  <div id="queryResults"></div>
+  <!-- 🔎 Results Title -->
+  <div class="text-center text-gray-400 text-lg mb-4">🔎 Results for Your Search</div>
+  <div id="queryResults" class="w-full max-w-3xl space-y-4"></div>
 
-  <div class="section-title" id="nounResultsTitle">🧠 Related Results (Based on Noun)</div>
-  <div id="nounResults"></div>
+  <!-- 🧠 Noun Results (Hidden by Default) -->
+  <div id="nounResultsTitle" class="text-center text-gray-400 text-lg mt-10 hidden">
+    🧠 Related Results
+  </div>
+  <div id="nounResults" class="w-full max-w-3xl space-y-4"></div>
 
-  <script>
-    const searchInput = document.getElementById('searchInput');
-    const queryResults = document.getElementById('queryResults');
-    const nounResults = document.getElementById('nounResults');
-    const backBtn = document.getElementById('backBtn');
-    const searchIcon = document.getElementById('searchIcon');
+  <!-- 🚫 No Results -->
+  <div id="noResults" class="text-center text-gray-500 mt-16 text-lg hidden">Nothing found. Try another search? 🤔</div>
 
-    // Load initial search query from sessionStorage
-    const searchQuery = sessionStorage.getItem('searchQuery') || '';
-    searchInput.value = searchQuery;
+  <!-- Template for Result Box -->
+  <!--
+  <a href="#" class="block glass p-5 rounded-xl shadow-md hover:bg-blue-500/10 transition">
+    <h3 class="text-lg font-semibold">Result Title</h3>
+    <p class="text-gray-300 text-sm">Description or snippet...</p>
+  </a>
+  -->
 
-    // Clicking back button takes user back in history
-    backBtn.addEventListener('click', () => {
-      window.history.back();
-    });
+  <!-- Font Awesome -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/js/all.min.js"></script>
 
-    // Trigger search on clicking the search icon or pressing Enter in input
-    function triggerSearch() {
-  const query = searchInput.value.trim();
-  if (!query) return;
-
-  sessionStorage.setItem('searchQuery', query);
-
-  // Only call exact search if query ends with '?'
-  if (query.endsWith('?')) {
-    fetchExactSearchResults(query, queryResults);
-  } else {
-    // If no '?', clear exact results area or show something else
-    queryResults.innerHTML = '<div class="no-result">Please end your query with a "?" for exact search.</div>';
-  }
-
-  // Always do noun-based search, no '?'
-  fetchNoun(query).then(noun => {
-    if (noun) {
-      fetchSearchResults(noun, nounResults);
-    } else {
-      nounResults.innerHTML = '<div class="no-result">Couldn’t find a related noun.</div>';
-    }
-  });
-    }
-
-    searchIcon.addEventListener('click', triggerSearch);
-    searchInput.addEventListener('keydown', e => {
-      if (e.key === 'Enter') triggerSearch();
-    });
-
-    // Render results with clickable boxes
-    function renderResults(container, data) {
-  container.innerHTML = data.map(item => `
-    <a href="redirect.html" class="result-box" data-xata-id="${item.xata_id}">
-      <div>${item.question}</div>
-    </a>
-  `).join('');
-
-  // After rendering, attach click listeners to each box
-  container.querySelectorAll('.result-box').forEach(box => {
-    box.addEventListener('click', e => {
-      const xataId = box.getAttribute('data-xata-id');
-      if (xataId) {
-        sessionStorage.setItem('selectedXataId', xataId);
-        console.log('Saved xata_id:', xataId); // optional for debugging
-      }
-    });
-  });
-    }
-
-    async function fetchExactSearchResults(query, container) {
-  try {
-    const res = await fetch(`https://library-of-knowledge.vercel.app/search?q=${encodeURIComponent(query)}&limit=5`);
-    const data = await res.json();
-
-    console.log("Search response:", data);
-
-    // If no results at all, just show dynamic box
-    if (data.message === 'No matching questions found.' || !Array.isArray(data) || data.length === 0) {
-      container.innerHTML = `
-        <a href="dynamic.html" class="result-box">
-          <div>${query}</div>
-        </a>
-      `;
-      return;
-    }
-
-    // Check if exact question exists in results (case insensitive)
-    const exactExists = data.some(item => item.question.toLowerCase() === query.toLowerCase());
-
-    // Render existing results
-    renderResults(container, data);
-
-    // If exact question NOT found, add the dynamic box below results
-    if (!exactExists) {
-      container.insertAdjacentHTML('beforeend', `
-        <a href="dynamic.html" class="result-box" style="background-color: #333; border: 2px dashed #00bfff; margin-top: 15px;">
-          <div>Create new entry: <strong>${query}</strong></div>
-        </a>
-      `);
-    }
-
-  } catch (err) {
-    console.error('Search failed:', err);
-    container.innerHTML = '<div class="no-result">Error loading results.</div>';
-  }
-    } 
-    
-    async function fetchSearchResults(query, container) {
-      try {
-        const res = await fetch(`https://sky.leapcell.app/search?q=${encodeURIComponent(query)}&limit=5`);
-        if (!res.ok) {
-          container.innerHTML = '<div class="no-result">No results found.</div>';
-          return;
-        }
-
-        const data = await res.json();
-        renderResults(container, data);
-      } catch (err) {
-        console.error('Search failed:', err);
-        container.innerHTML = '<div class="no-result">Error loading results.</div>';
-      }
-    }
-
-    async function fetchNoun(query) {
-      try {
-        const res = await fetch('https://cubby-noun-extrac-40.deno.dev/', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ text: query })
-        });
-        const data = await res.json();
-        if (data.nouns && data.nouns.length > 0) {
-  return data.nouns.slice(0, 3); // Max 3 nouns
-    }
-        return null;
-      } catch (err) {
-        console.error('Noun extraction failed:', err);
-        return null;
-      }
-    }
-
-    // Initial load with session query
-    if (searchQuery) {
-      fetchExactSearchResults(searchQuery, queryResults);
-      fetchNoun(searchQuery).then(noun => {
-        if (noun) {
-          fetchSearchResults(noun, nounResults);
-        } else {
-          nounResults.innerHTML = '<div class="no-result">Couldn’t find a related noun.</div>';
-        }
-      });
-    } else {
-      queryResults.innerHTML = '<div class="no-result">No search query found.</div>';
-    }
-  </script>
-
+  <!-- Script -->
+  <script src="search.js"></script>
 </body>
 </html>
