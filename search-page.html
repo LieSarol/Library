@@ -1,86 +1,69 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Search Page</title>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Search Page</title>
 
-    <!-- Font Awesome for icons -->
-    <link
-      rel="stylesheet"
-      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
-    />
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
 
-    <!-- Tailwind CSS CDN -->
-    <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Font Awesome for icons -->
+  <link
+    rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
+  />
+</head>
+<body class="bg-[#121212] text-white font-sans m-0 p-0">
 
-    <!-- Tailwind Custom Theme Config -->
-    <script>
-      tailwind.config = {
-        theme: {
-          extend: {
-            colors: {
-              dark: "#121212",
-              darker: "#1f1f1f",
-              card: "#1e1e1e",
-              skyish: "#00bfff",
-              fadedSky: "#00bfff33",
-            },
-          },
-        },
-      };
-    </script>
-  </head>
-  <body class="bg-dark text-white font-sans m-0 p-0">
+  <!-- Top Bar -->
+  <div class="flex items-center bg-[#1f1f1f] px-5 py-4 shadow-md shadow-black/40">
+    <!-- Back Button -->
+    <i
+      class="fa-solid fa-arrow-left text-[#00bfff] text-2xl mr-4 cursor-pointer hover:text-[#3399ff] transition-colors"
+      id="backBtn"
+      title="Go Back"
+    ></i>
 
-    <!-- Top Bar -->
-    <div class="top-bar flex items-center bg-darker px-5 py-3 shadow-md">
-      <!-- Back Button -->
+    <!-- Search Bar -->
+    <div class="flex items-center bg-[#2a2a2a] rounded-lg px-3 py-2 shadow-inner shadow-cyan-500/30 flex-1">
       <i
-        class="fa-solid fa-arrow-left back-button text-skyish text-2xl mr-4 cursor-pointer select-none hover:text-blue-400"
-        id="backBtn"
-        title="Go Back"
+        class="fa-solid fa-magnifying-glass text-[#00bfff] text-lg mr-3 cursor-pointer"
+        id="searchIcon"
+        title="Search"
       ></i>
-
-      <!-- Search Bar -->
-      <div
-        class="search-bar flex items-center bg-[#2a2a2a] rounded-lg px-3 py-2 shadow-inner shadow-skyish/50 w-full"
-      >
-        <i
-          class="fa-solid fa-magnifying-glass search-icon text-skyish text-lg mr-3 cursor-pointer select-none"
-          id="searchIcon"
-          title="Search"
-        ></i>
-        <input
-          type="text"
-          id="searchInput"
-          placeholder="Search..."
-          class="w-full bg-transparent text-white text-base outline-none"
-        />
-      </div>
+      <input
+        type="text"
+        id="searchInput"
+        placeholder="Search..."
+        class="bg-transparent outline-none text-white w-full placeholder-gray-400"
+      />
     </div>
+  </div>
 
-    <!-- Section Title -->
-    <div class="section-title text-center text-lg mt-8 text-gray-400">
-      🔎 Results for Your Search
-    </div>
-    <div id="queryResults"></div>
+  <!-- Section Title -->
+  <div class="text-center text-lg mt-10 text-gray-400">🔎 Results for Your Search</div>
+  <div id="queryResults"></div>
 
-    <!-- Hidden Noun Section Title -->
-    <div
-      class="section-title text-center text-lg mt-8 text-gray-400 hidden"
-      id="nounResultsTitle"
-    >
-      🧠 Related Results (Based on Noun)
-    </div>
-    <div id="nounResults"></div>
+  <!-- Hidden Noun Section Title -->
+  <div id="nounResultsTitle" class="hidden text-center text-lg mt-10 text-gray-400">
+    🧠 Related Results (Based on Noun)
+  </div>
+  <div id="nounResults"></div>
 
-    <!-- Optional Message for No Results -->
-    <div class="no-result text-center mt-12 text-lg text-gray-300 hidden">
-      No results found... 🤷‍♂️
-    </div>
+  <!-- Result Item Template (JS Will Populate) -->
+  <!-- Example Static (for ref) -->
+  <!--
+  <a href="#" class="block mx-auto my-4 p-5 w-[80%] bg-[#1e1e1e] rounded-xl shadow-md hover:bg-cyan-800/20 transition-colors">
+    Your result goes here...
+  </a>
+  -->
 
-    <!-- Script -->
-    <script src="search.js"></script>
-  </body>
+  <!-- No Result Message -->
+  <div class="text-center mt-20 text-lg text-gray-400" id="noResult" style="display: none;">
+    No results found. 😢
+  </div>
+
+  <script src="search.js"></script>
+</body>
 </html>
