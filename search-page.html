@@ -299,6 +299,21 @@ setInterval(() => {
       container.innerHTML = '<div class="no-result">Error loading niche results.</div>';
     }
   }
+    let lastNicheQuery = nicheQuery;
+
+// Check every 500ms if nicheQuery has changed
+setInterval(() => {
+  const current = sessionStorage.getItem('nicheQuery');
+  if (current !== lastNicheQuery) {
+    lastNicheQuery = current;
+
+    if (current) {
+      fetchNicheResults(current, nounResults);
+    } else {
+      nounResults.innerHTML = '<div class="no-result">No niche saved in sessionStorage.</div>';
+    }
+  }
+}, 500);
 
   // Initial load
   if (searchQuery) {
