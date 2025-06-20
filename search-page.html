@@ -135,139 +135,126 @@
   <div id="nounResults"></div>
 
   <script>
-    const searchInput = document.getElementById('searchInput');
-    const queryResults = document.getElementById('queryResults');
-    const nounResults = document.getElementById('nounResults');
-    const backBtn = document.getElementById('backBtn');
-    const searchIcon = document.getElementById('searchIcon');
+  const searchInput = document.getElementById('searchInput');
+  const queryResults = document.getElementById('queryResults');
+  const nounResults = document.getElementById('nounResults');
+  const backBtn = document.getElementById('backBtn');
+  const searchIcon = document.getElementById('searchIcon');
 
-    // Load initial search query from sessionStorage
-    const searchQuery = sessionStorage.getItem('searchQuery') || '';
-const nicheQuery = sessionStorage.getItem('nicheQuery') || ''; // ✅ NEW
-    searchInput.value = searchQuery;
+  const searchQuery = sessionStorage.getItem('searchQuery') || '';
+  const nicheQuery = sessionStorage.getItem('nicheQuery') || '';
+  searchInput.value = searchQuery;
 
-    // Clicking back button takes user back in history
-    backBtn.addEventListener('click', () => {
-      window.history.back();
-    });
-
-    // Trigger search on clicking the search icon or pressing Enter in input
-    function triggerSearch() {
-  const query = searchInput.value.trim();
-  if (!query) return;
-
-  sessionStorage.setItem('searchQuery', query);
-
-  // Only call exact search if query ends with '?'
-  if (query.endsWith('?')) {
-    fetchExactSearchResults(query, queryResults);
-  } else {
-    // If no '?', clear exact results area or show something else
-    queryResults.innerHTML = '<div class="no-result">Please end your query with a "?" for exact search.</div>';
-  }
-
-  // Always do noun-based search, no '?'
-  if (nicheQuery) {
-  fetchNicheResults(nicheQuery, nounResults);
-} else {
-  nounResults.innerHTML = '<div class="no-result">No niche saved in sessionStorage.</div>';
-  }
-
-    searchIcon.addEventListener('click', triggerSearch);
-    searchInput.addEventListener('keydown', e => {
-      if (e.key === 'Enter') triggerSearch();
-    });
-
-    // Render results with clickable boxes
-    function renderResults(container, data) {
-  container.innerHTML = data.map(item => `
-    <a href="redirect.html" class="result-box" data-xata-id="${item.xata_id}">
-      <div>${item.question}</div>
-    </a>
-  `).join('');
-
-  // After rendering, attach click listeners to each box
-  container.querySelectorAll('.result-box').forEach(box => {
-    box.addEventListener('click', e => {
-      const xataId = box.getAttribute('data-xata-id');
-      if (xataId) {
-        sessionStorage.setItem('selectedXataId', xataId);
-        console.log('Saved xata_id:', xataId); // optional for debugging
-      }
-    });
+  backBtn.addEventListener('click', () => {
+    window.history.back();
   });
-    }
 
-    async function fetchExactSearchResults(query, container) {
-  try {
-    const res = await fetch(`https://library-of-knowledge.vercel.app/search?q=${encodeURIComponent(query)}&limit=5`);
-    const data = await res.json();
+  // ✅ Moved OUTSIDE the function!
+  searchIcon.addEventListener('click', triggerSearch);
+  searchInput.addEventListener('keydown', e => {
+    if (e.key === 'Enter') triggerSearch();
+  });
 
-    console.log("Search response:", data);
+  function triggerSearch() {
+    const query = searchInput.value.trim();
+    if (!query) return;
 
-    // If no results at all, just show dynamic box
-    if (data.message === 'No matching questions found.' || !Array.isArray(data) || data.length === 0) {
-      container.innerHTML = `
-        <a href="dynamic.html" class="result-box">
-          <div>${query}</div>
-        </a>
-      `;
-      return;
-    }
+    sessionStorage.setItem('searchQuery', query);
 
-    // Check if exact question exists in results (case insensitive)
-    const exactExists = data.some(item => item.question.toLowerCase() === query.toLowerCase());
-
-    // Render existing results
-    renderResults(container, data);
-
-    // If exact question NOT found, add the dynamic box below results
-    if (!exactExists) {
-      container.insertAdjacentHTML('beforeend', `
-        <a href="dynamic.html" class="result-box" style="background-color: #333; border: 2px dashed #00bfff; margin-top: 15px;">
-          <div>Create new entry: <strong>${query}</strong></div>
-        </a>
-      `);
-    }
-
-  } catch (err) {
-    console.error('Search failed:', err);
-    container.innerHTML = '<div class="no-result">Error loading results.</div>';
-  }
-    }
-
-    async function fetchNicheResults(niche, container) {
-  try {
-    const res = await fetch(`https://library-of-knowledge.vercel.app/flex/niche?niche=${encodeURIComponent(niche)}&limit=5`);
-    if (!res.ok) {
-      container.innerHTML = '<div class="no-result">No results found for this niche.</div>';
-      return;
-    }
-
-    const data = await res.json();
-    if (!Array.isArray(data) || data.length === 0) {
-      container.innerHTML = '<div class="no-result">No results found for this niche.</div>';
+    if (query.endsWith('?')) {
+      fetchExactSearchResults(query, queryResults);
     } else {
+      queryResults.innerHTML = '<div class="no-result">Please end your query with a "?" for exact search.</div>';
+    }
+
+    if (nicheQuery) {
+      fetchNicheResults(nicheQuery, nounResults);
+    } else {
+      nounResults.innerHTML = '<div class="no-result">No niche saved in sessionStorage.</div>';
+    }
+  }
+
+  function renderResults(container, data) {
+    container.innerHTML = data.map(item => `
+      <a href="redirect.html" class="result-box" data-xata-id="${item.xata_id}">
+        <div>${item.question}</div>
+      </a>
+    `).join('');
+
+    container.querySelectorAll('.result-box').forEach(box => {
+      box.addEventListener('click', e => {
+        const xataId = box.getAttribute('data-xata-id');
+        if (xataId) {
+          sessionStorage.setItem('selectedXataId', xataId);
+          console.log('Saved xata_id:', xataId);
+        }
+      });
+    });
+  }
+
+  async function fetchExactSearchResults(query, container) {
+    try {
+      const res = await fetch(`https://library-of-knowledge.vercel.app/search?q=${encodeURIComponent(query)}&limit=5`);
+      const data = await res.json();
+
+      if (data.message === 'No matching questions found.' || !Array.isArray(data) || data.length === 0) {
+        container.innerHTML = `
+          <a href="dynamic.html" class="result-box">
+            <div>${query}</div>
+          </a>
+        `;
+        return;
+      }
+
+      const exactExists = data.some(item => item.question.toLowerCase() === query.toLowerCase());
       renderResults(container, data);
+
+      if (!exactExists) {
+        container.insertAdjacentHTML('beforeend', `
+          <a href="dynamic.html" class="result-box" style="background-color: #333; border: 2px dashed #00bfff; margin-top: 15px;">
+            <div>Create new entry: <strong>${query}</strong></div>
+          </a>
+        `);
+      }
+
+    } catch (err) {
+      console.error('Search failed:', err);
+      container.innerHTML = '<div class="no-result">Error loading results.</div>';
     }
-  } catch (err) {
-    console.error('Niche search failed:', err);
-    container.innerHTML = '<div class="no-result">Error loading niche results.</div>';
   }
+
+  async function fetchNicheResults(niche, container) {
+    try {
+      const res = await fetch(`https://library-of-knowledge.vercel.app/flex/niche?niche=${encodeURIComponent(niche)}&limit=5`);
+      if (!res.ok) {
+        container.innerHTML = '<div class="no-result">No results found for this niche.</div>';
+        return;
+      }
+
+      const data = await res.json();
+      if (!Array.isArray(data) || data.length === 0) {
+        container.innerHTML = '<div class="no-result">No results found for this niche.</div>';
+      } else {
+        renderResults(container, data);
+      }
+    } catch (err) {
+      console.error('Niche search failed:', err);
+      container.innerHTML = '<div class="no-result">Error loading niche results.</div>';
     }
+  }
 
-    // Initial load with session query
-    if (searchQuery) {
-  fetchExactSearchResults(searchQuery, queryResults);
+  // Initial load
+  if (searchQuery) {
+    fetchExactSearchResults(searchQuery, queryResults);
 
-  if (nicheQuery) {
-    fetchNicheResults(nicheQuery, nounResults);
+    if (nicheQuery) {
+      fetchNicheResults(nicheQuery, nounResults);
+    } else {
+      nounResults.innerHTML = '<div class="no-result">No niche saved in sessionStorage.</div>';
+    }
   } else {
-    nounResults.innerHTML = '<div class="no-result">No niche saved in sessionStorage.</div>';
+    queryResults.innerHTML = '<div class="no-result">No search query found.</div>';
   }
-} else {
-  queryResults.innerHTML = '<div class="no-result">No search query found.</div>';
-    }
   </script>
 
 </body>
