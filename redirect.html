@@ -3,15 +3,11 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Logging in...</title>
+    <title>Loading ...</title>
     <script>
       document.addEventListener('DOMContentLoaded', async () => {
         const xataId = sessionStorage.getItem('selectedXataId');
-
-        if (!xataId) {
-          console.warn('No id found in sessionStorage!');
-          return;
-        }
+        if (!xataId) return;
 
         try {
           await fetch('https://library-of-knowledge.vercel.app/count', {
@@ -19,10 +15,8 @@
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ xata_id: xataId, count: 1 }),
           });
-
-          console.log(`Logged 1 view for xata_id: ${xataId}`);
         } catch (err) {
-          console.error('Logging failed:', err);
+          // Logging silently failed. It's chill.
         }
 
         window.location.href = 'main.html';
@@ -31,24 +25,12 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
       @keyframes glitch {
-        0% {
-          transform: translate(0);
-        }
-        20% {
-          transform: translate(-2px, 2px);
-        }
-        40% {
-          transform: translate(-1px, -1px);
-        }
-        60% {
-          transform: translate(2px, 1px);
-        }
-        80% {
-          transform: translate(-1px, 1px);
-        }
-        100% {
-          transform: translate(0);
-        }
+        0% { transform: translate(0); }
+        20% { transform: translate(-2px, 2px); }
+        40% { transform: translate(-1px, -1px); }
+        60% { transform: translate(2px, 1px); }
+        80% { transform: translate(-1px, 1px); }
+        100% { transform: translate(0); }
       }
     </style>
   </head>
@@ -60,7 +42,7 @@
       </svg>
 
       <p class="text-lg md:text-xl font-mono text-blue-300 animate-pulse">Logging you in...</p>
-      <p class="text-sm text-gray-400 italic glitchy" style="animation: glitch 1s infinite">Decrypting your vibes... 🔓🧠</p>
+      <p class="text-sm text-gray-400 italic" style="animation: glitch 1s infinite">Decrypting your vibes... 🔓🧠</p>
     </div>
   </body>
 </html>
