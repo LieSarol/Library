@@ -143,6 +143,7 @@
 
     // Load initial search query from sessionStorage
     const searchQuery = sessionStorage.getItem('searchQuery') || '';
+const nicheQuery = sessionStorage.getItem('nicheQuery') || ''; // ✅ NEW
     searchInput.value = searchQuery;
 
     // Clicking back button takes user back in history
@@ -166,14 +167,11 @@
   }
 
   // Always do noun-based search, no '?'
-  fetchNoun(query).then(noun => {
-    if (noun) {
-      fetchSearchResults(noun, nounResults);
-    } else {
-      nounResults.innerHTML = '<div class="no-result">Couldn’t find a related noun.</div>';
-    }
-  });
-    }
+  if (nicheQuery) {
+  fetchNicheResults(nicheQuery, nounResults);
+} else {
+  nounResults.innerHTML = '<div class="no-result">No niche saved in sessionStorage.</div>';
+  }
 
     searchIcon.addEventListener('click', triggerSearch);
     searchInput.addEventListener('keydown', e => {
@@ -236,54 +234,39 @@
     console.error('Search failed:', err);
     container.innerHTML = '<div class="no-result">Error loading results.</div>';
   }
-    } 
-    
-    async function fetchSearchResults(query, container) {
-      try {
-        const res = await fetch(`https://sky.leapcell.app/search?q=${encodeURIComponent(query)}&limit=5`);
-        if (!res.ok) {
-          container.innerHTML = '<div class="no-result">No results found.</div>';
-          return;
-        }
-
-        const data = await res.json();
-        renderResults(container, data);
-      } catch (err) {
-        console.error('Search failed:', err);
-        container.innerHTML = '<div class="no-result">Error loading results.</div>';
-      }
     }
 
-    async function fetchNoun(query) {
-      try {
-        const res = await fetch('https://cubby-noun-extrac-40.deno.dev/', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ text: query })
-        });
-        const data = await res.json();
-        if (data.nouns && data.nouns.length > 0) {
-  return data.nouns.slice(0, 3); // Max 3 nouns
+    async function fetchNicheResults(niche, container) {
+  try {
+    const res = await fetch(`https://library-of-knowledge.vercel.app/flex/niche?niche=${encodeURIComponent(niche)}&limit=5`);
+    if (!res.ok) {
+      container.innerHTML = '<div class="no-result">No results found for this niche.</div>';
+      return;
     }
-        return null;
-      } catch (err) {
-        console.error('Noun extraction failed:', err);
-        return null;
-      }
+
+    const data = await res.json();
+    if (!Array.isArray(data) || data.length === 0) {
+      container.innerHTML = '<div class="no-result">No results found for this niche.</div>';
+    } else {
+      renderResults(container, data);
+    }
+  } catch (err) {
+    console.error('Niche search failed:', err);
+    container.innerHTML = '<div class="no-result">Error loading niche results.</div>';
+  }
     }
 
     // Initial load with session query
     if (searchQuery) {
-      fetchExactSearchResults(searchQuery, queryResults);
-      fetchNoun(searchQuery).then(noun => {
-        if (noun) {
-          fetchSearchResults(noun, nounResults);
-        } else {
-          nounResults.innerHTML = '<div class="no-result">Couldn’t find a related noun.</div>';
-        }
-      });
-    } else {
-      queryResults.innerHTML = '<div class="no-result">No search query found.</div>';
+  fetchExactSearchResults(searchQuery, queryResults);
+
+  if (nicheQuery) {
+    fetchNicheResults(nicheQuery, nounResults);
+  } else {
+    nounResults.innerHTML = '<div class="no-result">No niche saved in sessionStorage.</div>';
+  }
+} else {
+  queryResults.innerHTML = '<div class="no-result">No search query found.</div>';
     }
   </script>
 
