@@ -257,5 +257,62 @@
   }
   </script>
 
+  <script>
+const CATEGORIES = [
+  "Language Learning", "Mathematics", "Science", "Technology", "Engineering", "Art",
+  "Music", "History", "Geography", "Philosophy", "Psychology", "Literature",
+  "Writing & Communication", "Business & Entrepreneurship", "Finance & Investing", "Economics",
+  "Marketing", "Sales", "Public Speaking", "Critical Thinking", "Coding / Programming",
+  "Graphic Design", "Web Development", "App Development", "Game Development", "Animation",
+  "Video Production", "Photography", "Data Science", "Artificial Intelligence", "Cybersecurity",
+  "Robotics", "Mechanics / Auto Repair", "Architecture", "Interior Design", "Fashion Design",
+  "Cooking & Culinary Arts", "Baking", "Fitness & Exercise", "Yoga & Mindfulness",
+  "Health & Nutrition", "Self-Improvement", "Time Management", "Parenting Skills",
+  "Foreign Cultures & Travel", "Astronomy", "Biology", "Chemistry", "Physics", "Environmental Studies"
+];
+
+let lastQuery = sessionStorage.getItem('searchQuery') || '';
+
+function classifyAndStore(query) {
+  const prompt = `
+Classify the following question into ONE of the categories below. ONLY return the category name exactly as written:
+
+Categories:
+${CATEGORIES.map((c, i) => `${i + 1}. ${c}`).join('\n')}
+
+Question: "${query}"
+Category:
+`;
+
+  fetch('https://library-of-knowledge.vercel.app/groq', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ message: prompt })
+  })
+  .then(res => res.json())
+  .then(data => {
+    const reply = data.choices?.[0]?.message?.content?.trim();
+    if (reply) {
+      sessionStorage.setItem('nicheQuery', reply);
+      console.log("🎯 Niche updated:", reply);
+    } else {
+      console.warn("🤷‍♂️ No category reply from API");
+    }
+  })
+  .catch(err => {
+    console.error("🚨 API error:", err);
+  });
+}
+
+// Keep watchin’ like Netflix 👀
+setInterval(() => {
+  const currentQuery = sessionStorage.getItem('searchQuery') || '';
+  if (currentQuery && currentQuery !== lastQuery) {
+    lastQuery = currentQuery;
+    classifyAndStore(currentQuery);
+  }
+}, 500); // every half sec
+  </script>
+
 </body>
   </html>
