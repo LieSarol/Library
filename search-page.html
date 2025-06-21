@@ -339,17 +339,11 @@ setInterval(() => {
 }, 500);
 
   // Initial load
-  if (searchQuery) {
-    fetchExactSearchResults(searchQuery, queryResults);
-
-    if (nicheQuery) {
-      fetchNicheResults(nicheQuery, nounResults);
-    } else {
-      nounResults.innerHTML = '<div class="no-result">No niche saved in sessionStorage.</div>';
-    }
-  } else {
-    queryResults.innerHTML = '<div class="no-result">No search query found.</div>';
-  }
+if (searchQuery) {
+  triggerSearch(); // 👈 This will handle everything now
+} else {
+  queryResults.innerHTML = '<div class="no-result">No search query found.</div>';
+}
   </script>
 
 </body>
