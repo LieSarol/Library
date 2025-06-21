@@ -255,21 +255,27 @@ setInterval(() => {
   }
 
   function renderResults(container, data) {
-    container.innerHTML = data.map(item => `
+  container.innerHTML = data.map(item => {
+    const isKing = item.count > 1000;
+    return `
       <a href="redirect.html" class="result-box" data-xata-id="${item.xata_id}">
-        <div>${item.question}</div>
+        <div>
+          ${isKing ? '<i class="fas fa-crown" style="color: gold; margin-right: 6px;"></i>' : ''}
+          ${item.question}
+        </div>
       </a>
-    `).join('');
+    `;
+  }).join('');
 
-    container.querySelectorAll('.result-box').forEach(box => {
-      box.addEventListener('click', e => {
-        const xataId = box.getAttribute('data-xata-id');
-        if (xataId) {
-          sessionStorage.setItem('selectedXataId', xataId);
-          console.log('Saved xata_id:', xataId);
-        }
-      });
+  container.querySelectorAll('.result-box').forEach(box => {
+    box.addEventListener('click', e => {
+      const xataId = box.getAttribute('data-xata-id');
+      if (xataId) {
+        sessionStorage.setItem('selectedXataId', xataId);
+        console.log('Saved xata_id:', xataId);
+      }
     });
+  });
   }
 
   async function fetchExactSearchResults(query, container) {
