@@ -1,161 +1,202 @@
 <!DOCTYPE html>
 <html lang="en" class="dark">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>My Profile</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link
-      rel="stylesheet"
-      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"
-    />
-    <script>
-      tailwind.config = {
-        darkMode: 'class',
-        theme: {
-          extend: {
-            colors: {
-              primary: '#3b82f6',
-              darkbg: '#0f172a',
-              muted: '#94a3b8'
-            },
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Profile</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            primary: '#3b82f6',
+            darkbg: '#0f172a',
+            muted: '#94a3b8'
           },
         },
-      };
-    </script>
-  </head>
-  <body class="bg-darkbg text-white min-h-screen flex items-center justify-center p-6 relative">
-    
-    <!-- Back Button -->
-    <a href="/" class="absolute top-6 left-6 text-primary hover:text-blue-400 transition">
-      <i class="fas fa-arrow-left text-2xl"></i>
-    </a>
+      },
+    };
+  </script>
+</head>
+<body class="bg-darkbg text-white min-h-screen flex items-center justify-center p-6 relative">
 
-    <div class="bg-slate-800 p-6 rounded-2xl shadow-xl max-w-md w-full space-y-5">
-      <div class="flex flex-col items-center">
-        <img id="avatar" src="" alt="Avatar" class="w-28 h-28 rounded-full border-4 border-primary mb-2" />
-        <h2 id="username" class="text-xl font-bold text-primary cursor-pointer group relative">
-          <span class="editable">Loading...</span>
-          <i class="fas fa-pen text-xs ml-2 opacity-0 group-hover:opacity-80 transition"></i>
-        </h2>
-        <p id="joined" class="text-sm text-muted">Joined...</p>
-      </div>
+  <a href="/" class="absolute top-6 left-6 text-primary hover:text-blue-400 transition">
+    <i class="fas fa-arrow-left text-2xl"></i>
+  </a>
 
-      <div class="space-y-4 px-2">
-        <div class="group cursor-pointer">
-          <label class="text-muted text-xs">Bio</label>
-          <p id="bio" class="editable text-sm hover:bg-slate-700 p-2 rounded-lg transition"></p>
-        </div>
+  <div class="bg-slate-800 p-6 rounded-2xl shadow-xl max-w-md w-full space-y-6">
+    <div class="flex flex-col items-center">
+      <img id="avatar" src="" alt="Avatar" class="w-28 h-28 rounded-full border-4 border-primary mb-2" />
+      <h2 class="text-xl font-bold text-primary">My Profile</h2>
+      <p id="joined" class="text-sm text-muted">Joined...</p>
+    </div>
 
-        <div class="grid grid-cols-2 gap-4 text-left">
-          <div class="group cursor-pointer">
-            <label class="text-muted text-xs">Gender</label>
-            <p id="gender" class="editable text-sm hover:bg-slate-700 p-2 rounded-lg transition"></p>
-          </div>
-
-          <div class="group cursor-pointer">
-            <label class="text-muted text-xs">Love Status</label>
-            <p id="love_status" class="editable text-sm hover:bg-slate-700 p-2 rounded-lg transition"></p>
-          </div>
-
-          <div class="col-span-2 group cursor-pointer">
-            <label class="text-muted text-xs">Crush Name</label>
-            <p id="crush_name" class="editable text-sm hover:bg-slate-700 p-2 rounded-lg transition"></p>
-          </div>
+    <div class="space-y-4 px-2">
+      <!-- Field Group Template -->
+      <div class="relative group">
+        <label class="text-muted text-xs">Username</label>
+        <div class="flex items-center justify-between">
+          <p id="username" class="editable text-sm"></p>
+          <i class="fas fa-pen cursor-pointer text-muted hover:text-primary" onclick="editTextField('username', 20)"></i>
         </div>
       </div>
 
-      <div class="text-center pt-4">
-        <button id="saveBtn" class="bg-primary hover:bg-blue-600 text-white px-4 py-2 rounded-lg transition">
-          <i class="fas fa-save mr-2"></i>Save Changes
-        </button>
-        <p id="status" class="text-xs text-muted mt-2"></p>
+      <div class="relative group">
+        <label class="text-muted text-xs">Bio</label>
+        <div class="flex items-start justify-between">
+          <p id="bio" class="editable text-sm whitespace-pre-line"></p>
+          <i class="fas fa-pen cursor-pointer text-muted hover:text-primary" onclick="editTextArea('bio', 500)"></i>
+        </div>
+      </div>
+
+      <div class="relative group">
+        <label class="text-muted text-xs">Gender</label>
+        <div class="flex items-center justify-between">
+          <p id="gender" class="editable text-sm"></p>
+          <i class="fas fa-pen cursor-pointer text-muted hover:text-primary" onclick="editDropdown('gender', ['Male', 'Female', 'Non-binary', 'Alien', 'Secret 👀'])"></i>
+        </div>
+      </div>
+
+      <div class="relative group">
+        <label class="text-muted text-xs">Love Status</label>
+        <div class="flex items-center justify-between">
+          <p id="love_status" class="editable text-sm"></p>
+          <i class="fas fa-pen cursor-pointer text-muted hover:text-primary" onclick="editDropdown('love_status', ['Single', 'Taken', 'Crushing', 'It’s Complicated', 'Hiding 👀'])"></i>
+        </div>
+      </div>
+
+      <div class="relative group">
+        <label class="text-muted text-xs">Crush Name</label>
+        <div class="flex items-center justify-between">
+          <p id="crush_name" class="editable text-sm"></p>
+          <i class="fas fa-pen cursor-pointer text-muted hover:text-primary" onclick="editTextField('crush_name', 50)"></i>
+        </div>
       </div>
     </div>
 
-    <script>
-      const fields = ["username", "bio", "gender", "love_status", "crush_name"];
-      const dataCache = {};
+    <div class="text-center pt-4">
+      <button id="saveBtn" class="bg-primary hover:bg-blue-600 text-white px-4 py-2 rounded-lg transition">
+        <i class="fas fa-save mr-2"></i>Save Changes
+      </button>
+      <p id="status" class="text-xs text-muted mt-2"></p>
+    </div>
+  </div>
 
-      async function loadProfile() {
-        try {
-          const res = await fetch("https://sky.leapcell.app/me", { credentials: "include" });
-          const data = await res.json();
+  <script>
+    const fields = ["username", "bio", "gender", "love_status", "crush_name"];
+    const cache = {};
 
-          if (!res.ok) throw new Error(data.error);
+    async function loadProfile() {
+      const res = await fetch("https://sky.leapcell.app/me", { credentials: "include" });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error);
 
-          document.getElementById("avatar").src = data.avatar || "";
-          const joinedAt = new Date(data.joined);
-          const daysAgo = Math.floor((Date.now() - joinedAt) / (1000 * 60 * 60 * 24));
-          document.getElementById("joined").textContent =
-            "Joined " + (daysAgo === 0 ? "today" : daysAgo + " days ago");
+      document.getElementById("avatar").src = data.avatar || "";
+      const joinedAt = new Date(data.joined);
+      const daysAgo = Math.floor((Date.now() - joinedAt) / (1000 * 60 * 60 * 24));
+      document.getElementById("joined").textContent =
+        "Joined " + (daysAgo === 0 ? "today" : `${daysAgo} days ago`);
 
-          fields.forEach(id => {
-            const el = document.getElementById(id);
-            el.textContent = data[id] || "—";
-            dataCache[id] = data[id] || "";
-          });
-        } catch (err) {
-          document.getElementById("status").textContent = "❌ " + err.message;
-        }
-      }
+      fields.forEach(f => {
+        document.getElementById(f).textContent = data[f] || "—";
+        cache[f] = data[f] || "";
+      });
+    }
 
-      function enableInlineEditing() {
-        document.querySelectorAll(".editable").forEach((el) => {
-          el.addEventListener("click", () => {
-            const id = el.id || el.closest("[id]")?.id;
-            const current = el.textContent.trim();
-            const input = document.createElement("input");
-            input.type = "text";
-            input.value = current;
-            input.className = "w-full text-black px-2 py-1 rounded focus:outline-none";
-            el.replaceWith(input);
-            input.focus();
+    function editTextField(id, maxLen = 50) {
+      const p = document.getElementById(id);
+      const value = p.textContent;
+      const input = document.createElement("input");
+      input.type = "text";
+      input.value = value;
+      input.maxLength = maxLen;
+      input.className = "w-full mt-1 text-black px-2 py-1 rounded focus:outline-none";
+      p.replaceWith(input);
+      input.focus();
 
-            input.addEventListener("blur", () => {
-              const newVal = input.value.trim().substring(0, id === "bio" ? 500 : 50);
-              const p = document.createElement("p");
-              p.textContent = newVal || "—";
-              p.className = el.className;
-              p.classList.add("editable");
-              p.id = id;
-              input.replaceWith(p);
-              dataCache[id] = newVal;
-              enableInlineEditing(); // re-bind
-            });
-
-            input.addEventListener("keydown", (e) => {
-              if (e.key === "Enter") input.blur();
-            });
-          });
-        });
-      }
-
-      document.getElementById("saveBtn").addEventListener("click", async () => {
-        const payload = {};
-        fields.forEach(id => {
-          const val = dataCache[id];
-          if (val !== "") payload[id] = val;
-        });
-
-        try {
-          const res = await fetch("https://sky.leapcell.app/me/update", {
-            method: "PUT",
-            headers: { "Content-Type": "application/json" },
-            credentials: "include",
-            body: JSON.stringify(payload),
-          });
-
-          const result = await res.json();
-          document.getElementById("status").textContent = res.ok
-            ? "✅ Profile saved!"
-            : `❌ ${result.error || result.errors?.join(", ")}`;
-        } catch (err) {
-          document.getElementById("status").textContent = "🔥 Something went wrong.";
-        }
+      input.addEventListener("blur", () => {
+        const val = input.value.trim();
+        const newP = document.createElement("p");
+        newP.textContent = val || "—";
+        newP.id = id;
+        newP.className = "editable text-sm";
+        input.replaceWith(newP);
+        cache[id] = val;
       });
 
-      loadProfile().then(enableInlineEditing);
-    </script>
-  </body>
-  </html>
+      input.addEventListener("keydown", e => e.key === "Enter" && input.blur());
+    }
+
+    function editTextArea(id, maxLen = 500) {
+      const p = document.getElementById(id);
+      const value = p.textContent;
+      const textarea = document.createElement("textarea");
+      textarea.value = value;
+      textarea.maxLength = maxLen;
+      textarea.className = "w-full mt-1 text-black px-2 py-1 rounded focus:outline-none resize-none";
+      textarea.rows = 4;
+      p.replaceWith(textarea);
+      textarea.focus();
+
+      textarea.addEventListener("blur", () => {
+        const val = textarea.value.trim();
+        const newP = document.createElement("p");
+        newP.textContent = val || "—";
+        newP.id = id;
+        newP.className = "editable text-sm whitespace-pre-line";
+        textarea.replaceWith(newP);
+        cache[id] = val;
+      });
+    }
+
+    function editDropdown(id, options) {
+      const p = document.getElementById(id);
+      const currentVal = p.textContent;
+      const container = document.createElement("div");
+      container.className = "absolute z-50 bg-slate-900 border border-primary rounded w-full mt-1 shadow-lg";
+
+      options.forEach(opt => {
+        const btn = document.createElement("button");
+        btn.textContent = opt;
+        btn.className = "block w-full text-left px-4 py-2 hover:bg-primary/20";
+        btn.addEventListener("click", () => {
+          p.textContent = opt;
+          container.remove();
+          cache[id] = opt;
+        });
+        container.appendChild(btn);
+      });
+
+      p.parentElement.appendChild(container);
+    }
+
+    document.getElementById("saveBtn").addEventListener("click", async () => {
+      const payload = {};
+      fields.forEach(f => {
+        const val = cache[f]?.trim();
+        if (val) payload[f] = val;
+      });
+
+      const res = await fetch("https://sky.leapcell.app/me/update", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify(payload),
+      });
+
+      const data = await res.json();
+      document.getElementById("status").textContent = res.ok
+        ? "✅ Profile saved!"
+        : `❌ ${data.error || data.errors?.join(", ")}`;
+    });
+
+    loadProfile().catch(err => {
+      console.error(err);
+      document.getElementById("status").textContent = "❌ Failed to load profile.";
+    });
+  </script>
+</body>
+</html>
