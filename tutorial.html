@@ -5,63 +5,70 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Niche List</title>
 
-  <!-- TailwindCSS CDN -->
+  <!-- Tailwind CSS -->
   <script src="https://cdn.tailwindcss.com"></script>
 
-  <!-- Font Awesome for Back Icon -->
+  <!-- Font Awesome for icons -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+
+  <!-- Google Font: Inter -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet" />
+
+  <!-- AOS Animations -->
+  <link href="https://unpkg.com/aos@2.3.4/dist/aos.css" rel="stylesheet" />
+  <script src="https://unpkg.com/aos@2.3.4/dist/aos.js"></script>
 
   <style>
     body {
-      background-color: #1E293B;
+      font-family: 'Inter', sans-serif;
+      background: linear-gradient(to bottom right, #0f172a, #1e293b);
       color: white;
-      font-family: 'Arial', sans-serif;
     }
 
-    .btn-blue {
-      background-color: #2563ea;
+    .glass {
+      background: rgba(255, 255, 255, 0.05);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
     }
 
-    .btn-blue:hover {
-      background-color: #1e4cd4;
+    .card-hover:hover {
+      transform: translateY(-4px) scale(1.02);
+      box-shadow: 0 8px 24px rgba(59, 130, 246, 0.3);
     }
 
-    .playlist-item:hover {
-      box-shadow: 0 0 10px rgba(37, 99, 234, 0.3);
-      transform: scale(1.02);
-    }
-
-    .overlay-text {
-      background: rgba(0, 0, 0, 0.5);
-      backdrop-filter: blur(4px);
+    .transition-all {
+      transition: all 0.3s ease;
     }
   </style>
 </head>
-<body class="min-h-screen p-4">
+<body class="min-h-screen flex flex-col items-center px-4 py-8">
 
-  <!-- Back Button -->
-  <div class="mb-4">
-    <button onclick="history.back()" class="text-white text-xl hover:text-blue-400">
-      <i class="fas fa-arrow-left"></i> Back
-    </button>
+  <!-- Back Icon Link -->
+  <div class="w-full max-w-6xl mb-6 flex justify-start">
+    <a href="/dashboard" class="text-white text-2xl hover:text-blue-400 transition-all">
+      <i class="fas fa-arrow-left"></i>
+    </a>
   </div>
 
-  <!-- Playlist Thumbnail with overlay -->
-  <div class="relative mb-8 w-full max-w-4xl mx-auto rounded-lg overflow-hidden shadow-lg">
-    <img src="https://cdn.pixabay.com/photo/2025/05/30/17/16/mountain-9631830_1280.jpg" alt="Playlist Thumbnail"
-         class="w-full h-auto object-cover">
-
-    <!-- Overlay Text -->
-    <div class="absolute bottom-0 left-0 w-full p-6 overlay-text text-white">
-      <h1 class="text-2xl md:text-3xl font-bold">Your Curated Playlist</h1>
-      <p class="text-sm md:text-base text-gray-300">Based on niche: <span id="niche-name" class="font-semibold"></span></p>
+  <!-- Banner/Header -->
+  <div class="relative w-full max-w-6xl h-64 md:h-80 rounded-3xl overflow-hidden shadow-2xl mb-10">
+    <img src="https://cdn.pixabay.com/photo/2025/05/30/17/16/mountain-9631830_1280.jpg"
+         class="w-full h-full object-cover" />
+    <div class="absolute inset-0 glass flex flex-col justify-end p-6 md:p-10">
+      <h1 class="text-3xl md:text-5xl font-extrabold">Your Curated Playlist</h1>
+      <p class="text-gray-300 text-lg mt-2">
+        Niche: <span id="niche-name" class="text-white font-semibold"></span>
+      </p>
     </div>
   </div>
 
-  <!-- Playlist Items -->
-  <div id="playlist" class="space-y-4 max-w-4xl mx-auto"></div>
+  <!-- Playlist Grid -->
+  <div id="playlist" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 max-w-6xl w-full"></div>
 
+  <!-- Scripts -->
   <script>
+    AOS.init({ duration: 800, once: true });
+
     function getCookieValue(name) {
       const value = `; ${document.cookie}`;
       const parts = value.split(`; ${name}=`);
@@ -92,23 +99,23 @@
         playlist.innerHTML = "";
 
         data.forEach((item, index) => {
-          const div = document.createElement("a");
-div.href = "redirect0.html";
-div.className = "block playlist-item bg-slate-800 p-4 rounded-lg transition duration-200 hover:cursor-pointer";
+          const card = document.createElement("a");
+          card.href = "redirect0.html";
+          card.setAttribute("data-aos", "fade-up");
+          card.className = "block glass p-5 rounded-2xl transition-all card-hover";
 
-// Save xata_id on click
-div.addEventListener("click", () => {
-  sessionStorage.setItem("selectedXataId", item.xata_id);
-});
+          card.addEventListener("click", () => {
+            sessionStorage.setItem("selectedXataId", item.xata_id);
+          });
 
-div.innerHTML = `
-  <div class="flex items-center gap-4">
-    <div class="text-blue-400 text-lg font-bold">#${index + 1}</div>
-    <div class="text-white text-base font-medium">${item.question || "Untitled question"}</div>
-  </div>
-`;
+          card.innerHTML = `
+            <div class="flex flex-col gap-2">
+              <div class="text-blue-400 font-bold text-xl">#${index + 1}</div>
+              <div class="text-white text-base md:text-lg font-medium">${item.question || "Untitled question"}</div>
+            </div>
+          `;
 
-          playlist.appendChild(div);
+          playlist.appendChild(card);
         });
       } catch (err) {
         console.error(err);
