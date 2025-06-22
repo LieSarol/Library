@@ -27,7 +27,7 @@
 
     .glass {
       background: rgba(255, 255, 255, 0.05);
-      backdrop-filter: blur(10px);
+      backdrop-filter: blur(2px);
       border: 1px solid rgba(255, 255, 255, 0.1);
     }
 
@@ -45,14 +45,14 @@
 
   <!-- Back Icon Link -->
   <div class="w-full max-w-6xl mb-6 flex justify-start">
-    <a href="/dashboard" class="text-white text-2xl hover:text-blue-400 transition-all">
+    <a href="/" class="text-white text-2xl hover:text-blue-400 transition-all">
       <i class="fas fa-arrow-left"></i>
     </a>
   </div>
 
   <!-- Banner/Header -->
   <div class="relative w-full max-w-6xl h-64 md:h-80 rounded-3xl overflow-hidden shadow-2xl mb-10">
-    <img src="https://cdn.pixabay.com/photo/2025/05/30/17/16/mountain-9631830_1280.jpg"
+    <img src="https://cdn.pixabay.com/photo/2020/06/21/09/48/hill-5324149_1280.jpg"
          class="w-full h-full object-cover" />
     <div class="absolute inset-0 glass flex flex-col justify-end p-6 md:p-10">
       <h1 class="text-3xl md:text-5xl font-extrabold">Your Curated Playlist</h1>
@@ -81,7 +81,7 @@
       const nicheLabel = document.getElementById("niche-name");
 
       if (!niche) {
-        playlist.innerHTML = "<p class='text-red-400'>Cookie 'niche1' not set.</p>";
+        playlist.innerHTML = "<p class='text-red-400'>'niche1' not set.</p>";
         return;
       }
 
