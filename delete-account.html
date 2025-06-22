@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Delete Account</title>
+  <style>
+    body {
+      background: #111;
+      color: #f5f5f5;
+      font-family: 'Segoe UI', sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+    }
+
+    .container {
+      background: #222;
+      padding: 2rem;
+      border-radius: 12px;
+      box-shadow: 0 0 25px rgba(255, 0, 0, 0.3);
+      width: 90%;
+      max-width: 500px;
+      text-align: center;
+    }
+
+    h1 {
+      color: #ff4d4d;
+      font-size: 2rem;
+    }
+
+    p {
+      margin: 1rem 0;
+      font-size: 1rem;
+      line-height: 1.6;
+    }
+
+    input[type="text"] {
+      width: 100%;
+      padding: 0.75rem;
+      margin-top: 1rem;
+      border: 1px solid #ff4d4d;
+      border-radius: 8px;
+      background: #1a1a1a;
+      color: #f5f5f5;
+    }
+
+    button {
+      margin-top: 1.5rem;
+      background: #ff4d4d;
+      color: white;
+      padding: 0.75rem 1.5rem;
+      border: none;
+      border-radius: 8px;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: 0.2s ease;
+    }
+
+    button:hover {
+      background: #ff1a1a;
+    }
+
+    .status {
+      margin-top: 1.2rem;
+      font-weight: bold;
+      color: #ffb3b3;
+      word-break: break-word;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Delete Account</h1>
+    <p>This action is <strong>final</strong> — all your data will be gone forever 🪦</p>
+    <p>To confirm, type exactly:</p>
+    <p><code>"Yes, I want to delete my account"</code></p>
+
+    <input type="text" id="confirmation" placeholder="Type here exactly..." />
+    <button onclick="deleteAccount()">Delete My Account</button>
+
+    <div class="status" id="status"></div>
+  </div>
+
+  <script>
+    async function deleteAccount() {
+      const confirmationText = document.getElementById('confirmation').value;
+      const status = document.getElementById('status');
+      status.textContent = '☠️ Sending request...';
+
+      try {
+        const response = await fetch("https://sky.leapcell.app/me/delete", {
+          method: "DELETE",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          credentials: "include", // ✅ Include cookies even across origins
+          body: JSON.stringify({ confirmation: confirmationText }),
+        });
+
+        const data = await response.json();
+
+        if (!response.ok) {
+          status.textContent = `❌ ${data.error || 'Something went wrong.'}`;
+          return;
+        }
+
+        status.textContent = "✅ Account successfully deleted. Redirecting...";
+        setTimeout(() => {
+          window.location.href = "/goodbye"; // maybe a goodbye page or homepage
+        }, 2000);
+      } catch (err) {
+        status.textContent = "🔥 Server error. Please try again later.";
+        console.error(err);
+      }
+    }
+  </script>
+</body>
+</html>
