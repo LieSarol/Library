@@ -8,7 +8,7 @@
   <!-- Tailwind CSS -->
   <script src="https://cdn.tailwindcss.com"></script>
 
-  <!-- Font Awesome from Cloudflare CDN (no account needed) -->
+  <!-- Font Awesome -->
   <link
     rel="stylesheet"
     href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
@@ -33,43 +33,35 @@
     <h1 class="text-4xl sm:text-5xl font-bold mb-4 text-center">📚 Unlock Premium Tutorials</h1>
     <p class="text-center text-gray-400 mb-10 text-lg">Choose your path to glow-up: 📈</p>
 
-    <div class="grid md:grid-cols-2 gap-6 max-w-4xl w-full">
-      
-      <!-- Referral Plan -->
-      <div class="bg-[#1e293b] shadow-xl rounded-2xl p-6 border border-[#334155] hover:scale-[1.02] transition">
-        <h2 class="text-2xl font-semibold mb-2 text-white">🆓 Referral Plan</h2>
-        <p class="text-3xl font-bold text-green-400 mb-4">₱0 / month</p>
-        <ul class="mb-6 space-y-2 text-gray-300">
-          <li>✅ Access Premium Tutorials</li>
-          <li>✅ No time limit</li>
-          <li>✅ Invite just 3 friends</li>
-          <li>😎 Flex it, you earned it</li>
-        </ul>
-        <a href="/referral" class="block w-full text-center bg-purple-600 text-white py-2 rounded-lg hover:bg-purple-700 transition">
-          Invite Friends
-        </a>
-      </div>
-
-      <!-- Premium Plan -->
-      <div class="bg-[#1e293b] shadow-xl rounded-2xl p-6 border border-[#334155] hover:scale-[1.02] transition">
-        <h2 class="text-2xl font-semibold mb-2 text-white">💎 Premium Plan</h2>
-        <p class="text-3xl font-bold text-purple-400 mb-4">$2.00 / month</p>
-        <ul class="mb-6 space-y-2 text-gray-300">
-          <li>✅ Instant Access to Tutorials</li>
-          <li>✅ Supports the Platform</li>
-          <li>✨ Exclusive future features</li>
-          <li>🥂 No waiting, just learning</li>
-        </ul>
-        <a href="https://payhip.com/b/n9YeM" class="block w-full text-center bg-purple-600 text-white py-2 rounded-lg hover:bg-purple-700 transition">
-          Subscribe Now
-        </a>
-      </div>
-      
+    <!-- Free Tier Notice -->
+    <div class="bg-[#1e293b] border border-[#334155] rounded-xl p-4 text-center max-w-md w-full mb-8">
+      <p class="text-lg font-semibold text-green-400">You're currently on the <span class="text-white">Free Tier</span> 🎉</p>
+      <p class="text-sm text-gray-400 mt-1">Enjoy limited access to tutorials — upgrade anytime!</p>
     </div>
 
+    <!-- Premium Plan Only -->
+    <!-- Premium Plan Card (Styled like your new design) -->
+<div class="bg-[#1e293b] shadow-xl rounded-2xl p-6 border border-[#334155] hover:scale-[1.02] transition max-w-md w-full font-[Poppins,sans-serif]">
+  <h2 class="text-2xl font-semibold mb-2 text-white">💎 Premium Plan</h2>
+  <p class="text-3xl font-bold text-purple-400 mb-4">$2.00 / month</p>
+
+  <ul class="mb-6 space-y-3 text-gray-300 text-[15px] sm:text-base leading-relaxed">
+    <li>🔒 <span class="text-white font-medium">The best tutorials are locked.</span> Just like your potential 🙃</li>
+    <li>📈 <span class="text-white font-medium">Over 1,000 people watched them.</span> You? Still deciding if $2 is “too much” 😩</li>
+    <li>💀 <span class="text-white font-medium">Free tier is basically ✨character development✨</span> at this point</li>
+    <li>🧠 <span class="text-white font-medium">Learning is still free.</span> But *glowing up?* That’s premium, babe 💅</li>
+    <li>🌌 <span class="text-white font-medium">$2 won’t fix your life,</span> but it’s a cute start</li>
+  </ul>
+
+  <a href="https://payhip.com/b/n9YeM" class="block w-full text-center bg-purple-600 text-white py-3 rounded-lg hover:bg-purple-700 transition font-semibold">
+    Okay fine, take my $2 🙄
+  </a>
+</div>
+
     <p class="mt-10 text-sm text-gray-400 text-center italic">
-      Why do programmers prefer dark mode? — Because light attracts bugs 🐛💡
-    </p>
+  Why do programmers prefer dark mode? Because light attracts bugs 🐛💡<br/>
+  And if you're still on free tier... guess who's the bug? 👀
+</p>
   </div>
 
 </body>
