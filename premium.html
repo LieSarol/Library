@@ -23,10 +23,28 @@
         background-color: rgba(255, 255, 255, 0.05);
         border: 1px solid rgba(255, 255, 255, 0.1);
       }
+
+      /* 👇 FIXED HEIGHT + SCROLLABLE DROPDOWN */
+      #dropdownMenu {
+        max-height: 250px;
+        overflow-y: auto;
+      }
+
+      #dropdownMenu::-webkit-scrollbar {
+        width: 6px;
+      }
+
+      #dropdownMenu::-webkit-scrollbar-thumb {
+        background-color: rgba(59, 130, 246, 0.3); /* blue-500/30 */
+        border-radius: 4px;
+      }
+
+      #dropdownMenu::-webkit-scrollbar-track {
+        background: transparent;
+      }
     </style>
   </head>
   <body class="text-white px-6 py-12">
-
     <div class="max-w-4xl mx-auto space-y-12">
       <!-- Title -->
       <div class="text-center">
@@ -63,25 +81,25 @@
       const questionList = document.getElementById("questionList");
 
       const dropdownNiches = [
-  "Science",
-  "Mathematics",
-  "Philosophy",
-  "Psychology",
-  "Coding / Programming",
-  "Business & Entrepreneurship",
-  "Finance & Investing",
-  "Marketing",
-  "Artificial Intelligence",
-  "Health & Nutrition",
-  "Self-Improvement",
-  "Communication & Writing",
-  "Critical Thinking",
-  "Leadership",
-  "Emotional Intelligence"
-];
+        "Science",
+        "Mathematics",
+        "Philosophy",
+        "Psychology",
+        "Coding / Programming",
+        "Business & Entrepreneurship",
+        "Finance & Investing",
+        "Marketing",
+        "Artificial Intelligence",
+        "Health & Nutrition",
+        "Self-Improvement",
+        "Communication & Writing",
+        "Critical Thinking",
+        "Leadership",
+        "Emotional Intelligence"
+      ];
 
       // Populate dropdown
-      niches.forEach((niche) => {
+      dropdownNiches.forEach((niche) => {
         const li = document.createElement("li");
         li.textContent = niche;
         li.className =
@@ -105,29 +123,39 @@
       });
 
       async function fetchQuestions(niche) {
-        const url = `https://library-of-knowledge.vercel.app/flex/popular?niche=${niche}&limit=5`;
-        try {
-          const res = await fetch(url);
-          const data = await res.json();
+  const url = `https://library-of-knowledge.vercel.app/flex/popular?niche=${niche}&limit=5`;
+  try {
+    const res = await fetch(url);
+    const data = await res.json();
 
-          questionList.innerHTML = "";
+    questionList.innerHTML = "";
 
-          data.forEach((item) => {
-            const card = document.createElement("div");
-            card.className =
-              "glass p-5 rounded-xl shadow-md border border-blue-500/20 hover:border-blue-400/40 transition";
-            card.innerHTML = `
-              <div class="flex items-start gap-3">
-                <i class="fas fa-crown text-blue-400 mt-1"></i>
-                <div class="text-white font-medium leading-snug">${item.question}</div>
-              </div>
-            `;
-            questionList.appendChild(card);
-          });
-        } catch (err) {
-          questionList.innerHTML = `<p class="text-red-400">Error loading tutorials.</p>`;
+    data.forEach((item) => {
+      const card = document.createElement("div");
+      card.className =
+        "glass p-5 rounded-xl shadow-md border border-blue-500/20 hover:border-blue-400/40 transition cursor-pointer";
+
+      card.innerHTML = `
+        <div class="flex items-start gap-3">
+          <i class="fas fa-crown text-blue-400 mt-1"></i>
+          <div class="text-white font-medium leading-snug">${item.question}</div>
+        </div>
+      `;
+
+      // 🎯 Detect click and store xata_id
+      card.addEventListener("click", () => {
+        if (item.xata_id) {
+          sessionStorage.setItem("selectedXataId", item.xata_id);
         }
-      }
+        window.location.href = "/main5.html";
+      });
+
+      questionList.appendChild(card);
+    });
+  } catch (err) {
+    questionList.innerHTML = `<p class="text-red-400">Error loading tutorials.</p>`;
+  }
+          }
 
       // Load default niche
       fetchQuestions("life");
