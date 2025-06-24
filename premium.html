@@ -89,7 +89,7 @@
       });
 
       async function fetchQuestions(niche) {
-        const url = `https://library-of-knowledge.vercel.app/data/popular?niche=${niche}&limit=5`;
+        const url = `https://library-of-knowledge.vercel.app/flex/popular?niche=${niche}&limit=5`;
         try {
           const res = await fetch(url);
           const data = await res.json();
