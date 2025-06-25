@@ -44,69 +44,71 @@
   <div class="status" id="detailsMessage">Please hold on, we're poking the backend 😶‍🌫️</div>
 
   <script>
-    const statusEl = document.getElementById("statusMessage");
-    const detailsEl = document.getElementById("detailsMessage");
+  const statusEl = document.getElementById("statusMessage");
+  const detailsEl = document.getElementById("detailsMessage");
 
-    let tries = 0;
-    const maxTries = 10; // Try for 20 seconds (1 try every 2s)
+  let tries = 0;
+  const maxTries = 10; // Try for 20 seconds (1 try every 2s)
 
-    async function verifyPortal() {
-      try {
-        const res = await fetch("https://sky.leapcell.app/portal/update", {
-          method: "PUT",
-          credentials: "include",
-          headers: {
-            "Content-Type": "application/json"
-          }
-        });
-
-        const logStatus = `[${new Date().toLocaleTimeString()}] HTTP ${res.status}`;
-
-        if (res.ok) {
-          const data = await res.json();
-          console.log(`${logStatus} ✅`, data);
-
-          statusEl.className = "message success";
-          statusEl.textContent = "✅ You're now verified!";
-          detailsEl.textContent = data.message || "You're cleared to go 🚀";
-        } else {
-          const errorData = await res.json();
-          console.warn(`${logStatus} ❌`, errorData);
-
-          statusEl.className = "message error";
-          statusEl.textContent = "❌ Verification failed";
-          detailsEl.textContent = errorData.error || "Something went wrong. Maybe too soon?";
-          
-          retry(); // Try again
+  async function verifyPortal() {
+    try {
+      const res = await fetch("https://sky.leapcell.app/portal/update", {
+        method: "PUT",
+        credentials: "include",
+        headers: {
+          "Content-Type": "application/json"
         }
+      });
 
-      } catch (err) {
-        console.error(`[${new Date().toLocaleTimeString()}] 💥 Network error:`, err);
+      const logStatus = `[${new Date().toLocaleTimeString()}] HTTP ${res.status}`;
 
-        statusEl.className = "message error";
-        statusEl.textContent = "🔥 Server exploded (probably)";
-        detailsEl.textContent = "Try again later or poke the dev 👀";
+      if (res.ok) {
+        const data = await res.json();
+        console.log(`${logStatus} ✅`, data);
 
-        retry(); // Still retry even on network error
-      }
-    }
-
-    function retry() {
-      tries++;
-      if (tries < maxTries) {
-        statusEl.className = "message loading";
-        statusEl.textContent = `🔁 Retrying... (${tries}/${maxTries})`;
-        detailsEl.textContent = "We're still checking if the portal is open 🕵️‍♂️";
-
-        setTimeout(verifyPortal, 2000); // try again in 2s
+        statusEl.className = "message success";
+        statusEl.textContent = "✅ You're now verified!";
+        detailsEl.textContent = data.message || "You're cleared to go 🚀";
       } else {
-        statusEl.className = "message error";
-        statusEl.textContent = "⏱️ Timed out!";
-        detailsEl.textContent = "The portal didn’t open in time. Try again later!";
-      }
-    }
+        const errorData = await res.json();
+        console.warn(`${logStatus} ❌`, errorData);
 
-    window.addEventListener("DOMContentLoaded", verifyPortal);
-  </script>
+        statusEl.className = "message error";
+        statusEl.textContent = "❌ Verification failed";
+        detailsEl.textContent = errorData.error || "Something went wrong. Maybe too soon?";
+        
+        retry(); // Try again
+      }
+
+    } catch (err) {
+      console.error(`[${new Date().toLocaleTimeString()}] 💥 Network error:`, err);
+
+      statusEl.className = "message error";
+      statusEl.textContent = "🔥 Server exploded (probably)";
+      detailsEl.textContent = "Try again later or poke the dev 👀";
+
+      retry(); // Still retry even on network error
+    }
+  }
+
+  function retry() {
+    tries++;
+    if (tries < maxTries) {
+      statusEl.className = "message loading";
+      statusEl.textContent = `🔁 Retrying... (${tries}/${maxTries})`;
+      detailsEl.textContent = "We're still checking if the portal is open 🕵️‍♂️";
+
+      setTimeout(verifyPortal, 2000); // try again in 2s
+    } else {
+      statusEl.className = "message error";
+      statusEl.textContent = "⏱️ Timed out!";
+      detailsEl.textContent = "The portal didn’t open in time. Try again later!";
+    }
+  }
+
+  window.addEventListener("DOMContentLoaded", () => {
+    setTimeout(verifyPortal, 6000); // Delay verification by 6 seconds
+  });
+      </script>
 </body>
 </html>
