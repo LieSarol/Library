@@ -63,10 +63,10 @@
 
       <div class="col-span-2">
         <div class="flex justify-between items-center">
-          <span class="text-muted">Crush:</span>
-          <span id="crush_name" class="text-right">—</span>
+          <span class="text-muted">Fav Topic:</span>
+          <span id="fav_topic" class="text-right">—</span>
         </div>
-        <button onclick="editText('crush_name', 50)" class="text-xs text-muted hover:text-primary float-right -mt-1"><i class="fas fa-pen"></i></button>
+        <button onclick="editText('fav_topic', 50)" class="text-xs text-muted hover:text-primary float-right -mt-1"><i class="fas fa-pen"></i></button>
       </div>
     </div>
 
@@ -88,7 +88,7 @@
   </div>
 
   <script>
-    const fields = ["username", "bio", "gender", "love_status", "crush_name"];
+    const fields = ["username", "bio", "gender", "love_status", "fav_topic"];
     const cache = {};
 
     async function loadProfile() {
