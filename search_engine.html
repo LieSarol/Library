@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Nexix Search ✨</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Inter', sans-serif;
+      background: linear-gradient(to bottom right, #0d0d0d, #1c1c1f);
+      color: #fff;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+* {
+  box-sizing: border-box;
+}
+
+html, body {
+  overflow-x: hidden;
+}
+
+    header {
+      padding: 2rem 1rem;
+      text-align: center;
+      background: #1e1e22;
+      border-bottom: 1px solid #333;
+    }
+
+    h1 {
+      font-size: 2rem;
+      margin-bottom: 1rem;
+    }
+
+    input[type="text"] {
+      width: 100%;
+      max-width: 600px;
+      padding: 14px;
+      font-size: 1rem;
+      border-radius: 10px;
+      border: none;
+      outline: none;
+      background: #222;
+      color: #fff;
+      box-shadow: 0 0 10px #0077ff88;
+      transition: box-shadow 0.3s ease;
+    }
+
+    input[type="text"]:focus {
+      box-shadow: 0 0 15px #00aaffaa;
+    }
+
+    .tabs {
+      margin-top: 1rem;
+      display: flex;
+      justify-content: center;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+
+    .tabs button {
+      padding: 10px 20px;
+      border: none;
+      border-radius: 6px;
+      background: #333;
+      color: #fff;
+      cursor: pointer;
+      transition: transform 0.2s ease, background 0.3s ease;
+    }
+
+    .tabs button:hover {
+      background: #444;
+      transform: scale(1.05);
+    }
+
+    .tabs button.active {
+      background: #0077ff;
+    }
+
+    #results {
+      flex: 1;
+      padding: 2rem 1rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+      max-width: 900px;
+      margin: 0 auto;
+      width: 100%;
+    }
+
+    .web-result {
+      background: #1a1a1d;
+      padding: 1rem;
+      border-radius: 10px;
+      border: 1px solid #333;
+      transition: transform 0.3s ease;
+    }
+
+    .web-result:hover {
+      transform: translateY(-2px);
+      border-color: #555;
+    }
+
+    .web-result h3 {
+      margin: 0 0 0.5rem;
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      font-size: 1.1rem;
+      flex-wrap: wrap;
+    }
+
+    .web-result h3 img {
+      width: 18px;
+      height: 18px;
+      border-radius: 3px;
+    }
+
+    .web-result h3 a {
+      color: #00aaff;
+      text-decoration: none;
+      word-break: break-word;
+    }
+
+    .web-result p {
+      color: #ccc;
+      margin: 0.5rem 0 0;
+    }
+
+    .web-result small {
+      color: #888;
+      font-size: 0.8rem;
+    }
+
+    .images-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+      gap: 1rem;
+    }
+
+    .images-grid img {
+      width: 100%;
+      height: 120px;
+      object-fit: cover;
+      border-radius: 8px;
+      border: 1px solid #444;
+    }
+
+    @media (max-width: 200px) {
+      h1 {
+        font-size: 1.6rem;
+      }
+
+      input[type="text"] {
+        font-size: 0.95rem;
+        padding: 12px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>✨ Nexix Search ✨</h1>
+    <input id="searchInput" type="text" placeholder="Type something cute...">
+    <div class="tabs">
+      <button id="webTab" class="active">🔍 Web</button>
+      <button id="imgTab">🖼 Images</button>
+    </div>
+  </header>
+
+  <div id="results"></div>
+
+  <script>
+    const searchInput = document.getElementById("searchInput");
+    const resultsDiv = document.getElementById("results");
+    const webTab = document.getElementById("webTab");
+    const imgTab = document.getElementById("imgTab");
+
+    let mode = "web"; // default
+
+    webTab.onclick = () => {
+      mode = "web";
+      webTab.classList.add("active");
+      imgTab.classList.remove("active");
+      doSearch();
+    };
+
+    imgTab.onclick = () => {
+      mode = "img";
+      imgTab.classList.add("active");
+      webTab.classList.remove("active");
+      doSearch();
+    };
+
+    searchInput.addEventListener("keypress", e => {
+      if (e.key === "Enter") {
+        doSearch();
+      }
+    });
+
+    async function doSearch() {
+      const q = encodeURIComponent(searchInput.value.trim());
+      if (!q) return;
+
+      resultsDiv.innerHTML = "<p>✨ Loading cuteness... ✨</p>";
+
+      if (mode === "web") {
+        const res = await fetch(`https://crawler10.zeabur.app/crawl?query=${q}`);
+        const data = await res.json();
+
+        resultsDiv.innerHTML = "";
+        data.forEach(site => {
+          const domain = new URL(site.url).hostname.replace('www.', '');
+
+          const item = document.createElement("div");
+          item.className = "web-result";
+          item.innerHTML = `
+            <h3>
+              <img src="${site.brandIcon}" alt="icon"
+                onerror="this.onerror=null; this.src='https://www.google.com/s2/favicons?domain=${domain}&sz=16'" />
+              <a href="${site.url}" target="_blank">${site.title}</a>
+              <small>${domain}</small>
+            </h3>
+            <p>${site.description}</p>
+          `;
+          resultsDiv.appendChild(item);
+        });
+      } else {
+        const res = await fetch(`https://crawler10.onrender.com/images?query=${q}`);
+        const urls = await res.json();
+
+        resultsDiv.innerHTML = '<div class="images-grid"></div>';
+        const grid = resultsDiv.querySelector(".images-grid");
+        urls.forEach(url => {
+          const img = document.createElement("img");
+          img.src = url;
+          grid.appendChild(img);
+        });
+      }
+    }
+  </script>
+</body>
+</html>
