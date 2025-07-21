@@ -235,10 +235,10 @@ html, body {
         resultsDiv.innerHTML = '<div class="images-grid"></div>';
         const grid = resultsDiv.querySelector(".images-grid");
         urls.forEach(url => {
-          const img = document.createElement("img");
-          img.src = url;
-          grid.appendChild(img);
-        });
+  const img = document.createElement("img");
+  img.src = url.image; // 👈 boom. THIS was the issue!
+  grid.appendChild(img);
+});
       }
     }
   </script>
