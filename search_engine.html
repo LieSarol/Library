@@ -236,7 +236,7 @@ html, body {
         const grid = resultsDiv.querySelector(".images-grid");
         urls.forEach(item => {
   const img = document.createElement("img");
-  img.src = item.image;
+  img.src = item.thumbnail || item.image;
   img.alt = item.title || "Image result";
   img.title = item.title || "";
   img.loading = "lazy";
