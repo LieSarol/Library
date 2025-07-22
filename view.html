@@ -83,17 +83,28 @@
     }
 
     function goBack() {
-      window.history.back(); // Or set a fixed page like: location.href = 'search.html';
+      window.history.back();
     }
 
-    function downloadImage() {
+    async function downloadImage() {
       if (!imageURL) return;
-      const a = document.createElement("a");
-      a.href = imageURL;
-      a.download = imageURL.split("/").pop(); // Use the filename from URL
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
+
+      try {
+        const response = await fetch(imageURL, { mode: 'cors' });
+        const blob = await response.blob();
+        const blobURL = URL.createObjectURL(blob);
+
+        const a = document.createElement("a");
+        a.href = blobURL;
+        a.download = imageURL.split("/").pop(); // grab the filename
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(blobURL);
+      } catch (err) {
+        alert("😔 Failed to download image. Maybe CORS is blocking it.");
+        console.error(err);
+      }
     }
   </script>
 </body>
