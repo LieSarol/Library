@@ -234,9 +234,19 @@ html, body {
 
         resultsDiv.innerHTML = '<div class="images-grid"></div>';
         const grid = resultsDiv.querySelector(".images-grid");
-        urls.forEach(url => {
+        urls.forEach(item => {
   const img = document.createElement("img");
-  img.src = url.image; // 👈 boom. THIS was the issue!
+  img.src = item.image;
+  img.alt = item.title || "Image result";
+  img.title = item.title || "";
+  img.loading = "lazy";
+
+  // 👇 Add click listener to save cookie + redirect
+  img.addEventListener("click", () => {
+    document.cookie = `viewImage=${encodeURIComponent(item.image)}; path=/; max-age=86400`; // 1 day
+    window.location.href = "view.html";
+  });
+
   grid.appendChild(img);
 });
       }
