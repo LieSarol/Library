@@ -3,23 +3,31 @@
 <head>
   <meta charset="UTF-8" />
   <title>🖼 View Image</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
   <style>
+    * {
+      box-sizing: border-box;
+    }
+
     body {
       margin: 0;
       background: #111;
-      height: 100vh;
       font-family: 'Inter', sans-serif;
       color: white;
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
     }
 
     .top-bar {
-      position: absolute;
+      position: fixed;
       top: 16px;
       left: 16px;
       display: flex;
       align-items: center;
       gap: 12px;
+      z-index: 10;
     }
 
     .back-btn {
@@ -29,30 +37,40 @@
     }
 
     .download-btn {
-      position: absolute;
+      position: fixed;
       top: 16px;
       right: 16px;
       background-color: #222;
       color: white;
       border: 1px solid #555;
-      padding: 6px 12px;
-      border-radius: 6px;
-      font-size: 14px;
+      padding: 8px 14px;
+      border-radius: 8px;
+      font-size: 15px;
       cursor: pointer;
+      z-index: 10;
     }
 
     .image-container {
+      flex: 1;
       display: flex;
       justify-content: center;
       align-items: center;
-      height: 100vh;
+      padding: 16px;
     }
 
     img {
-      max-width: 90%;
+      max-width: 100%;
       max-height: 90vh;
       border-radius: 12px;
       box-shadow: 0 0 20px #00aaff88;
+      width: auto;
+      height: auto;
+    }
+
+    .fallback-message {
+      color: #aaa;
+      font-size: 18px;
+      text-align: center;
     }
   </style>
 </head>
@@ -79,7 +97,8 @@
       img.id = "main-image";
       document.getElementById("image-container").appendChild(img);
     } else {
-      document.getElementById("image-container").innerHTML = "<p>No image found 🫠</p>";
+      document.getElementById("image-container").innerHTML =
+        "<p class='fallback-message'>No image found 🫠</p>";
     }
 
     function goBack() {
@@ -89,22 +108,30 @@
     async function downloadImage() {
       if (!imageURL) return;
 
+      let blob;
+
       try {
         const response = await fetch(imageURL, { mode: 'cors' });
-        const blob = await response.blob();
-        const blobURL = URL.createObjectURL(blob);
-
-        const a = document.createElement("a");
-        a.href = blobURL;
-        a.download = imageURL.split("/").pop(); // grab the filename
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
-        URL.revokeObjectURL(blobURL);
-      } catch (err) {
-        alert("😔 Failed to download image. Maybe CORS is blocking it.");
-        console.error(err);
+        if (!response.ok) throw new Error();
+        blob = await response.blob();
+      } catch (_) {
+        try {
+          const proxyResponse = await fetch(`https://search-proxy-d5n4.onrender.com/proxy?url=${encodeURIComponent(imageURL)}`);
+          if (!proxyResponse.ok) throw new Error();
+          blob = await proxyResponse.blob();
+        } catch (_) {
+          return; // Fail silently
+        }
       }
+
+      const blobURL = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = blobURL;
+      a.download = imageURL.split("/").pop();
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(blobURL);
     }
   </script>
 </body>
