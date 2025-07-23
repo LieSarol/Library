@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Cookie Editor 🍪</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      background: #fff8f0;
+      padding: 20px;
+    }
+    h1 {
+      color: #ff7b00;
+    }
+    .cookie {
+      background: #ffe4c4;
+      padding: 10px;
+      margin-bottom: 10px;
+      border-radius: 10px;
+    }
+    label {
+      display: block;
+      margin: 5px 0;
+    }
+    input {
+      width: 100%;
+      padding: 4px;
+    }
+    button {
+      margin-top: 5px;
+      padding: 6px 10px;
+      background: #ff7b00;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    button:hover {
+      background: #cc6200;
+    }
+  </style>
+</head>
+<body>
+  <h1>🍪 Cookie Editor</h1>
+
+  <div id="cookie-list"></div>
+
+  <h2>Add / Modify Cookie</h2>
+  <form id="cookie-form">
+    <label>Cookie Name: <input type="text" id="cookie-name" required></label>
+    <label>Cookie Value: <input type="text" id="cookie-value" required></label>
+    <label>Expires (optional): 
+      <input type="datetime-local" id="cookie-expiry">
+    </label>
+    <button type="submit">Save Cookie</button>
+  </form>
+
+  <script>
+    function parseCookies() {
+      const cookies = document.cookie.split('; ').filter(Boolean);
+      const cookieList = document.getElementById('cookie-list');
+      cookieList.innerHTML = '';
+
+      cookies.forEach((cookie) => {
+        const [name, ...valParts] = cookie.split('=');
+        const value = decodeURIComponent(valParts.join('='));
+
+        const div = document.createElement('div');
+        div.className = 'cookie';
+        div.innerHTML = `
+          <strong>${name}</strong><br>
+          Value: ${value}<br>
+          Expiry: <em>Cannot read (JavaScript can't access cookie expiration directly)</em><br>
+          <button onclick="deleteCookie('${name}')">Delete</button>
+        `;
+        cookieList.appendChild(div);
+      });
+    }
+
+    function deleteCookie(name) {
+      document.cookie = name + '=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
+      parseCookies();
+    }
+
+    function setCookie(name, value, expiry) {
+      let cookieStr = `${encodeURIComponent(name)}=${encodeURIComponent(value)}; path=/;`;
+      if (expiry) {
+        cookieStr += ` expires=${new Date(expiry).toUTCString()};`;
+      }
+      document.cookie = cookieStr;
+    }
+
+    document.getElementById('cookie-form').addEventListener('submit', function (e) {
+      e.preventDefault();
+      const name = document.getElementById('cookie-name').value;
+      const value = document.getElementById('cookie-value').value;
+      const expiry = document.getElementById('cookie-expiry').value;
+
+      setCookie(name, value, expiry);
+      parseCookies();
+      e.target.reset();
+    });
+
+    parseCookies();
+  </script>
+</body>
+</html>
