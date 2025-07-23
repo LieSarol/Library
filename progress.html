@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>My Starry Progress 🌌</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Quicksand:wght@500&family=Unbounded:wght@500&display=swap');
+
+    body {
+      margin: 0;
+      font-family: 'Unbounded', 'Quicksand', sans-serif;
+      background: radial-gradient(ellipse at bottom, #0b1d36 0%, #000000 100%);
+      height: 100vh;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      color: #fff;
+    }
+
+    /* ✨ Star animations */
+    .star {
+      position: absolute;
+      background: white;
+      border-radius: 50%;
+      opacity: 0.8;
+      animation: twinkle 2s infinite ease-in-out alternate;
+    }
+
+    @keyframes twinkle {
+      0% { opacity: 0.2; transform: scale(1); }
+      100% { opacity: 1; transform: scale(1.3); }
+    }
+
+    /* 🌌 Star generator */
+    canvas {
+      position: absolute;
+      top: 0;
+      left: 0;
+      z-index: 0;
+    }
+
+    .card {
+      position: relative;
+      z-index: 1;
+      background: rgba(255, 255, 255, 0.07);
+      backdrop-filter: blur(10px);
+      border-radius: 20px;
+      padding: 2rem;
+      max-width: 400px;
+      text-align: center;
+      border: 2px solid rgba(255, 255, 255, 0.1);
+      box-shadow: 0 0 25px rgba(0, 0, 50, 0.4);
+    }
+
+    img {
+      border-radius: 50%;
+      border: 5px solid #6fc5ff;
+      box-shadow: 0 0 15px #6fc5ff;
+      width: 100px;
+      height: 100px;
+      margin-bottom: 1rem;
+      background: white;
+    }
+
+    .day {
+      font-size: 2rem;
+      font-weight: bold;
+      margin-bottom: 0.5rem;
+      color: #d3efff;
+    }
+
+    .bar {
+      background: #203040;
+      border-radius: 30px;
+      overflow: hidden;
+      height: 14px;
+      margin: 1rem 0;
+    }
+
+    .bar-inner {
+      height: 100%;
+      background: linear-gradient(to right, #50aaff, #2f80ed);
+      width: 0%;
+      transition: width 0.8s ease-in-out;
+    }
+
+    .quote {
+      font-style: italic;
+      margin-top: 1.2rem;
+      color: #a2d0ff;
+    }
+
+    button {
+      margin-top: 1.5rem;
+      padding: 0.7rem 1.5rem;
+      border: none;
+      border-radius: 25px;
+      background: #4d94ff;
+      color: #fff;
+      font-weight: bold;
+      cursor: pointer;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+    }
+
+    button:hover {
+      background: #347cff;
+    }
+  </style>
+</head>
+<body>
+  <canvas id="stars"></canvas>
+
+  <div class="card">
+    <img id="avatar" src="" />
+    <div class="day" id="progressText">Loading...</div>
+    <div class="bar">
+      <div class="bar-inner" id="progressBar"></div>
+    </div>
+    <button onclick="resetCountdown()">🔁 Reset Progress</button>
+    <div class="quote" id="quote"></div>
+  </div>
+
+  <script>
+    // 🌠 Star generator on canvas
+    const canvas = document.getElementById("stars");
+    const ctx = canvas.getContext("2d");
+
+    function resizeCanvas() {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    }
+
+    window.addEventListener("resize", resizeCanvas);
+    resizeCanvas();
+
+    const numStars = 150;
+    const stars = [];
+
+    for (let i = 0; i < numStars; i++) {
+      stars.push({
+        x: Math.random() * canvas.width,
+        y: Math.random() * canvas.height,
+        radius: Math.random() * 1.5,
+        alpha: Math.random(),
+        delta: Math.random() * 0.02
+      });
+    }
+
+    function drawStars() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      for (let star of stars) {
+        ctx.beginPath();
+        ctx.arc(star.x, star.y, star.radius, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(255, 255, 255, ${star.alpha})`;
+        ctx.fill();
+        star.alpha += star.delta;
+        if (star.alpha <= 0 || star.alpha >= 1) star.delta = -star.delta;
+      }
+      requestAnimationFrame(drawStars);
+    }
+
+    drawStars();
+  </script>
+
+  <script>
+    const COOKIE_NAME = "repentStart";
+    const YEAR_DAYS = 365;
+    const quotes = [
+      "“Even the darkest nights will end and the sun will rise.”",
+      "“You're not starting over, you're starting stronger.”",
+      "“The stars don't apologize for shining. Keep going.”",
+      "“This moment is sacred. You are growing.”",
+      "“The sky is full of stars, just like your progress.”"
+    ];
+
+    function setCookie(name, value, days) {
+      const d = new Date();
+      d.setTime(d.getTime() + (days * 24 * 60 * 60 * 1000));
+      document.cookie = `${name}=${value};expires=${d.toUTCString()};path=/`;
+    }
+
+    function getCookie(name) {
+      const value = `; ${document.cookie}`;
+      const parts = value.split(`; ${name}=`);
+      if (parts.length === 2) return parts.pop().split(';').shift();
+    }
+
+    function calculateDays(start) {
+      const startDate = new Date(start);
+      const today = new Date();
+      const diff = Math.floor((today - startDate) / (1000 * 60 * 60 * 24));
+      return diff;
+    }
+
+    function loadTracker() {
+      let startDate = getCookie(COOKIE_NAME);
+      if (!startDate) {
+        startDate = new Date().toISOString();
+        setCookie(COOKIE_NAME, startDate, 365);
+      }
+
+      const day = calculateDays(startDate);
+      const remaining = YEAR_DAYS - day;
+      const progress = Math.min(100, (day / YEAR_DAYS) * 100).toFixed(1);
+
+      document.getElementById("progressText").textContent =
+        `🌙 Day ${day} of ${YEAR_DAYS} — ${remaining} days left`;
+
+      document.getElementById("progressBar").style.width = `${progress}%`;
+
+      const seed = "StarDreamer"; // can be anything
+      document.getElementById("avatar").src =
+        `https://api.dicebear.com/7.x/icons/svg?seed=8`;
+
+      document.getElementById("quote").textContent =
+        quotes[Math.floor(Math.random() * quotes.length)];
+    }
+
+    function resetCountdown() {
+      if (confirm("Reset your journey under the stars? 🌠")) {
+        const now = new Date().toISOString();
+        setCookie(COOKIE_NAME, now, 365);
+        loadTracker();
+      }
+    }
+
+    loadTracker();
+  </script>
+</body>
+</html>
