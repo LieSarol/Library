@@ -2,69 +2,83 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Notification Debug Logs</title>
+  <title>Real-Time Notification Logs</title>
   <style>
     body {
-      font-family: sans-serif;
+      font-family: monospace;
       padding: 20px;
     }
     pre {
-      background: #111;
+      background-color: #111;
       color: #0f0;
-      padding: 10px;
+      padding: 15px;
       border-radius: 8px;
-      overflow-x: auto;
-      max-height: 300px;
+      max-height: 400px;
+      overflow-y: auto;
     }
   </style>
 </head>
 <body>
-  <h1>🔔 Notification Debug</h1>
-  <p>If notifications are supported and permission is granted, you’ll get one on every load!</p>
+  <h2>🔬 Notification Logs</h2>
+  <p>This logs **everything**, no secrets.</p>
   <pre id="log">[Logs will appear here]</pre>
 
   <script>
     const logEl = document.getElementById("log");
-    function log(msg) {
-      console.log(msg); // still logs to console too
-      logEl.textContent += msg + "\n";
+
+    function log(message) {
+      console.log(message); // log to dev console
+      logEl.textContent += message + "\n";
+      logEl.scrollTop = logEl.scrollHeight; // auto scroll
     }
 
     document.addEventListener("DOMContentLoaded", () => {
-      log("🌐 Page loaded");
+      log("🌐 DOM loaded");
 
       if (!("Notification" in window)) {
-        log("❌ This browser doesn't support notifications.");
+        log("❌ Browser doesn't support notifications.");
         return;
       }
 
-      log("✅ Notifications are supported.");
+      log("✅ Notifications supported.");
 
       if (Notification.permission === "granted") {
         log("🔓 Permission already granted.");
-        sendNotification();
+        showNotification();
       } else if (Notification.permission === "denied") {
-        log("🔒 Permission previously denied. Cannot show notifications.");
+        log("🚫 Notifications denied. No soup for you.");
       } else {
-        log("❔ Asking for permission...");
-        Notification.requestPermission().then((permission) => {
-          log("📜 User selected: " + permission);
-          if (permission === "granted") {
-            sendNotification();
+        log("❔ Requesting permission...");
+        Notification.requestPermission().then((perm) => {
+          log("📜 User said: " + perm);
+          if (perm === "granted") {
+            showNotification();
           } else {
-            log("⚠️ Notification not allowed.");
+            log("⚠️ No notification will be shown.");
           }
         });
       }
-
-      function sendNotification() {
-        const notif = new Notification("👋 Hello again!", {
-          body: "You just opened or refreshed the page!",
-          icon: "https://emojiapi.dev/api/v1/waving-hand/64.png"
-        });
-        log("📢 Notification sent!");
-      }
     });
+
+    function showNotification() {
+      log("📤 Creating notification...");
+
+      try {
+        const notif = new Notification("🔔 Hey there!", {
+          body: "This was triggered on page load!",
+          icon: "https://emojiapi.dev/api/v1/bell/64.png"
+        });
+
+        log("✅ Notification created. Waiting for interaction...");
+
+        notif.onshow = () => log("📢 Notification was **shown**.");
+        notif.onclick = () => log("🖱️ User **clicked** the notification.");
+        notif.onclose = () => log("❌ Notification was **closed**.");
+        notif.onerror = (e) => log("🔥 Notification **error**: " + JSON.stringify(e));
+      } catch (err) {
+        log("💥 Error creating notification: " + err.message);
+      }
+    }
   </script>
 </body>
 </html>
