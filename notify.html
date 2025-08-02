@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Page Load Notification</title>
+</head>
+<body>
+  <h1>Welcome!</h1>
+  <p>This page will notify you every time you open or refresh it 😎</p>
+
+  <script>
+    document.addEventListener("DOMContentLoaded", function () {
+      // Check if browser supports it
+      if (!("Notification" in window)) {
+        alert("This browser doesn't support notifications 😢");
+        return;
+      }
+
+      // If permission already granted
+      if (Notification.permission === "granted") {
+        sendNotif();
+      }
+
+      // Ask for permission if not denied
+      else if (Notification.permission !== "denied") {
+        Notification.requestPermission().then((permission) => {
+          if (permission === "granted") {
+            sendNotif();
+          }
+        });
+      }
+
+      // Function to send the actual notification
+      function sendNotif() {
+        new Notification("👋 Hello again!", {
+          body: "You just opened or refreshed the page!",
+          icon: "https://emojiapi.dev/api/v1/waving-hand/64.png" // Just an optional cute icon
+        });
+      }
+    });
+  </script>
+</body>
+</html>
