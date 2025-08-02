@@ -2,40 +2,67 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Page Load Notification</title>
+  <title>Notification Debug Logs</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      padding: 20px;
+    }
+    pre {
+      background: #111;
+      color: #0f0;
+      padding: 10px;
+      border-radius: 8px;
+      overflow-x: auto;
+      max-height: 300px;
+    }
+  </style>
 </head>
 <body>
-  <h1>Welcome!</h1>
-  <p>This page will notify you every time you open or refresh it 😎</p>
+  <h1>🔔 Notification Debug</h1>
+  <p>If notifications are supported and permission is granted, you’ll get one on every load!</p>
+  <pre id="log">[Logs will appear here]</pre>
 
   <script>
-    document.addEventListener("DOMContentLoaded", function () {
-      // Check if browser supports it
+    const logEl = document.getElementById("log");
+    function log(msg) {
+      console.log(msg); // still logs to console too
+      logEl.textContent += msg + "\n";
+    }
+
+    document.addEventListener("DOMContentLoaded", () => {
+      log("🌐 Page loaded");
+
       if (!("Notification" in window)) {
-        alert("This browser doesn't support notifications 😢");
+        log("❌ This browser doesn't support notifications.");
         return;
       }
 
-      // If permission already granted
-      if (Notification.permission === "granted") {
-        sendNotif();
-      }
+      log("✅ Notifications are supported.");
 
-      // Ask for permission if not denied
-      else if (Notification.permission !== "denied") {
+      if (Notification.permission === "granted") {
+        log("🔓 Permission already granted.");
+        sendNotification();
+      } else if (Notification.permission === "denied") {
+        log("🔒 Permission previously denied. Cannot show notifications.");
+      } else {
+        log("❔ Asking for permission...");
         Notification.requestPermission().then((permission) => {
+          log("📜 User selected: " + permission);
           if (permission === "granted") {
-            sendNotif();
+            sendNotification();
+          } else {
+            log("⚠️ Notification not allowed.");
           }
         });
       }
 
-      // Function to send the actual notification
-      function sendNotif() {
-        new Notification("👋 Hello again!", {
+      function sendNotification() {
+        const notif = new Notification("👋 Hello again!", {
           body: "You just opened or refreshed the page!",
-          icon: "https://emojiapi.dev/api/v1/waving-hand/64.png" // Just an optional cute icon
+          icon: "https://emojiapi.dev/api/v1/waving-hand/64.png"
         });
+        log("📢 Notification sent!");
       }
     });
   </script>
