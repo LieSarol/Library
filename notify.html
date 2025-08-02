@@ -2,83 +2,68 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Real-Time Notification Logs</title>
+  <title>Service Worker Notifications</title>
   <style>
-    body {
-      font-family: monospace;
-      padding: 20px;
-    }
+    body { font-family: monospace; padding: 20px; }
     pre {
-      background-color: #111;
-      color: #0f0;
-      padding: 15px;
-      border-radius: 8px;
-      max-height: 400px;
-      overflow-y: auto;
+      background: #111; color: #0f0; padding: 15px;
+      border-radius: 8px; max-height: 300px; overflow-y: auto;
     }
   </style>
 </head>
 <body>
-  <h2>🔬 Notification Logs</h2>
-  <p>This logs **everything**, no secrets.</p>
+  <h2>🛠️ SW Notification Logs</h2>
+  <p>Now using Service Worker 💪</p>
   <pre id="log">[Logs will appear here]</pre>
 
   <script>
     const logEl = document.getElementById("log");
-
-    function log(message) {
-      console.log(message); // log to dev console
-      logEl.textContent += message + "\n";
-      logEl.scrollTop = logEl.scrollHeight; // auto scroll
+    function log(msg) {
+      console.log(msg);
+      logEl.textContent += msg + "\n";
+      logEl.scrollTop = logEl.scrollHeight;
     }
 
-    document.addEventListener("DOMContentLoaded", () => {
+    document.addEventListener("DOMContentLoaded", async () => {
       log("🌐 DOM loaded");
 
-      if (!("Notification" in window)) {
-        log("❌ Browser doesn't support notifications.");
+      if (!("serviceWorker" in navigator)) {
+        log("❌ Service Workers not supported.");
         return;
       }
 
-      log("✅ Notifications supported.");
+      try {
+        const registration = await navigator.serviceWorker.register('sw.js');
+        log("🛡️ Service Worker registered.");
 
-      if (Notification.permission === "granted") {
-        log("🔓 Permission already granted.");
-        showNotification();
-      } else if (Notification.permission === "denied") {
-        log("🚫 Notifications denied. No soup for you.");
-      } else {
-        log("❔ Requesting permission...");
-        Notification.requestPermission().then((perm) => {
-          log("📜 User said: " + perm);
-          if (perm === "granted") {
-            showNotification();
+        if (Notification.permission === 'granted') {
+          log("🔓 Notification permission already granted.");
+          registration.showNotification("👋 Hello from SW!", {
+            body: "You just loaded the page!",
+            icon: "https://emojiapi.dev/api/v1/bell/64.png"
+          });
+          log("📢 Notification sent from SW.");
+        } else if (Notification.permission !== 'denied') {
+          const permission = await Notification.requestPermission();
+          log("📜 Permission response: " + permission);
+
+          if (permission === 'granted') {
+            registration.showNotification("✅ Thanks!", {
+              body: "Notifications are now enabled.",
+              icon: "https://emojiapi.dev/api/v1/check-mark/64.png"
+            });
+            log("📢 Notification sent after permission.");
           } else {
-            log("⚠️ No notification will be shown.");
+            log("🚫 Permission denied.");
           }
-        });
+        } else {
+          log("🚫 Notification previously denied.");
+        }
+
+      } catch (err) {
+        log("💥 SW Error: " + err.message);
       }
     });
-
-    function showNotification() {
-      log("📤 Creating notification...");
-
-      try {
-        const notif = new Notification("🔔 Hey there!", {
-          body: "This was triggered on page load!",
-          icon: "https://emojiapi.dev/api/v1/bell/64.png"
-        });
-
-        log("✅ Notification created. Waiting for interaction...");
-
-        notif.onshow = () => log("📢 Notification was **shown**.");
-        notif.onclick = () => log("🖱️ User **clicked** the notification.");
-        notif.onclose = () => log("❌ Notification was **closed**.");
-        notif.onerror = (e) => log("🔥 Notification **error**: " + JSON.stringify(e));
-      } catch (err) {
-        log("💥 Error creating notification: " + err.message);
-      }
-    }
   </script>
 </body>
 </html>
