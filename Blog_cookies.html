@@ -1,101 +1,130 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="scroll-smooth">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Blog Template Display</title>
+  
+  <!-- Tailwind CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Font Awesome CDN -->
+  <link
+    rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+  />
+  
   <style>
-    /* Reset some margin/padding */
-    * {
-      box-sizing: border-box;
+    /* Custom scrollbar for side menu */
+    .scrollbar-thin::-webkit-scrollbar {
+      width: 6px;
     }
-    body {
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      background: #f4f6f8;
-      margin: 0;
-      padding: 1rem;
-      display: flex;
-      justify-content: center;
-      min-height: 100vh;
-      color: #222;
+    .scrollbar-thin::-webkit-scrollbar-track {
+      background: transparent;
     }
-    #blog-container {
-      background: #fff;
-      max-width: 700px;
-      width: 100%;
-      padding: 2rem;
-      border-radius: 12px;
-      box-shadow: 0 8px 24px rgba(0,0,0,0.1);
-      display: flex;
-      flex-direction: column;
-      gap: 1.5rem;
-    }
-    img.cover-photo {
-      width: 100%;
-      height: 300px;
-      object-fit: cover;
-      border-radius: 12px;
-      box-shadow: 0 4px 14px rgba(0,0,0,0.1);
-      user-select: none;
-    }
-    h1#title {
-      margin: 0;
-      font-size: 2.5rem;
-      font-weight: 700;
-      color: #111;
-      text-align: center;
-    }
-    p.description {
-      font-style: italic;
-      font-size: 1.125rem;
-      color: #555;
-      text-align: center;
-      margin-top: -0.5rem;
-      line-height: 1.4;
-    }
-    div.content {
-      font-size: 1rem;
-      line-height: 1.7;
-      color: #333;
-      white-space: pre-wrap;
-      padding-top: 0.5rem;
-      border-top: 1px solid #eee;
-    }
-    .error {
-      color: #b00020;
-      font-weight: 700;
-      text-align: center;
-      margin-top: 2rem;
-      font-size: 1.25rem;
-    }
-    @media (max-width: 480px) {
-      #blog-container {
-        padding: 1rem;
-      }
-      h1#title {
-        font-size: 1.8rem;
-      }
-      p.description {
-        font-size: 1rem;
-      }
-      div.content {
-        font-size: 0.9rem;
-      }
+    .scrollbar-thin::-webkit-scrollbar-thumb {
+      background-color: #7c3aed; /* purple-700 */
+      border-radius: 10px;
     }
   </style>
 </head>
-<body>
+<body class="bg-white text-gray-900 dark:bg-gray-900 dark:text-gray-100 transition-colors duration-500 font-sans">
 
-  <div id="blog-container">
-    <h1 id="title">Loading...</h1>
-    <img id="cover-photo" class="cover-photo" src="" alt="Cover Photo" />
-    <p id="description" class="description"></p>
-    <div id="content" class="content"></div>
-  </div>
+  <!-- Navbar -->
+  <nav class="fixed top-0 left-0 right-0 bg-white dark:bg-gray-800 shadow-md z-50">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex justify-between items-center h-16">
+      
+      <div class="flex items-center space-x-3">
+        <button id="menu-btn" aria-label="Open menu" class="text-purple-700 dark:text-purple-400 focus:outline-none md:hidden">
+          <i class="fas fa-bars fa-lg"></i>
+        </button>
+        <a href="#" class="text-2xl font-bold text-purple-700 dark:text-purple-400 select-none">MyBlog</a>
+      </div>
 
-  <div id="error-message" class="error" style="display:none;"></div>
+      <ul class="hidden md:flex space-x-8 text-purple-700 dark:text-purple-400 font-semibold">
+        <li><a href="#" class="hover:text-purple-600 dark:hover:text-purple-300 transition">Home</a></li>
+        <li><a href="#" class="hover:text-purple-600 dark:hover:text-purple-300 transition">About</a></li>
+        <li><a href="#" class="hover:text-purple-600 dark:hover:text-purple-300 transition">Contact</a></li>
+      </ul>
+
+      <button id="dark-mode-toggle" aria-label="Toggle dark mode" class="text-purple-700 dark:text-purple-400 focus:outline-none ml-4">
+        <i class="fas fa-moon fa-lg"></i>
+      </button>
+    </div>
+  </nav>
+
+  <!-- Side Drawer Menu -->
+  <aside id="side-menu" class="fixed top-0 left-0 h-full w-64 bg-white dark:bg-gray-800 shadow-lg transform -translate-x-full transition-transform duration-300 ease-in-out scrollbar-thin overflow-y-auto z-40">
+    <div class="px-6 py-8 flex flex-col space-y-6">
+      <button id="menu-close-btn" aria-label="Close menu" class="self-end text-purple-700 dark:text-purple-400 focus:outline-none">
+        <i class="fas fa-times fa-lg"></i>
+      </button>
+      <a href="#" class="text-lg font-semibold text-purple-700 dark:text-purple-400 hover:text-purple-600 dark:hover:text-purple-300 transition">Home</a>
+      <a href="#" class="text-lg font-semibold text-purple-700 dark:text-purple-400 hover:text-purple-600 dark:hover:text-purple-300 transition">About</a>
+      <a href="#" class="text-lg font-semibold text-purple-700 dark:text-purple-400 hover:text-purple-600 dark:hover:text-purple-300 transition">Contact</a>
+    </div>
+  </aside>
+
+  <!-- Page content wrapper -->
+  <main class="pt-20 max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
+
+    <article class="bg-white dark:bg-gray-900 rounded-lg shadow-lg overflow-hidden transition-colors duration-500">
+      <img id="cover-photo" alt="Cover photo" class="w-full h-72 object-cover select-none" />
+      <div class="p-6">
+        <h1 id="title" class="text-4xl font-extrabold text-purple-700 dark:text-purple-400 mb-3">Loading...</h1>
+        <p id="description" class="italic text-lg text-purple-600 dark:text-purple-300 mb-5"></p>
+        <div id="content" class="prose prose-purple prose-lg dark:prose-invert max-w-none"></div>
+      </div>
+    </article>
+
+    <div id="error-message" class="text-red-600 dark:text-red-400 font-semibold text-center mt-10 hidden"></div>
+    
+  </main>
+
+  <!-- Footer -->
+  <footer class="mt-16 py-8 bg-purple-700 dark:bg-purple-900 text-purple-100 text-center select-none">
+    <p class="mb-3">&copy; 2025 MyBlog. All rights reserved.</p>
+    <div class="flex justify-center space-x-6 text-xl">
+      <a href="#" aria-label="Facebook" class="hover:text-purple-300 transition"><i class="fab fa-facebook-f"></i></a>
+      <a href="#" aria-label="Twitter" class="hover:text-purple-300 transition"><i class="fab fa-twitter"></i></a>
+      <a href="#" aria-label="Instagram" class="hover:text-purple-300 transition"><i class="fab fa-instagram"></i></a>
+      <a href="#" aria-label="LinkedIn" class="hover:text-purple-300 transition"><i class="fab fa-linkedin-in"></i></a>
+    </div>
+  </footer>
 
   <script>
+    // Hamburger menu toggling
+    const menuBtn = document.getElementById('menu-btn');
+    const sideMenu = document.getElementById('side-menu');
+    const menuCloseBtn = document.getElementById('menu-close-btn');
+
+    menuBtn.addEventListener('click', () => {
+      sideMenu.classList.remove('-translate-x-full');
+    });
+
+    menuCloseBtn.addEventListener('click', () => {
+      sideMenu.classList.add('-translate-x-full');
+    });
+
+    // Dark mode toggle
+    const darkModeToggle = document.getElementById('dark-mode-toggle');
+    const htmlEl = document.documentElement;
+
+    // Initialize from localStorage
+    if (localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+      htmlEl.classList.add('dark');
+    }
+
+    darkModeToggle.addEventListener('click', () => {
+      if (htmlEl.classList.contains('dark')) {
+        htmlEl.classList.remove('dark');
+        localStorage.theme = 'light';
+      } else {
+        htmlEl.classList.add('dark');
+        localStorage.theme = 'dark';
+      }
+    });
+
+    // Cookie helper
     function getCookie(name) {
       const value = `; ${document.cookie}`;
       const parts = value.split(`; ${name}=`);
@@ -126,10 +155,12 @@
         document.getElementById('content').textContent = blog.content;
 
       } catch (error) {
-        document.getElementById('blog-container').style.display = 'none';
-        const errorMessage = document.getElementById('error-message');
-        errorMessage.style.display = 'block';
-        errorMessage.textContent = `Oops! ${error.message}`;
+        document.getElementById('error-message').textContent = `Oops! ${error.message}`;
+        document.getElementById('error-message').classList.remove('hidden');
+        document.getElementById('title').textContent = '';
+        document.getElementById('cover-photo').src = '';
+        document.getElementById('description').textContent = '';
+        document.getElementById('content').textContent = '';
         console.error(error);
       }
     }
@@ -137,6 +168,5 @@
     const titleFromCookie = getCookie('title');
     fetchBlogData(titleFromCookie);
   </script>
-
 </body>
-</html>
+          </html>
