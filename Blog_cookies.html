@@ -264,27 +264,28 @@
       }
 
       try {
-        const encodedTitle = encodeURIComponent(titleFromCookie);
-        const response = await fetch(`https://seo-db.vercel.app/retrieve/${encodedTitle}`);
-        if (!response.ok) throw new Error('Failed to fetch blog data');
+  const encodedTitle = encodeURIComponent(titleFromCookie);
+  const response = await fetch(`https://seo-db.vercel.app/retrieve/${encodedTitle}`);
+  if (!response.ok) throw new Error('Failed to fetch blog data');
 
-        const post = await response.json();
+  const json = await response.json();
+  const post = json.data && json.data.length > 0 ? json.data[0] : null;
 
-        if (!post || Object.keys(post).length === 0) {
-          container.innerHTML = `<p style="color:red;">No blog post found for title: "${titleFromCookie}"</p>`;
-          return;
-        }
+  if (!post) {
+    container.innerHTML = `<p style="color:red;">No blog post found for title: "${titleFromCookie}"</p>`;
+    return;
+  }
 
-        container.innerHTML = `
-          <h1>${post.title}</h1>
-          <img src="${post.cover_photo}" alt="Cover photo for ${post.title}" class="cover-photo" />
-          <p class="description">${post.description}</p>
-          <div class="content">${post.content}</div>
-        `;
+  container.innerHTML = `
+    <h1>${post.title}</h1>
+    <img src="${post.cover_photo}" alt="Cover photo for ${post.title}" class="cover-photo" />
+    <p class="description">${post.description}</p>
+    <div class="content">${post.content}</div>
+  `;
 
-      } catch (error) {
-        container.innerHTML = `<p style="color:red;">Oops! ${error.message}</p>`;
-      }
+} catch (error) {
+  container.innerHTML = `<p style="color:red;">Oops! ${error.message}</p>`;
+    }
     }
 
     loadBlog();
