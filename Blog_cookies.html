@@ -192,8 +192,10 @@
         document.getElementById('cover-photo').src = blog.cover_photo;
         document.getElementById('cover-photo').alt = `Cover photo for ${blog.title || title}`;
         document.getElementById('description').textContent = blog.description;
-        document.getElementById('content').innerHTML = blog.content;
-
+        // Split content by periods, trim, and wrap each sentence in <p>
+const sentences = blog.content.split('.').filter(s => s.trim().length > 0);
+const formattedContent = sentences.map(s => `<p>${s.trim()}.</p>`).join('');
+document.getElementById('content').innerHTML = formattedContent;
       } catch (error) {
         document.getElementById('error-message').textContent = `Oops! ${error.message}`;
         document.getElementById('error-message').classList.remove('hidden');
