@@ -208,7 +208,7 @@ html, body {
       resultsDiv.innerHTML = "<p>✨ Loading cuteness... ✨</p>";
 
       if (mode === "web") {
-        const res = await fetch(`https://crawler10.onrender.com/crawl?query=${q}`);
+        const res = await fetch(`https://crawler30.onrender.com/crawl?query=${q}`);
         const data = await res.json();
 
         resultsDiv.innerHTML = "";
@@ -229,7 +229,7 @@ html, body {
           resultsDiv.appendChild(item);
         });
       } else {
-        const res = await fetch(`https://crawler10.onrender.com/images?query=${q}`);
+        const res = await fetch(`https://crawler30.onrender.com/images?query=${q}`);
         const urls = await res.json();
 
         resultsDiv.innerHTML = '<div class="images-grid"></div>';
