@@ -116,7 +116,7 @@
         blob = await response.blob();
       } catch (_) {
         try {
-          const proxyResponse = await fetch(`https://search-proxy-d5n4.onrender.com/proxy?url=${encodeURIComponent(imageURL)}`);
+          const proxyResponse = await fetch(`https://search-proxy12.onrender.com/proxy?url=${encodeURIComponent(imageURL)}`);
           if (!proxyResponse.ok) throw new Error();
           blob = await proxyResponse.blob();
         } catch (_) {
