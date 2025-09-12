@@ -123,6 +123,24 @@
   </div>
 
   <script>
+  const RESET_PASSWORD = "starlight123"; // change this to your secret!
+
+  function resetCountdown() {
+    const entered = prompt("✨ Enter the secret password to reset progress:");
+    if (entered === RESET_PASSWORD) {
+      if (confirm("Are you sure you want to reset your journey under the stars? 🌠")) {
+        const now = new Date().toISOString();
+        setCookie(COOKIE_NAME, now, 365);
+        loadTracker();
+        alert("Progress has been reset. 🌌 Start fresh, star traveler!");
+      }
+    } else if (entered !== null) {
+      alert("❌ Wrong password. The stars say try again!");
+    }
+  }
+  </script>
+
+  <script>
     // 🌠 Star generator on canvas
     const canvas = document.getElementById("stars");
     const ctx = canvas.getContext("2d");
