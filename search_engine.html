@@ -4,208 +4,89 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Nexix Search ✨</title>
-  <style>
-    body {
-      margin: 0;
-      font-family: 'Inter', sans-serif;
-      background: linear-gradient(to bottom right, #0d0d0d, #1c1c1f);
-      color: #fff;
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-    }
-
-* {
-  box-sizing: border-box;
-}
-
-html, body {
-  overflow-x: hidden;
-}
-
-    header {
-      padding: 2rem 1rem;
-      text-align: center;
-      background: #1e1e22;
-      border-bottom: 1px solid #333;
-    }
-
-    h1 {
-      font-size: 2rem;
-      margin-bottom: 1rem;
-    }
-
-    input[type="text"] {
-      width: 100%;
-      max-width: 600px;
-      padding: 14px;
-      font-size: 1rem;
-      border-radius: 10px;
-      border: none;
-      outline: none;
-      background: #222;
-      color: #fff;
-      box-shadow: 0 0 10px #0077ff88;
-      transition: box-shadow 0.3s ease;
-    }
-
-    input[type="text"]:focus {
-      box-shadow: 0 0 15px #00aaffaa;
-    }
-
-    .tabs {
-      margin-top: 1rem;
-      display: flex;
-      justify-content: center;
-      gap: 1rem;
-      flex-wrap: wrap;
-    }
-
-    .tabs button {
-      padding: 10px 20px;
-      border: none;
-      border-radius: 6px;
-      background: #333;
-      color: #fff;
-      cursor: pointer;
-      transition: transform 0.2s ease, background 0.3s ease;
-    }
-
-    .tabs button:hover {
-      background: #444;
-      transform: scale(1.05);
-    }
-
-    .tabs button.active {
-      background: #0077ff;
-    }
-
-    #results {
-      flex: 1;
-      padding: 2rem 1rem;
-      display: flex;
-      flex-direction: column;
-      gap: 1.5rem;
-      max-width: 900px;
-      margin: 0 auto;
-      width: 100%;
-    }
-
-    .web-result {
-      background: #1a1a1d;
-      padding: 1rem;
-      border-radius: 10px;
-      border: 1px solid #333;
-      transition: transform 0.3s ease;
-    }
-
-    .web-result:hover {
-      transform: translateY(-2px);
-      border-color: #555;
-    }
-
-    .web-result h3 {
-      margin: 0 0 0.5rem;
-      display: flex;
-      align-items: center;
-      gap: 0.6rem;
-      font-size: 1.1rem;
-      flex-wrap: wrap;
-    }
-
-    .web-result h3 img {
-      width: 18px;
-      height: 18px;
-      border-radius: 3px;
-    }
-
-    .web-result h3 a {
-      color: #00aaff;
-      text-decoration: none;
-      word-break: break-word;
-    }
-
-    .web-result p {
-      color: #ccc;
-      margin: 0.5rem 0 0;
-    }
-
-    .web-result small {
-      color: #888;
-      font-size: 0.8rem;
-    }
-
-    .images-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
-      gap: 1rem;
-    }
-
-    .images-grid img {
-      width: 100%;
-      height: 120px;
-      object-fit: cover;
-      border-radius: 8px;
-      border: 1px solid #444;
-    }
-
-    @media (max-width: 200px) {
-      h1 {
-        font-size: 1.6rem;
-      }
-
-      input[type="text"] {
-        font-size: 0.95rem;
-        padding: 12px;
-      }
-    }
-  </style>
+  <!-- TailwindCSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- FontAwesome CDN -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
 </head>
-<body>
-  <header>
-    <h1>✨ Nexix Search ✨</h1>
-    <input id="searchInput" type="text" placeholder="Type something cute...">
-    <div class="tabs">
-      <button id="webTab" class="active">🔍 Web</button>
-      <button id="imgTab">🖼 Images</button>
-    </div>
-  </header>
+<body class="bg-gradient-to-br from-gray-900 to-gray-800 text-white min-h-screen flex flex-col font-sans">
 
-  <div id="results"></div>
+  <!-- Header -->
+  <header class="bg-gray-900 border-b border-gray-700 p-4 flex items-center justify-between">
+  <!-- Menu icon on the left -->
+  <div class="relative">
+    <button id="menuBtn" class="text-white text-2xl focus:outline-none">
+      <i class="fas fa-bars"></i>
+    </button>
+    <!-- Dropdown -->
+    <div id="dropdownMenu" class="hidden absolute left-0 mt-2 w-40 bg-gray-800 border border-gray-700 rounded shadow-lg z-50">
+      <a href="#" class="block px-4 py-2 hover:bg-gray-700 transition">Home</a>
+      <a href="#" class="block px-4 py-2 hover:bg-gray-700 transition">Settings</a>
+      <a href="#" class="block px-4 py-2 hover:bg-gray-700 transition">About</a>
+    </div>
+  </div>
+
+  <!-- Title centered on small screens -->
+  <h1 class="text-3xl font-bold text-center flex-1">✨ Nexix Search ✨</h1>
+</header>
+
+  <!-- Search bar -->
+  <div class="flex flex-col items-center p-4 gap-4">
+    <input id="searchInput" type="text" placeholder="Type something cute..." 
+      class="w-full max-w-lg px-4 py-3 rounded-xl bg-gray-800 border border-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500 text-white placeholder-gray-400 transition"/>
+    
+    <!-- Tabs -->
+    <div class="flex gap-3">
+      <button id="webTab" class="px-4 py-2 rounded-lg bg-blue-600 hover:bg-blue-500 transition active">🔍 Web</button>
+      <button id="imgTab" class="px-4 py-2 rounded-lg bg-gray-700 hover:bg-gray-600 transition">🖼 Images</button>
+    </div>
+  </div>
+
+  <!-- Results -->
+  <main id="results" class="flex-1 p-4 flex flex-col gap-4 max-w-4xl mx-auto w-full"></main>
 
   <script>
+    // Menu toggle
+    const menuBtn = document.getElementById('menuBtn');
+    const dropdownMenu = document.getElementById('dropdownMenu');
+    menuBtn.addEventListener('click', () => {
+      dropdownMenu.classList.toggle('hidden');
+    });
+
+    // Tabs + search
     const searchInput = document.getElementById("searchInput");
     const resultsDiv = document.getElementById("results");
     const webTab = document.getElementById("webTab");
     const imgTab = document.getElementById("imgTab");
-
-    let mode = "web"; // default
+    let mode = "web";
 
     webTab.onclick = () => {
       mode = "web";
-      webTab.classList.add("active");
-      imgTab.classList.remove("active");
+      webTab.classList.add("bg-blue-600");
+      imgTab.classList.remove("bg-blue-600");
+      webTab.classList.remove("bg-gray-700");
+      imgTab.classList.add("bg-gray-700");
       doSearch();
     };
 
     imgTab.onclick = () => {
       mode = "img";
-      imgTab.classList.add("active");
-      webTab.classList.remove("active");
+      imgTab.classList.add("bg-blue-600");
+      webTab.classList.remove("bg-blue-600");
+      imgTab.classList.remove("bg-gray-700");
+      webTab.classList.add("bg-gray-700");
       doSearch();
     };
 
     searchInput.addEventListener("keypress", e => {
-      if (e.key === "Enter") {
-        doSearch();
-      }
+      if (e.key === "Enter") doSearch();
     });
 
     async function doSearch() {
       const q = encodeURIComponent(searchInput.value.trim());
       if (!q) return;
 
-      resultsDiv.innerHTML = "<p>✨ Loading cuteness... ✨</p>";
+      resultsDiv.innerHTML = "<p class='text-center text-gray-400'>✨ Loading cuteness... ✨</p>";
 
       if (mode === "web") {
         const res = await fetch(`https://crawler30.onrender.com/crawl?query=${q}`);
@@ -214,17 +95,16 @@ html, body {
         resultsDiv.innerHTML = "";
         data.forEach(site => {
           const domain = new URL(site.url).hostname.replace('www.', '');
-
           const item = document.createElement("div");
-          item.className = "web-result";
+          item.className = "bg-gray-800 p-4 rounded-xl border border-gray-700 hover:scale-[1.02] transition transform flex flex-col gap-2";
           item.innerHTML = `
-            <h3>
-              <img src="${site.brandIcon}" alt="icon"
-                onerror="this.onerror=null; this.src='https://www.google.com/s2/favicons?domain=${domain}&sz=16'" />
-              <a href="${site.url}" target="_blank">${site.title}</a>
-              <small>${domain}</small>
+            <h3 class="flex items-center gap-2 text-lg flex-wrap">
+              <img src="${site.brandIcon}" alt="icon" class="w-5 h-5 rounded-sm" 
+                   onerror="this.onerror=null; this.src='https://www.google.com/s2/favicons?domain=${domain}&sz=16'" />
+              <a href="${site.url}" target="_blank" class="text-blue-400 hover:underline break-words">${site.title}</a>
+              <small class="text-gray-400 text-sm">${domain}</small>
             </h3>
-            <p>${site.description}</p>
+            <p class="text-gray-300">${site.description}</p>
           `;
           resultsDiv.appendChild(item);
         });
@@ -232,49 +112,23 @@ html, body {
         const res = await fetch(`https://crawler30.onrender.com/images?query=${q}`);
         const urls = await res.json();
 
-        resultsDiv.innerHTML = '<div class="images-grid"></div>';
-        const grid = resultsDiv.querySelector(".images-grid");
+        resultsDiv.innerHTML = '<div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4"></div>';
+        const grid = resultsDiv.querySelector("div");
         urls.forEach(item => {
-  const img = document.createElement("img");
-  img.src = item.thumbnail || item.image;
-  img.alt = item.title || "Image result";
-  img.title = item.title || "";
-  img.loading = "lazy";
-
-  // 👇 Add click listener to save cookie + redirect
-  img.addEventListener("click", () => {
-    document.cookie = `viewImage=${encodeURIComponent(item.image)}; path=/; max-age=86400`; // 1 day
-    window.location.href = "view.html";
-  });
-
-  grid.appendChild(img);
-});
+          const img = document.createElement("img");
+          img.src = item.thumbnail || item.image;
+          img.alt = item.title || "Image result";
+          img.title = item.title || "";
+          img.loading = "lazy";
+          img.className = "w-full h-32 object-cover rounded-lg border border-gray-700 hover:scale-105 transition cursor-pointer";
+          img.addEventListener("click", () => {
+            document.cookie = `viewImage=${encodeURIComponent(item.image)}; path=/; max-age=86400`;
+            window.location.href = "view.html";
+          });
+          grid.appendChild(img);
+        });
       }
     }
-  </script>
-
-  <script type="text/javascript">
-	atOptions = {
-		'key' : '79630ca3f0a5e0b75d29569747d9437a',
-		'format' : 'iframe',
-		'height' : 250,
-		'width' : 300,
-		'params' : {}
-	};
-</script>
-<script type="text/javascript" src="//www.highperformanceformat.com/79630ca3f0a5e0b75d29569747d9437a/invoke.js"></script>
-
-  <script>
-(function(nmuufa){
-var d = document,
-    s = d.createElement('script'),
-    l = d.scripts[d.scripts.length - 1];
-s.settings = nmuufa || {};
-s.src = "\/\/grimy-bicycle.com\/bEXrV.sIdDGwl\/0zY\/WhcN\/qeomW9zuAZPU\/lNkvPwTIYK1EMMTKgYwQNiD\/QxtAN-j\/UOxhO\/DeA\/0\/NnQF";
-s.async = true;
-s.referrerPolicy = 'no-referrer-when-downgrade';
-l.parentNode.insertBefore(s, l);
-})({})
   </script>
 </body>
 </html>
