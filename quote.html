@@ -1,0 +1,651 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+  <title>QuoteCard Pro · Quote Image Maker</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js">
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Playfair+Display:wght@600;700;800;900&family=Bebas+Neue&family=Oswald:wght@500;600;700&family=Montserrat:wght@500;600;700;800&family=Cormorant+Garamond:wght@500;600;700&family=Libre+Baskerville:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      background: #f0ece6;
+      font-family: 'Inter', system-ui, -apple-system, sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      min-height: 100vh;
+      padding: 20px 12px;
+      margin: 0;
+    }
+
+    .app-container {
+      max-width: 820px;
+      width: 100%;
+      background: #ffffff;
+      border-radius: 18px;
+      padding: 28px 28px 32px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.03), 0 8px 30px rgba(0,0,0,0.05);
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+    }
+
+    .app-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding-bottom: 14px;
+      border-bottom: 1px solid #ece8e1;
+    }
+
+    .app-header h1 {
+      font-family: 'Montserrat', 'Inter', sans-serif;
+      font-weight: 700;
+      font-size: 1.5rem;
+      color: #1a1816;
+      letter-spacing: -0.4px;
+    }
+
+    .app-header .badge {
+      font-family: 'Inter', sans-serif;
+      font-size: 0.68rem;
+      font-weight: 700;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      background: #8b5cf6;
+      color: #ffffff;
+      padding: 5px 13px;
+      border-radius: 18px;
+    }
+
+    .upload-area {
+      background: #fafaf8;
+      border: 1.5px dashed #d8d3c9;
+      border-radius: 12px;
+      padding: 24px 18px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    .upload-area:hover {
+      border-color: #8b5cf6;
+      background: #f8f6fc;
+    }
+    .upload-icon {
+      font-size: 1.8rem;
+      margin-bottom: 6px;
+      opacity: 0.8;
+    }
+    .upload-text {
+      font-weight: 500;
+      color: #3d3832;
+      font-size: 0.9rem;
+    }
+    .file-name {
+      margin-top: 6px;
+      font-size: 0.78rem;
+      color: #6b6459;
+      background: #ece8e1;
+      padding: 4px 14px;
+      border-radius: 18px;
+      font-weight: 500;
+    }
+    #imageInput {
+      display: none;
+    }
+
+    .input-row {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+    .input-group {
+      flex: 1;
+      min-width: 200px;
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+    }
+    .input-group label {
+      font-weight: 700;
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      color: #6b6359;
+    }
+    textarea, input {
+      width: 100%;
+      padding: 13px 15px;
+      border: 1.5px solid #e0dbd2;
+      border-radius: 10px;
+      font-size: 0.9rem;
+      line-height: 1.6;
+      resize: vertical;
+      font-family: 'Inter', sans-serif;
+      background: #fdfdfb;
+      outline: none;
+      transition: border 0.2s, box-shadow 0.2s;
+      color: #1f1d19;
+    }
+    textarea:focus, input:focus {
+      border-color: #8b5cf6;
+      box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.06);
+    }
+
+    .template-options {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+    .template-btn {
+      flex: 1;
+      min-width: 90px;
+      background: #f6f3ee;
+      border: 1.5px solid #e0d9cf;
+      padding: 12px 8px;
+      border-radius: 10px;
+      font-weight: 600;
+      color: #3d3832;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 5px;
+      font-size: 0.8rem;
+      font-family: 'Inter', sans-serif;
+      letter-spacing: 0.1px;
+    }
+    .template-btn:hover {
+      background: #e8e2d8;
+      border-color: #b8afa2;
+    }
+    .template-btn.active {
+      background: #8b5cf6;
+      border-color: #8b5cf6;
+      color: #ffffff;
+      box-shadow: 0 4px 16px rgba(139, 92, 246, 0.2);
+    }
+    .template-icon {
+      font-size: 1.1rem;
+    }
+
+    .template-section-label {
+      font-weight: 700;
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      color: #6b6359;
+      margin-bottom: 2px;
+      display: block;
+    }
+
+    .preview-download {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 18px;
+      margin-top: 2px;
+    }
+
+    /* ============ QUOTE CARD - 1:1 SQUARE ============ */
+    .quote-card {
+      width: 100%;
+      max-width: 400px;
+      aspect-ratio: 1 / 1;
+      border-radius: 8px;
+      overflow: hidden;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.08), 0 8px 28px rgba(0,0,0,0.07);
+      display: flex;
+      flex-direction: column;
+      position: relative;
+      background: #ffffff;
+    }
+
+    .card-bg-image {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 0;
+    }
+    .card-bg-image img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+    .placeholder-bg {
+      width: 100%;
+      height: 100%;
+      background: #e8e3d9;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #b0a89b;
+      font-size: 0.85rem;
+      font-weight: 500;
+      font-family: 'Inter', sans-serif;
+    }
+
+    .card-content {
+      position: relative;
+      z-index: 1;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+      padding: 28px 24px 24px;
+    }
+
+    .quote-mark {
+      font-size: 4rem;
+      line-height: 0.6;
+      font-weight: 700;
+      margin-bottom: 8px;
+      opacity: 0.9;
+    }
+
+    .quote-text {
+      font-size: 1.6rem;
+      line-height: 1.2;
+      font-weight: 700;
+      margin-bottom: 14px;
+      letter-spacing: -0.3px;
+    }
+
+    .quote-author {
+      font-size: 0.9rem;
+      font-weight: 600;
+      letter-spacing: 0.3px;
+      opacity: 0.9;
+    }
+
+    .quote-divider {
+      width: 40px;
+      height: 3px;
+      border-radius: 2px;
+      margin-bottom: 12px;
+    }
+
+    /* ============ TEMPLATE 1: BOLD OVERLAY ============ */
+    .template-bold .quote-card {
+      border-radius: 4px;
+    }
+    .template-bold .card-content {
+      background: linear-gradient(to top, rgba(0,0,0,0.8) 0%, rgba(0,0,0,0.25) 55%, rgba(0,0,0,0.05) 85%, transparent 100%);
+      justify-content: flex-end;
+      padding: 32px 22px 20px;
+    }
+    .template-bold .quote-mark {
+      color: #ff6b35;
+      font-family: 'Playfair Display', 'Georgia', serif;
+      font-size: 3.5rem;
+    }
+    .template-bold .quote-text {
+      color: #ffffff;
+      font-family: 'Bebas Neue', 'Oswald', 'Impact', sans-serif;
+      font-size: 2.1rem;
+      font-weight: 400;
+      text-shadow: 2px 2px 8px rgba(0,0,0,0.5);
+      letter-spacing: 0.4px;
+    }
+    .template-bold .quote-author {
+      color: #ffcc80;
+      font-family: 'Inter', sans-serif;
+      font-size: 0.85rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 1.2px;
+    }
+    .template-bold .quote-divider {
+      background: #ff6b35;
+    }
+
+    /* ============ TEMPLATE 2: CLASSIC ELEGANT ============ */
+    .template-classic .quote-card {
+      border-radius: 6px;
+    }
+    .template-classic .card-content {
+      background: linear-gradient(to top, rgba(255,255,255,0.95) 0%, rgba(255,255,255,0.75) 40%, rgba(255,255,255,0.3) 75%, transparent 100%);
+      justify-content: flex-end;
+      padding: 30px 24px 22px;
+    }
+    .template-classic .quote-mark {
+      color: #c4a35a;
+      font-family: 'Playfair Display', 'Georgia', serif;
+      font-size: 3.8rem;
+    }
+    .template-classic .quote-text {
+      color: #1a1816;
+      font-family: 'Cormorant Garamond', 'Playfair Display', 'Georgia', serif;
+      font-size: 1.5rem;
+      font-weight: 600;
+      font-style: italic;
+      text-shadow: none;
+      letter-spacing: 0.1px;
+    }
+    .template-classic .quote-author {
+      color: #5c4f3a;
+      font-family: 'Inter', sans-serif;
+      font-size: 0.8rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+    }
+    .template-classic .quote-divider {
+      background: #c4a35a;
+      width: 50px;
+      height: 2px;
+    }
+
+    /* ============ TEMPLATE 3: DARK DRAMATIC ============ */
+    .template-dramatic .quote-card {
+      border-radius: 0;
+    }
+    .template-dramatic .card-content {
+      background: linear-gradient(to top, rgba(10,10,12,0.95) 0%, rgba(10,10,12,0.6) 50%, rgba(10,10,12,0.1) 80%, transparent 100%);
+      justify-content: flex-end;
+      padding: 34px 24px 22px;
+    }
+    .template-dramatic .quote-mark {
+      color: #d4af37;
+      font-family: 'Playfair Display', 'Georgia', serif;
+      font-size: 3.5rem;
+    }
+    .template-dramatic .quote-text {
+      color: #f0e6d3;
+      font-family: 'Libre Baskerville', 'Playfair Display', 'Georgia', serif;
+      font-size: 1.3rem;
+      font-weight: 700;
+      text-shadow: none;
+      letter-spacing: 0.1px;
+    }
+    .template-dramatic .quote-author {
+      color: #d4af37;
+      font-family: 'Inter', sans-serif;
+      font-size: 0.78rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 1.4px;
+    }
+    .template-dramatic .quote-divider {
+      background: #d4af37;
+      width: 36px;
+      height: 2px;
+    }
+
+    .download-btn {
+      background: #8b5cf6;
+      border: none;
+      color: #ffffff;
+      font-weight: 700;
+      font-size: 0.9rem;
+      padding: 13px 28px;
+      border-radius: 24px;
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      cursor: pointer;
+      transition: 0.2s ease;
+      letter-spacing: 0.2px;
+      box-shadow: 0 4px 16px rgba(139, 92, 246, 0.25);
+      font-family: 'Inter', sans-serif;
+    }
+    .download-btn:hover {
+      background: #7c3aed;
+      box-shadow: 0 6px 22px rgba(139, 92, 246, 0.35);
+    }
+    .download-btn:active {
+      transform: scale(0.97);
+    }
+    .note {
+      font-size: 0.72rem;
+      color: #9b9488;
+      font-family: 'Inter', sans-serif;
+    }
+
+    @media (max-width: 500px) {
+      .app-container {
+        padding: 18px 14px 22px;
+      }
+      .quote-card {
+        max-width: 320px;
+      }
+      .template-bold .quote-text {
+        font-size: 1.6rem;
+      }
+      .template-classic .quote-text {
+        font-size: 1.2rem;
+      }
+      .template-dramatic .quote-text {
+        font-size: 1.1rem;
+      }
+      .input-row {
+        flex-direction: column;
+        gap: 8px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="app-container">
+    <div class="app-header">
+      <h1>QuoteCard</h1>
+      <span class="badge">Pro</span>
+    </div>
+
+    <!-- Upload -->
+    <div class="upload-area" id="uploadTrigger">
+      <div class="upload-icon">🖼️</div>
+      <div class="upload-text">Upload background image</div>
+      <div class="file-name" id="fileNameDisplay">No file selected</div>
+      <input type="file" id="imageInput" accept="image/*">
+    </div>
+
+    <!-- Quote & Author inputs -->
+    <div class="input-row">
+      <div class="input-group">
+        <label>✍️ Quote</label>
+        <textarea id="quoteText" placeholder="e.g. There is nothing impossible to him who will try." rows="2"></textarea>
+      </div>
+      <div class="input-group">
+        <label>👤 Author</label>
+        <input type="text" id="authorText" placeholder="e.g. Alexander the Great" />
+      </div>
+    </div>
+
+    <!-- Templates -->
+    <div>
+      <span class="template-section-label">Quote style</span>
+      <div class="template-options" id="templateContainer">
+        <button class="template-btn active" data-template="bold">
+          <span class="template-icon">🔥</span> Bold Overlay
+        </button>
+        <button class="template-btn" data-template="classic">
+          <span class="template-icon">🎨</span> Classic Elegant
+        </button>
+        <button class="template-btn" data-template="dramatic">
+          <span class="template-icon">🌑</span> Dark Dramatic
+        </button>
+      </div>
+    </div>
+
+    <!-- Preview -->
+    <div class="preview-download">
+      <div id="quoteCard" class="quote-card template-bold">
+        <div class="card-bg-image" id="cardBgImage">
+          <div class="placeholder-bg">Your image</div>
+        </div>
+        <div class="card-content">
+          <span class="quote-mark" id="quoteMark">"</span>
+          <p class="quote-text" id="quoteTextDisplay">Your quote appears here.</p>
+          <div class="quote-divider"></div>
+          <span class="quote-author" id="quoteAuthorDisplay">— Author Name</span>
+        </div>
+      </div>
+      <button class="download-btn" id="downloadBtn">
+        ⬇️ Download Quote Card
+      </button>
+      <span class="note">Perfect 1:1 square · optimized for social media</span>
+    </div>
+  </div>
+
+  <script>
+    (function() {
+      const imageInput = document.getElementById('imageInput');
+      const uploadTrigger = document.getElementById('uploadTrigger');
+      const fileNameDisplay = document.getElementById('fileNameDisplay');
+      const quoteTextarea = document.getElementById('quoteText');
+      const authorInput = document.getElementById('authorText');
+      const quoteCard = document.getElementById('quoteCard');
+      const cardBgImage = document.getElementById('cardBgImage');
+      const quoteTextDisplay = document.getElementById('quoteTextDisplay');
+      const quoteAuthorDisplay = document.getElementById('quoteAuthorDisplay');
+      const templateButtons = document.querySelectorAll('.template-btn');
+      const downloadBtn = document.getElementById('downloadBtn');
+
+      let currentImageDataUrl = null;
+      let currentTemplate = 'bold';
+
+      function applyTemplate(templateName) {
+        quoteCard.classList.remove('template-bold', 'template-classic', 'template-dramatic');
+        quoteCard.classList.add(`template-${templateName}`);
+        currentTemplate = templateName;
+      }
+
+      function updateQuotePreview() {
+        const quote = quoteTextarea.value.trim();
+        const author = authorInput.value.trim();
+        quoteTextDisplay.textContent = quote ? `"${quote}"` : 'Your quote appears here.';
+        quoteAuthorDisplay.textContent = author ? `— ${author}` : '— Author Name';
+      }
+
+      function updateImagePreview() {
+        cardBgImage.innerHTML = '';
+        if (currentImageDataUrl) {
+          const img = document.createElement('img');
+          img.src = currentImageDataUrl;
+          img.alt = 'background image';
+          cardBgImage.appendChild(img);
+        } else {
+          const placeholder = document.createElement('div');
+          placeholder.className = 'placeholder-bg';
+          placeholder.textContent = 'Your image';
+          cardBgImage.appendChild(placeholder);
+        }
+      }
+
+      function handleFileSelect(file) {
+        if (!file) return;
+        if (!file.type.startsWith('image/')) {
+          alert('Please select a valid image file.');
+          return;
+        }
+        fileNameDisplay.textContent = file.name.length > 28 ? file.name.substring(0, 25) + '...' : file.name;
+        const reader = new FileReader();
+        reader.onload = function(e) {
+          currentImageDataUrl = e.target.result;
+          updateImagePreview();
+        };
+        reader.readAsDataURL(file);
+      }
+
+      uploadTrigger.addEventListener('click', () => imageInput.click());
+      imageInput.addEventListener('change', (e) => {
+        if (e.target.files[0]) handleFileSelect(e.target.files[0]);
+      });
+
+      uploadTrigger.addEventListener('dragover', (e) => {
+        e.preventDefault();
+        uploadTrigger.style.borderColor = '#8b5cf6';
+      });
+      uploadTrigger.addEventListener('dragleave', (e) => {
+        e.preventDefault();
+        uploadTrigger.style.borderColor = '#d8d3c9';
+      });
+      uploadTrigger.addEventListener('drop', (e) => {
+        e.preventDefault();
+        uploadTrigger.style.borderColor = '#d8d3c9';
+        if (e.dataTransfer.files.length > 0) {
+          handleFileSelect(e.dataTransfer.files[0]);
+          imageInput.files = e.dataTransfer.files;
+        }
+      });
+
+      quoteTextarea.addEventListener('input', updateQuotePreview);
+      authorInput.addEventListener('input', updateQuotePreview);
+
+      templateButtons.forEach(btn => {
+        btn.addEventListener('click', function() {
+          templateButtons.forEach(b => b.classList.remove('active'));
+          this.classList.add('active');
+          const template = this.getAttribute('data-template');
+          if (template) applyTemplate(template);
+        });
+      });
+
+      downloadBtn.addEventListener('click', async function() {
+        const originalText = downloadBtn.textContent;
+        downloadBtn.textContent = '⏳ Generating...';
+        downloadBtn.disabled = true;
+        try {
+          const cardElement = document.getElementById('quoteCard');
+          const canvas = await html2canvas(cardElement, {
+            scale: 2.5,
+            backgroundColor: '#ffffff',
+            allowTaint: false,
+            useCORS: true,
+            logging: false
+          });
+          canvas.toBlob(function(blob) {
+            if (!blob) {
+              alert('Could not generate image. Please try again.');
+              downloadBtn.textContent = originalText;
+              downloadBtn.disabled = false;
+              return;
+            }
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            const timestamp = new Date().toISOString().slice(0, 19).replace(/:/g, '-');
+            link.download = `quotecard_${timestamp}.png`;
+            link.href = url;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            URL.revokeObjectURL(url);
+            downloadBtn.textContent = originalText;
+            downloadBtn.disabled = false;
+          }, 'image/png');
+        } catch (error) {
+          console.error(error);
+          alert('Something went wrong. Please try again.');
+          downloadBtn.textContent = originalText;
+          downloadBtn.disabled = false;
+        }
+      });
+
+      // Initialize
+      applyTemplate('bold');
+      quoteTextarea.value = 'There is nothing impossible to him who will try.';
+      authorInput.value = 'Alexander the Great';
+      updateQuotePreview();
+      updateImagePreview();
+    })();
+  </script>
+</body>
+</html>
