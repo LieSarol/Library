@@ -1,0 +1,767 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+  <title>FactCard · Scroll-Stopping Templates</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Playfair+Display:wght@600;700;800;900&family=Anton&family=Oswald:wght@400;500;600;700&family=Montserrat:wght@400;500;600;700;800;900&family=DM+Serif+Display&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      background: #f4f1eb;
+      font-family: 'Inter', system-ui, -apple-system, sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      min-height: 100vh;
+      padding: 20px 12px 40px;
+      margin: 0;
+    }
+
+    /* ============ APP SHELL ============ */
+    .app-container {
+      max-width: 860px;
+      width: 100%;
+      background: #ffffff;
+      border-radius: 24px;
+      padding: 32px 32px 36px;
+      box-shadow: 0 1px 2px rgba(0,0,0,0.02), 0 12px 40px rgba(0,0,0,0.06);
+      display: flex;
+      flex-direction: column;
+      gap: 28px;
+    }
+
+    .app-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding-bottom: 16px;
+      border-bottom: 2px solid #f0ece6;
+    }
+
+    .app-header h1 {
+      font-family: 'Space Grotesk', 'Inter', sans-serif;
+      font-weight: 700;
+      font-size: 1.6rem;
+      color: #12100e;
+      letter-spacing: -0.6px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .app-header h1 span {
+      background: #12100e;
+      color: #ffffff;
+      font-size: 0.55rem;
+      font-weight: 600;
+      letter-spacing: 1.8px;
+      text-transform: uppercase;
+      padding: 5px 12px;
+      border-radius: 20px;
+      font-family: 'Inter', sans-serif;
+    }
+
+    /* ============ UPLOAD ZONE ============ */
+    .upload-area {
+      background: #fafaf8;
+      border: 2px dashed #e0dbd2;
+      border-radius: 16px;
+      padding: 28px 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.25s ease;
+      position: relative;
+      overflow: hidden;
+    }
+    .upload-area::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(circle at center, rgba(24,119,242,0.03) 0%, transparent 70%);
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+    .upload-area:hover {
+      border-color: #1877f2;
+      background: #f8f9fc;
+      transform: translateY(-1px);
+    }
+    .upload-area:hover::before {
+      opacity: 1;
+    }
+    .upload-icon {
+      font-size: 2rem;
+      margin-bottom: 8px;
+      position: relative;
+      z-index: 1;
+    }
+    .upload-text {
+      font-weight: 600;
+      color: #2d2923;
+      font-size: 0.95rem;
+      position: relative;
+      z-index: 1;
+    }
+    .upload-hint {
+      font-size: 0.72rem;
+      color: #a0988b;
+      margin-top: 4px;
+      position: relative;
+      z-index: 1;
+    }
+    .file-name {
+      margin-top: 10px;
+      font-size: 0.75rem;
+      color: #1877f2;
+      background: #eef4fd;
+      padding: 6px 16px;
+      border-radius: 20px;
+      font-weight: 600;
+      position: relative;
+      z-index: 1;
+    }
+    #imageInput {
+      display: none;
+    }
+
+    /* ============ INPUTS ============ */
+    .input-row {
+      display: flex;
+      gap: 16px;
+      align-items: flex-end;
+    }
+    .text-section {
+      flex: 1;
+    }
+    .text-section label,
+    .template-section-label {
+      font-weight: 700;
+      font-size: 0.68rem;
+      text-transform: uppercase;
+      letter-spacing: 1.2px;
+      color: #8b8276;
+      margin-bottom: 8px;
+      display: block;
+    }
+    textarea {
+      width: 100%;
+      padding: 14px 16px;
+      border: 2px solid #e8e3d9;
+      border-radius: 12px;
+      font-size: 0.9rem;
+      line-height: 1.6;
+      resize: vertical;
+      font-family: 'Inter', sans-serif;
+      background: #fdfdfb;
+      outline: none;
+      transition: border 0.2s, box-shadow 0.2s;
+      color: #1a1713;
+    }
+    textarea:focus {
+      border-color: #1877f2;
+      box-shadow: 0 0 0 4px rgba(24, 119, 242, 0.06);
+    }
+
+    /* ============ TEMPLATE PILLS ============ */
+    .template-options {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+    .template-btn {
+      flex: 1;
+      min-width: 100px;
+      background: #f6f3ee;
+      border: 2px solid transparent;
+      padding: 14px 10px;
+      border-radius: 14px;
+      font-weight: 600;
+      color: #5c554b;
+      cursor: pointer;
+      transition: all 0.25s ease;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+      font-size: 0.78rem;
+      font-family: 'Inter', sans-serif;
+      letter-spacing: 0.2px;
+      position: relative;
+    }
+    .template-btn:hover {
+      background: #ece6dc;
+      color: #2d2923;
+    }
+    .template-btn.active {
+      background: #12100e;
+      border-color: #12100e;
+      color: #ffffff;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+      transform: translateY(-2px);
+    }
+    .template-icon {
+      font-size: 1.3rem;
+      transition: transform 0.3s ease;
+    }
+    .template-btn.active .template-icon {
+      transform: scale(1.15);
+    }
+
+    /* ============ PREVIEW SECTION ============ */
+    .preview-download {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 20px;
+      margin-top: 4px;
+    }
+
+    /* ============ THE CARD - 3:4 PORTRAIT ============ */
+    .fact-card {
+      width: 100%;
+      max-width: 360px;
+      aspect-ratio: 3 / 4;
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.1), 0 16px 48px rgba(0,0,0,0.12);
+      display: flex;
+      flex-direction: column;
+      position: relative;
+      background: #ffffff;
+      transition: box-shadow 0.4s ease;
+    }
+    .fact-card:hover {
+      box-shadow: 0 8px 32px rgba(0,0,0,0.14), 0 24px 60px rgba(0,0,0,0.16);
+    }
+
+    .card-image-area {
+      width: 100%;
+      flex: 1;
+      background: #e8e3d9;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      position: relative;
+      min-height: 0;
+    }
+    .card-image-area img {
+      display: block;
+    }
+    .img-cover-landscape {
+      height: 100%;
+      width: auto;
+      max-width: none;
+    }
+    .img-cover-portrait {
+      width: 100%;
+      height: auto;
+      max-height: none;
+    }
+    .placeholder-img {
+      color: #b0a89b;
+      font-size: 0.85rem;
+      font-weight: 500;
+      font-family: 'Inter', sans-serif;
+      padding: 20px;
+      text-align: center;
+    }
+
+    /* ============ OVERLAY ============ */
+    .card-overlay {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      padding: 48px 28px 28px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      pointer-events: none;
+      z-index: 2;
+    }
+    .card-text-block {
+      flex: 0 0 auto;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      gap: 8px;
+      z-index: 2;
+    }
+
+    /* ============ TEMPLATE 1: BOLD OVERLAY - SCROLL-STOPPER ============ */
+    .template-bold .fact-card {
+      border-radius: 8px;
+    }
+    .template-bold .card-overlay {
+      background: linear-gradient(
+        to top,
+        rgba(0,0,0,0.92) 0%,
+        rgba(0,0,0,0.78) 12%,
+        rgba(0,0,0,0.55) 35%,
+        rgba(0,0,0,0.28) 58%,
+        rgba(0,0,0,0.08) 80%,
+        transparent 100%
+      );
+      padding: 56px 28px 32px;
+    }
+    /* Label: dissolved into the design — thin red line + tracked text */
+    .template-bold .card-label {
+      background: transparent;
+      color: #ffffff;
+      font-family: 'Inter', sans-serif;
+      font-size: 0.55rem;
+      font-weight: 700;
+      letter-spacing: 2.5px;
+      padding: 0 0 10px 0;
+      border-radius: 0;
+      border-bottom: 2px solid rgba(255,59,48,0.8);
+      display: inline-block;
+      align-self: flex-start;
+      text-shadow: 0 1px 4px rgba(0,0,0,0.6);
+    }
+    .template-bold .card-fact {
+      color: #ffffff;
+      font-family: 'Anton', 'Oswald', 'Impact', sans-serif;
+      font-size: 2.4rem;
+      font-weight: 400;
+      letter-spacing: 0.2px;
+      line-height: 0.95;
+      text-shadow: 0 2px 12px rgba(0,0,0,0.8);
+      margin-top: 2px;
+    }
+
+    /* ============ TEMPLATE 2: EDITORIAL CLEAN ============ */
+    .template-minimal .fact-card {
+      border-radius: 6px;
+      background: #ffffff;
+    }
+    .template-minimal .card-image-area {
+      flex: 2.4;
+    }
+    .template-minimal .card-text-block {
+      flex: 0.9;
+      background: #ffffff;
+      padding: 20px 24px 24px;
+      gap: 6px;
+      border-left: 3px solid #1877f2;
+      margin: 0 0 0 0;
+    }
+    .template-minimal .card-label {
+      background: transparent;
+      color: #1877f2;
+      font-family: 'Inter', sans-serif;
+      font-size: 0.58rem;
+      font-weight: 700;
+      letter-spacing: 2px;
+      padding: 0;
+      border-radius: 0;
+      align-self: flex-start;
+      margin-bottom: 2px;
+      text-transform: uppercase;
+    }
+    .template-minimal .card-fact {
+      color: #12100e;
+      font-family: 'DM Serif Display', 'Playfair Display', 'Georgia', serif;
+      font-size: 1.25rem;
+      font-weight: 400;
+      text-shadow: none;
+      line-height: 1.25;
+      letter-spacing: -0.2px;
+    }
+
+    /* ============ TEMPLATE 3: DARK CINEMATIC ============ */
+    .template-dark .fact-card {
+      border-radius: 0;
+      background: #080808;
+    }
+    .template-dark .card-image-area {
+      flex: 2.6;
+      border-bottom: 2px solid #c9a050;
+    }
+    .template-dark .card-text-block {
+      flex: 0.75;
+      background: #080808;
+      padding: 18px 24px 22px;
+      gap: 6px;
+    }
+    .template-dark .card-label {
+      background: transparent;
+      color: #c9a050;
+      font-family: 'Inter', sans-serif;
+      font-size: 0.55rem;
+      font-weight: 600;
+      letter-spacing: 2.5px;
+      padding: 0;
+      border-radius: 0;
+      align-self: flex-start;
+      margin-bottom: 4px;
+      text-transform: uppercase;
+      border-bottom: 1px solid rgba(201,160,80,0.4);
+      padding-bottom: 8px;
+    }
+    .template-dark .card-fact {
+      color: #e8e2d4;
+      font-family: 'Playfair Display', 'Georgia', serif;
+      font-size: 1.3rem;
+      font-weight: 800;
+      text-shadow: none;
+      line-height: 1.2;
+      letter-spacing: -0.3px;
+    }
+
+    /* ============ DOWNLOAD BUTTON ============ */
+    .button-row {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+    }
+    .download-btn {
+      background: #12100e;
+      border: none;
+      color: #ffffff;
+      font-weight: 700;
+      font-size: 0.88rem;
+      padding: 14px 32px;
+      border-radius: 28px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      cursor: pointer;
+      transition: all 0.25s ease;
+      letter-spacing: 0.3px;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.2);
+      font-family: 'Inter', sans-serif;
+    }
+    .download-btn:hover {
+      background: #000000;
+      box-shadow: 0 8px 28px rgba(0,0,0,0.3);
+      transform: translateY(-2px);
+    }
+    .download-btn:active {
+      transform: scale(0.96);
+    }
+    .note {
+      font-size: 0.7rem;
+      color: #a0988b;
+      font-family: 'Inter', sans-serif;
+      font-weight: 500;
+    }
+
+    /* ============ HELPER BADGE ============ */
+    .ratio-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: #f6f3ee;
+      padding: 6px 14px;
+      border-radius: 20px;
+      font-size: 0.7rem;
+      font-weight: 600;
+      color: #5c554b;
+      font-family: 'Inter', sans-serif;
+      letter-spacing: 0.3px;
+    }
+    .ratio-badge::before {
+      content: '';
+      width: 8px;
+      height: 8px;
+      background: #22c55e;
+      border-radius: 50%;
+      display: inline-block;
+    }
+
+    @media (max-width: 600px) {
+      .app-container {
+        padding: 20px 16px 24px;
+        border-radius: 18px;
+      }
+      .fact-card {
+        max-width: 300px;
+      }
+      .template-bold .card-fact {
+        font-size: 1.8rem;
+      }
+      .template-minimal .card-fact {
+        font-size: 1.05rem;
+      }
+      .template-dark .card-fact {
+        font-size: 1.1rem;
+      }
+      .template-bold .card-overlay {
+        padding: 40px 20px 24px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="app-container">
+    <div class="app-header">
+      <h1>FactCard <span>Beta</span></h1>
+      <div class="ratio-badge">3:4 Portrait</div>
+    </div>
+
+    <!-- Upload -->
+    <div class="upload-area" id="uploadTrigger">
+      <div class="upload-icon">📸</div>
+      <div class="upload-text">Drop your image here or click to browse</div>
+      <div class="upload-hint">High resolution works best · JPG, PNG, WEBP</div>
+      <div class="file-name" id="fileNameDisplay">No file selected</div>
+      <input type="file" id="imageInput" accept="image/*">
+    </div>
+
+    <!-- Fact text -->
+    <div class="text-section">
+      <label>Your scroll-stopping fact</label>
+      <textarea id="factText" placeholder="e.g. Cleopatra lived closer in time to the iPhone than to the building of the Great Pyramid." rows="3"></textarea>
+    </div>
+
+    <!-- Templates -->
+    <div>
+      <span class="template-section-label">Choose your style</span>
+      <div class="template-options" id="templateContainer">
+        <button class="template-btn active" data-template="bold">
+          <span class="template-icon">🔥</span> Bold Impact
+        </button>
+        <button class="template-btn" data-template="minimal">
+          <span class="template-icon">✧</span> Editorial Clean
+        </button>
+        <button class="template-btn" data-template="dark">
+          <span class="template-icon">◈</span> Dark Cinematic
+        </button>
+      </div>
+    </div>
+
+    <!-- Preview -->
+    <div class="preview-download">
+      <div id="factCard" class="fact-card template-bold">
+        <div class="card-image-area" id="cardImageContainer">
+          <span class="placeholder-img">Your image appears here</span>
+        </div>
+        <div class="card-overlay" id="cardOverlay">
+          <span class="card-label" id="cardLabel">History Fact</span>
+          <p class="card-fact" id="cardFactDisplay">Your fact text appears here.</p>
+        </div>
+        <div class="card-text-block" id="cardTextBlock" style="display: none;">
+          <span class="card-label" id="cardLabelAlt">History Fact</span>
+          <p class="card-fact" id="cardFactDisplayAlt">Your fact text appears here.</p>
+        </div>
+      </div>
+      <div class="button-row">
+        <button class="download-btn" id="downloadBtn">
+          <span>⬇</span> Download Post
+        </button>
+        <span class="note">Perfect 3:4 · Scroll-stopping design</span>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    (function() {
+      const imageInput = document.getElementById('imageInput');
+      const uploadTrigger = document.getElementById('uploadTrigger');
+      const fileNameDisplay = document.getElementById('fileNameDisplay');
+      const factTextarea = document.getElementById('factText');
+      const factCard = document.getElementById('factCard');
+      const cardImageContainer = document.getElementById('cardImageContainer');
+      const cardOverlay = document.getElementById('cardOverlay');
+      const cardTextBlock = document.getElementById('cardTextBlock');
+      const cardLabel = document.getElementById('cardLabel');
+      const cardFactDisplay = document.getElementById('cardFactDisplay');
+      const cardLabelAlt = document.getElementById('cardLabelAlt');
+      const cardFactDisplayAlt = document.getElementById('cardFactDisplayAlt');
+      const templateButtons = document.querySelectorAll('.template-btn');
+      const downloadBtn = document.getElementById('downloadBtn');
+
+      let currentImageDataUrl = null;
+      let currentTemplate = 'bold';
+
+      const labelTexts = {
+        bold: 'History Fact',
+        minimal: 'Did You Know?',
+        dark: 'The Truth'
+      };
+
+      function applyTemplate(templateName) {
+        factCard.classList.remove('template-bold', 'template-minimal', 'template-dark');
+        factCard.classList.add(`template-${templateName}`);
+        currentTemplate = templateName;
+
+        if (templateName === 'bold') {
+          cardOverlay.style.display = 'flex';
+          cardTextBlock.style.display = 'none';
+          if (cardLabel && labelTexts[templateName]) {
+            cardLabel.textContent = labelTexts[templateName];
+          }
+          cardFactDisplay.textContent = factTextarea.value.trim() || 'Your fact text appears here.';
+        } else if (templateName === 'minimal' || templateName === 'dark') {
+          cardOverlay.style.display = 'none';
+          cardTextBlock.style.display = 'flex';
+          if (cardLabelAlt && labelTexts[templateName]) {
+            cardLabelAlt.textContent = labelTexts[templateName];
+          }
+          cardFactDisplayAlt.textContent = factTextarea.value.trim() || 'Your fact text appears here.';
+        }
+      }
+
+      function updateFactText() {
+        const text = factTextarea.value.trim() || 'Your fact text appears here.';
+        cardFactDisplay.textContent = text;
+        cardFactDisplayAlt.textContent = text;
+      }
+
+      function applyImageOrientation() {
+        const images = cardImageContainer.querySelectorAll('img');
+        images.forEach(img => {
+          img.classList.remove('img-cover-landscape', 'img-cover-portrait');
+          if (img.complete && img.naturalWidth > 0) {
+            if (img.naturalWidth >= img.naturalHeight) {
+              img.classList.add('img-cover-landscape');
+            } else {
+              img.classList.add('img-cover-portrait');
+            }
+          }
+        });
+      }
+
+      function updateImagePreview() {
+        cardImageContainer.innerHTML = '';
+        if (currentImageDataUrl) {
+          const img = document.createElement('img');
+          img.src = currentImageDataUrl;
+          img.alt = 'uploaded image';
+          img.onload = function() {
+            if (img.naturalWidth >= img.naturalHeight) {
+              img.classList.add('img-cover-landscape');
+            } else {
+              img.classList.add('img-cover-portrait');
+            }
+          };
+          img.onerror = function() {
+            cardImageContainer.innerHTML = '';
+            const placeholder = document.createElement('span');
+            placeholder.className = 'placeholder-img';
+            placeholder.textContent = 'Your image appears here';
+            cardImageContainer.appendChild(placeholder);
+          };
+          cardImageContainer.appendChild(img);
+        } else {
+          const placeholder = document.createElement('span');
+          placeholder.className = 'placeholder-img';
+          placeholder.textContent = 'Your image appears here';
+          cardImageContainer.appendChild(placeholder);
+        }
+      }
+
+      function handleFileSelect(file) {
+        if (!file) return;
+        if (!file.type.startsWith('image/')) {
+          alert('Please select a valid image file.');
+          return;
+        }
+        fileNameDisplay.textContent = file.name.length > 28 ? file.name.substring(0, 25) + '...' : file.name;
+        const reader = new FileReader();
+        reader.onload = function(e) {
+          currentImageDataUrl = e.target.result;
+          updateImagePreview();
+        };
+        reader.readAsDataURL(file);
+      }
+
+      uploadTrigger.addEventListener('click', () => imageInput.click());
+      imageInput.addEventListener('change', (e) => {
+        if (e.target.files[0]) handleFileSelect(e.target.files[0]);
+      });
+
+      uploadTrigger.addEventListener('dragover', (e) => {
+        e.preventDefault();
+        uploadTrigger.style.borderColor = '#1877f2';
+        uploadTrigger.style.background = '#f8f9fc';
+      });
+      uploadTrigger.addEventListener('dragleave', (e) => {
+        e.preventDefault();
+        uploadTrigger.style.borderColor = '#e0dbd2';
+        uploadTrigger.style.background = '#fafaf8';
+      });
+      uploadTrigger.addEventListener('drop', (e) => {
+        e.preventDefault();
+        uploadTrigger.style.borderColor = '#e0dbd2';
+        uploadTrigger.style.background = '#fafaf8';
+        if (e.dataTransfer.files.length > 0) {
+          handleFileSelect(e.dataTransfer.files[0]);
+          imageInput.files = e.dataTransfer.files;
+        }
+      });
+
+      factTextarea.addEventListener('input', updateFactText);
+
+      templateButtons.forEach(btn => {
+        btn.addEventListener('click', function() {
+          templateButtons.forEach(b => b.classList.remove('active'));
+          this.classList.add('active');
+          const template = this.getAttribute('data-template');
+          if (template) applyTemplate(template);
+        });
+      });
+
+      downloadBtn.addEventListener('click', async function() {
+        const originalHTML = downloadBtn.innerHTML;
+        downloadBtn.innerHTML = '<span>⏳</span> Generating...';
+        downloadBtn.disabled = true;
+        try {
+          applyImageOrientation();
+          const cardElement = document.getElementById('factCard');
+          const canvas = await html2canvas(cardElement, {
+            scale: 2.5,
+            backgroundColor: '#ffffff',
+            allowTaint: false,
+            useCORS: true,
+            logging: false
+          });
+          canvas.toBlob(function(blob) {
+            if (!blob) {
+              alert('Could not generate image. Please try again.');
+              downloadBtn.innerHTML = originalHTML;
+              downloadBtn.disabled = false;
+              return;
+            }
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            const timestamp = new Date().toISOString().slice(0, 19).replace(/:/g, '-');
+            link.download = `factcard_${timestamp}.png`;
+            link.href = url;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            URL.revokeObjectURL(url);
+            downloadBtn.innerHTML = originalHTML;
+            downloadBtn.disabled = false;
+          }, 'image/png');
+        } catch (error) {
+          console.error(error);
+          alert('Something went wrong. Please try again.');
+          downloadBtn.innerHTML = originalHTML;
+          downloadBtn.disabled = false;
+        }
+      });
+
+      // Initialize
+      applyTemplate('bold');
+      factTextarea.value = 'Cleopatra lived closer in time to the iPhone than to the building of the Great Pyramid.';
+      updateFactText();
+      updateImagePreview();
+    })();
+  </script>
+</body>
+</html>
