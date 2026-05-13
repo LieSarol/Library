@@ -1,0 +1,858 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+  <title>FactCard · Modern Templates</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Playfair+Display:wght@400;500;600;700;800;900&family=DM+Serif+Display&family=DM+Sans:wght@400;500;600;700;800&family=Space+Grotesk:wght@300;400;500;600;700&family=Archivo:wght@400;500;600;700;800;900&family=Outfit:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      background: #f0f2f5;
+      font-family: 'Inter', system-ui, -apple-system, sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      min-height: 100vh;
+      padding: 24px 16px 48px;
+      margin: 0;
+    }
+
+    /* App Shell */
+    .app-container {
+      max-width: 880px;
+      width: 100%;
+      background: #ffffff;
+      border-radius: 28px;
+      padding: 36px 36px 40px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.04), 0 8px 48px rgba(0,0,0,0.08);
+      display: flex;
+      flex-direction: column;
+      gap: 32px;
+    }
+
+    .app-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding-bottom: 20px;
+      border-bottom: 1px solid #eef0f4;
+    }
+
+    .app-header h1 {
+      font-family: 'Outfit', 'Inter', sans-serif;
+      font-weight: 700;
+      font-size: 1.7rem;
+      color: #1a1d23;
+      letter-spacing: -0.8px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .app-header h1 span {
+      background: linear-gradient(135deg, #6366f1, #8b5cf6);
+      color: #ffffff;
+      font-size: 0.6rem;
+      font-weight: 700;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      padding: 6px 14px;
+      border-radius: 24px;
+      font-family: 'Inter', sans-serif;
+    }
+
+    /* Upload Zone */
+    .upload-area {
+      background: #f8fafc;
+      border: 2px dashed #cbd5e1;
+      border-radius: 20px;
+      padding: 32px 24px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      position: relative;
+      overflow: hidden;
+    }
+    .upload-area:hover {
+      border-color: #6366f1;
+      background: #f5f3ff;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 24px rgba(99, 102, 241, 0.08);
+    }
+    .upload-icon {
+      font-size: 2.2rem;
+      margin-bottom: 10px;
+      position: relative;
+      z-index: 1;
+    }
+    .upload-text {
+      font-weight: 600;
+      color: #1e293b;
+      font-size: 0.95rem;
+      position: relative;
+      z-index: 1;
+    }
+    .upload-hint {
+      font-size: 0.75rem;
+      color: #94a3b8;
+      margin-top: 6px;
+      position: relative;
+      z-index: 1;
+    }
+    .file-name {
+      margin-top: 12px;
+      font-size: 0.78rem;
+      color: #6366f1;
+      background: #ede9fe;
+      padding: 7px 18px;
+      border-radius: 24px;
+      font-weight: 600;
+      position: relative;
+      z-index: 1;
+    }
+    #imageInput {
+      display: none;
+    }
+
+    /* Input Section */
+    .input-section {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .text-section label,
+    .template-section-label {
+      font-weight: 700;
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 1.4px;
+      color: #64748b;
+      margin-bottom: 8px;
+      display: block;
+    }
+    textarea {
+      width: 100%;
+      padding: 16px 18px;
+      border: 2px solid #e2e8f0;
+      border-radius: 14px;
+      font-size: 0.9rem;
+      line-height: 1.7;
+      resize: vertical;
+      font-family: 'Inter', sans-serif;
+      background: #fdfdff;
+      outline: none;
+      transition: border 0.2s, box-shadow 0.2s;
+      color: #1a1d23;
+    }
+    textarea:focus {
+      border-color: #6366f1;
+      box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.08);
+    }
+
+    /* Template Pills */
+    .template-options {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+    .template-btn {
+      flex: 1;
+      min-width: 120px;
+      background: #f1f5f9;
+      border: 2px solid transparent;
+      padding: 16px 12px;
+      border-radius: 16px;
+      font-weight: 600;
+      color: #475569;
+      cursor: pointer;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+      font-size: 0.8rem;
+      font-family: 'Inter', sans-serif;
+      letter-spacing: 0.2px;
+      position: relative;
+      overflow: hidden;
+    }
+    .template-btn:hover {
+      background: #e2e8f0;
+      color: #1e293b;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 16px rgba(0,0,0,0.06);
+    }
+    .template-btn.active {
+      background: #ffffff;
+      border-color: #6366f1;
+      color: #4f46e5;
+      box-shadow: 0 4px 24px rgba(99, 102, 241, 0.15), 0 1px 2px rgba(0,0,0,0.04);
+      transform: translateY(-3px);
+    }
+    .template-btn.active::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 32px;
+      height: 3px;
+      background: #6366f1;
+      border-radius: 3px 3px 0 0;
+    }
+    .template-icon {
+      font-size: 1.4rem;
+      transition: transform 0.3s ease;
+    }
+    .template-btn.active .template-icon {
+      transform: scale(1.2);
+    }
+
+    /* Preview */
+    .preview-section {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 24px;
+      margin-top: 4px;
+    }
+
+    /* THE CARD - 3:4 Portrait */
+    .fact-card {
+      width: 100%;
+      max-width: 360px;
+      aspect-ratio: 3 / 4;
+      border-radius: 20px;
+      overflow: hidden;
+      box-shadow: 0 4px 24px rgba(0,0,0,0.08), 0 12px 48px rgba(0,0,0,0.12);
+      display: flex;
+      flex-direction: column;
+      position: relative;
+      background: #ffffff;
+      transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    .fact-card:hover {
+      box-shadow: 0 8px 36px rgba(0,0,0,0.12), 0 20px 60px rgba(0,0,0,0.16);
+      transform: translateY(-4px);
+    }
+
+    .card-image-area {
+      width: 100%;
+      flex: 1;
+      background: #e2e8f0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      position: relative;
+      min-height: 0;
+    }
+    .card-image-area img {
+      display: block;
+    }
+    .img-cover-landscape {
+      height: 100%;
+      width: auto;
+      max-width: none;
+    }
+    .img-cover-portrait {
+      width: 100%;
+      height: auto;
+      max-height: none;
+    }
+    .placeholder-img {
+      color: #94a3b8;
+      font-size: 0.85rem;
+      font-weight: 500;
+      font-family: 'Inter', sans-serif;
+      padding: 24px;
+      text-align: center;
+    }
+
+    .card-overlay {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      padding: 52px 32px 32px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      pointer-events: none;
+      z-index: 2;
+    }
+    .card-text-block {
+      flex: 0 0 auto;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      gap: 10px;
+      z-index: 2;
+    }
+
+    /* ===== TEMPLATE 1: CLEAN MODERN (indigo accent, subtle shadow) ===== */
+    .template-clean .fact-card {
+      border-radius: 24px;
+      background: #ffffff;
+    }
+    .template-clean .card-image-area {
+      flex: 2.2;
+    }
+    .template-clean .card-text-block {
+      flex: 0.7;
+      background: #ffffff;
+      padding: 20px 28px 28px;
+      gap: 8px;
+      border-top: 4px solid #6366f1;
+    }
+    .template-clean .card-label {
+      background: #ede9fe;
+      color: #4f46e5;
+      font-family: 'Inter', sans-serif;
+      font-size: 0.6rem;
+      font-weight: 700;
+      letter-spacing: 2px;
+      padding: 6px 14px;
+      border-radius: 20px;
+      align-self: flex-start;
+      text-transform: uppercase;
+    }
+    .template-clean .card-fact {
+      color: #1e293b;
+      font-family: 'Outfit', 'Inter', sans-serif;
+      font-size: 1.35rem;
+      font-weight: 700;
+      line-height: 1.3;
+      letter-spacing: -0.4px;
+    }
+
+    /* ===== TEMPLATE 2: NEUBRUTALISM (bold borders, hard shadows, loud) ===== */
+    .template-neubrutal .fact-card {
+      border-radius: 8px;
+      background: #fffbeb;
+      border: 4px solid #1e293b;
+      box-shadow: 8px 8px 0px #1e293b;
+    }
+    .template-neubrutal .fact-card:hover {
+      box-shadow: 12px 12px 0px #1e293b;
+      transform: translateY(-4px);
+    }
+    .template-neubrutal .card-image-area {
+      flex: 2;
+      border-bottom: 4px solid #1e293b;
+    }
+    .template-neubrutal .card-text-block {
+      flex: 0.8;
+      background: #fef3c7;
+      padding: 20px 28px 28px;
+      gap: 8px;
+    }
+    .template-neubrutal .card-label {
+      background: #f59e0b;
+      color: #1e293b;
+      font-family: 'Archivo', 'Inter', sans-serif;
+      font-size: 0.65rem;
+      font-weight: 800;
+      letter-spacing: 1.5px;
+      padding: 7px 16px;
+      border-radius: 4px;
+      align-self: flex-start;
+      text-transform: uppercase;
+      border: 3px solid #1e293b;
+    }
+    .template-neubrutal .card-fact {
+      color: #1e293b;
+      font-family: 'Archivo', 'Inter', sans-serif;
+      font-size: 1.3rem;
+      font-weight: 800;
+      line-height: 1.15;
+      letter-spacing: -0.5px;
+      text-transform: uppercase;
+    }
+
+    /* ===== TEMPLATE 3: SOFT GRADIENT (glassmorphism, modern glow) ===== */
+    .template-gradient .fact-card {
+      border-radius: 24px;
+      background: linear-gradient(145deg, #faf5ff 0%, #ede9fe 50%, #e0e7ff 100%);
+      box-shadow: 0 8px 40px rgba(99, 102, 241, 0.15), inset 0 1px 0 rgba(255,255,255,0.6);
+    }
+    .template-gradient .card-image-area {
+      flex: 2.4;
+      border-radius: 24px 24px 0 0;
+    }
+    .template-gradient .card-text-block {
+      flex: 0.65;
+      background: rgba(255, 255, 255, 0.75);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      padding: 22px 28px 26px;
+      gap: 8px;
+      margin: 16px;
+      margin-top: -16px;
+      border-radius: 16px;
+      border: 1px solid rgba(255, 255, 255, 0.4);
+      box-shadow: 0 4px 20px rgba(0,0,0,0.04);
+    }
+    .template-gradient .card-label {
+      background: linear-gradient(135deg, #6366f1, #8b5cf6);
+      color: #ffffff;
+      font-family: 'Inter', sans-serif;
+      font-size: 0.58rem;
+      font-weight: 700;
+      letter-spacing: 2px;
+      padding: 6px 14px;
+      border-radius: 20px;
+      align-self: flex-start;
+      text-transform: uppercase;
+    }
+    .template-gradient .card-fact {
+      color: #2d1b69;
+      font-family: 'DM Serif Display', 'Playfair Display', serif;
+      font-size: 1.25rem;
+      font-weight: 500;
+      line-height: 1.35;
+      letter-spacing: -0.2px;
+    }
+
+    /* ===== TEMPLATE 4: MINIMAL SWISS (grid, asymmetric, high contrast) ===== */
+    .template-darkswiss .fact-card {
+      border-radius: 0;
+      background: #0f0f0f;
+    }
+    .template-darkswiss .card-image-area {
+      flex: 2.2;
+      border-bottom: 1px solid #333333;
+    }
+    .template-darkswiss .card-text-block {
+      flex: 0.75;
+      background: #0f0f0f;
+      padding: 22px 32px 28px;
+      gap: 12px;
+      border-left: 5px solid #ffffff;
+      margin: 20px 0 20px 24px;
+    }
+    .template-darkswiss .card-label {
+      background: transparent;
+      color: #a3a3a3;
+      font-family: 'Space Grotesk', 'Inter', sans-serif;
+      font-size: 0.55rem;
+      font-weight: 500;
+      letter-spacing: 3px;
+      padding: 0;
+      border-radius: 0;
+      align-self: flex-start;
+      text-transform: uppercase;
+      border-bottom: 2px solid #ffffff;
+      padding-bottom: 10px;
+    }
+    .template-darkswiss .card-fact {
+      color: #ffffff;
+      font-family: 'DM Sans', 'Inter', sans-serif;
+      font-size: 1.2rem;
+      font-weight: 600;
+      line-height: 1.25;
+      letter-spacing: -0.3px;
+    }
+
+    /* ===== TEMPLATE 5: EDITORIAL CARD (magazine style, elegant) ===== */
+    .template-editorial .fact-card {
+      border-radius: 12px;
+      background: #fafaf9;
+    }
+    .template-editorial .card-image-area {
+      flex: 2.6;
+    }
+    .template-editorial .card-text-block {
+      flex: 0.55;
+      background: #ffffff;
+      padding: 18px 28px 24px;
+      gap: 4px;
+      border-top: 1px solid #e7e5e4;
+      margin: 0 20px 0 20px;
+    }
+    .template-editorial .card-label {
+      background: transparent;
+      color: #78716c;
+      font-family: 'Inter', sans-serif;
+      font-size: 0.6rem;
+      font-weight: 600;
+      letter-spacing: 2.5px;
+      padding: 0;
+      border-radius: 0;
+      align-self: flex-start;
+      text-transform: uppercase;
+      margin-bottom: 4px;
+    }
+    .template-editorial .card-fact {
+      color: #292524;
+      font-family: 'DM Serif Display', 'Playfair Display', serif;
+      font-size: 1.15rem;
+      font-weight: 400;
+      line-height: 1.3;
+      letter-spacing: 0px;
+      font-style: italic;
+    }
+
+    /* Download Button */
+    .button-row {
+      display: flex;
+      gap: 16px;
+      align-items: center;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+    .download-btn {
+      background: linear-gradient(135deg, #1e293b, #334155);
+      border: none;
+      color: #ffffff;
+      font-weight: 700;
+      font-size: 0.9rem;
+      padding: 16px 36px;
+      border-radius: 32px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      cursor: pointer;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      letter-spacing: 0.3px;
+      box-shadow: 0 4px 20px rgba(30, 41, 59, 0.3);
+      font-family: 'Inter', sans-serif;
+    }
+    .download-btn:hover {
+      background: linear-gradient(135deg, #0f172a, #1e293b);
+      box-shadow: 0 8px 32px rgba(30, 41, 59, 0.4);
+      transform: translateY(-3px);
+    }
+    .download-btn:active {
+      transform: scale(0.95);
+    }
+    .note {
+      font-size: 0.72rem;
+      color: #94a3b8;
+      font-family: 'Inter', sans-serif;
+      font-weight: 500;
+    }
+
+    .ratio-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: #f1f5f9;
+      padding: 8px 18px;
+      border-radius: 24px;
+      font-size: 0.72rem;
+      font-weight: 600;
+      color: #475569;
+      font-family: 'Inter', sans-serif;
+      letter-spacing: 0.3px;
+    }
+    .ratio-badge::before {
+      content: '';
+      width: 10px;
+      height: 10px;
+      background: #22c55e;
+      border-radius: 50%;
+      display: inline-block;
+      box-shadow: 0 0 8px rgba(34, 197, 94, 0.4);
+    }
+
+    @media (max-width: 640px) {
+      .app-container {
+        padding: 24px 18px 28px;
+        border-radius: 20px;
+      }
+      .fact-card {
+        max-width: 300px;
+      }
+      .template-options {
+        gap: 8px;
+      }
+      .template-btn {
+        min-width: 90px;
+        padding: 12px 8px;
+        font-size: 0.7rem;
+      }
+      .template-clean .card-fact,
+      .template-neubrutal .card-fact,
+      .template-gradient .card-fact,
+      .template-darkswiss .card-fact,
+      .template-editorial .card-fact {
+        font-size: 1rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="app-container">
+    <div class="app-header">
+      <h1>FactCard <span>Modern</span></h1>
+      <div class="ratio-badge">3:4 Portrait</div>
+    </div>
+
+    <!-- Upload -->
+    <div class="upload-area" id="uploadTrigger">
+      <div class="upload-icon">🖼️</div>
+      <div class="upload-text">Drop your image here or click to browse</div>
+      <div class="upload-hint">High resolution works best · JPG, PNG, WEBP</div>
+      <div class="file-name" id="fileNameDisplay">No file selected</div>
+      <input type="file" id="imageInput" accept="image/*">
+    </div>
+
+    <!-- Fact text -->
+    <div class="input-section">
+      <div class="text-section">
+        <label>Your fascinating fact</label>
+        <textarea id="factText" placeholder="e.g. A day on Venus is longer than a year on Venus." rows="3"></textarea>
+      </div>
+    </div>
+
+    <!-- Templates -->
+    <div>
+      <span class="template-section-label">Choose your style</span>
+      <div class="template-options" id="templateContainer">
+        <button class="template-btn active" data-template="clean">
+          <span class="template-icon">✨</span> Clean Modern
+        </button>
+        <button class="template-btn" data-template="neubrutal">
+          <span class="template-icon">💥</span> Neubrutal
+        </button>
+        <button class="template-btn" data-template="gradient">
+          <span class="template-icon">🌊</span> Soft Gradient
+        </button>
+        <button class="template-btn" data-template="darkswiss">
+          <span class="template-icon">◼️</span> Dark Swiss
+        </button>
+        <button class="template-btn" data-template="editorial">
+          <span class="template-icon">📰</span> Editorial
+        </button>
+      </div>
+    </div>
+
+    <!-- Preview -->
+    <div class="preview-section">
+      <div id="factCard" class="fact-card template-clean">
+        <div class="card-image-area" id="cardImageContainer">
+          <span class="placeholder-img">Your image appears here</span>
+        </div>
+        <div class="card-overlay" id="cardOverlay" style="display: none;">
+          <span class="card-label" id="cardLabel">Fun Fact</span>
+          <p class="card-fact" id="cardFactDisplay">Your fact text appears here.</p>
+        </div>
+        <div class="card-text-block" id="cardTextBlock">
+          <span class="card-label" id="cardLabelAlt">Fun Fact</span>
+          <p class="card-fact" id="cardFactDisplayAlt">Your fact text appears here.</p>
+        </div>
+      </div>
+      <div class="button-row">
+        <button class="download-btn" id="downloadBtn">
+          <span>⬇</span> Download Card
+        </button>
+        <span class="note">Perfect 3:4 · Modern design</span>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    (function() {
+      const imageInput = document.getElementById('imageInput');
+      const uploadTrigger = document.getElementById('uploadTrigger');
+      const fileNameDisplay = document.getElementById('fileNameDisplay');
+      const factTextarea = document.getElementById('factText');
+      const factCard = document.getElementById('factCard');
+      const cardImageContainer = document.getElementById('cardImageContainer');
+      const cardOverlay = document.getElementById('cardOverlay');
+      const cardTextBlock = document.getElementById('cardTextBlock');
+      const cardLabel = document.getElementById('cardLabel');
+      const cardFactDisplay = document.getElementById('cardFactDisplay');
+      const cardLabelAlt = document.getElementById('cardLabelAlt');
+      const cardFactDisplayAlt = document.getElementById('cardFactDisplayAlt');
+      const templateButtons = document.querySelectorAll('.template-btn');
+      const downloadBtn = document.getElementById('downloadBtn');
+
+      let currentImageDataUrl = null;
+      let currentTemplate = 'clean';
+
+      const labelTexts = {
+        clean: 'Fun Fact',
+        neubrutal: 'WOW FACT',
+        gradient: 'Did You Know?',
+        darkswiss: 'Truth',
+        editorial: 'Fascinating'
+      };
+
+      // All templates use cardTextBlock (no overlay needed)
+      function applyTemplate(templateName) {
+        factCard.classList.remove('template-clean', 'template-neubrutal', 'template-gradient', 'template-darkswiss', 'template-editorial');
+        factCard.classList.add(`template-${templateName}`);
+        currentTemplate = templateName;
+
+        // All modern templates use the text block
+        cardOverlay.style.display = 'none';
+        cardTextBlock.style.display = 'flex';
+        if (cardLabelAlt && labelTexts[templateName]) {
+          cardLabelAlt.textContent = labelTexts[templateName];
+        }
+        cardFactDisplayAlt.textContent = factTextarea.value.trim() || 'Your fact text appears here.';
+      }
+
+      function updateFactText() {
+        const text = factTextarea.value.trim() || 'Your fact text appears here.';
+        cardFactDisplay.textContent = text;
+        cardFactDisplayAlt.textContent = text;
+      }
+
+      function applyImageOrientation() {
+        const images = cardImageContainer.querySelectorAll('img');
+        images.forEach(img => {
+          img.classList.remove('img-cover-landscape', 'img-cover-portrait');
+          if (img.complete && img.naturalWidth > 0) {
+            if (img.naturalWidth >= img.naturalHeight) {
+              img.classList.add('img-cover-landscape');
+            } else {
+              img.classList.add('img-cover-portrait');
+            }
+          }
+        });
+      }
+
+      function updateImagePreview() {
+        cardImageContainer.innerHTML = '';
+        if (currentImageDataUrl) {
+          const img = document.createElement('img');
+          img.src = currentImageDataUrl;
+          img.alt = 'uploaded image';
+          img.onload = function() {
+            if (img.naturalWidth >= img.naturalHeight) {
+              img.classList.add('img-cover-landscape');
+            } else {
+              img.classList.add('img-cover-portrait');
+            }
+          };
+          img.onerror = function() {
+            cardImageContainer.innerHTML = '';
+            const placeholder = document.createElement('span');
+            placeholder.className = 'placeholder-img';
+            placeholder.textContent = 'Your image appears here';
+            cardImageContainer.appendChild(placeholder);
+          };
+          cardImageContainer.appendChild(img);
+        } else {
+          const placeholder = document.createElement('span');
+          placeholder.className = 'placeholder-img';
+          placeholder.textContent = 'Your image appears here';
+          cardImageContainer.appendChild(placeholder);
+        }
+      }
+
+      function handleFileSelect(file) {
+        if (!file) return;
+        if (!file.type.startsWith('image/')) {
+          alert('Please select a valid image file.');
+          return;
+        }
+        fileNameDisplay.textContent = file.name.length > 28 ? file.name.substring(0, 25) + '...' : file.name;
+        const reader = new FileReader();
+        reader.onload = function(e) {
+          currentImageDataUrl = e.target.result;
+          updateImagePreview();
+        };
+        reader.readAsDataURL(file);
+      }
+
+      uploadTrigger.addEventListener('click', () => imageInput.click());
+      imageInput.addEventListener('change', (e) => {
+        if (e.target.files[0]) handleFileSelect(e.target.files[0]);
+      });
+
+      uploadTrigger.addEventListener('dragover', (e) => {
+        e.preventDefault();
+        uploadTrigger.style.borderColor = '#6366f1';
+        uploadTrigger.style.background = '#f5f3ff';
+      });
+      uploadTrigger.addEventListener('dragleave', (e) => {
+        e.preventDefault();
+        uploadTrigger.style.borderColor = '#cbd5e1';
+        uploadTrigger.style.background = '#f8fafc';
+      });
+      uploadTrigger.addEventListener('drop', (e) => {
+        e.preventDefault();
+        uploadTrigger.style.borderColor = '#cbd5e1';
+        uploadTrigger.style.background = '#f8fafc';
+        if (e.dataTransfer.files.length > 0) {
+          handleFileSelect(e.dataTransfer.files[0]);
+          imageInput.files = e.dataTransfer.files;
+        }
+      });
+
+      factTextarea.addEventListener('input', updateFactText);
+
+      templateButtons.forEach(btn => {
+        btn.addEventListener('click', function() {
+          templateButtons.forEach(b => b.classList.remove('active'));
+          this.classList.add('active');
+          const template = this.getAttribute('data-template');
+          if (template) applyTemplate(template);
+        });
+      });
+
+      downloadBtn.addEventListener('click', async function() {
+        const originalHTML = downloadBtn.innerHTML;
+        downloadBtn.innerHTML = '<span>⏳</span> Generating...';
+        downloadBtn.disabled = true;
+        try {
+          applyImageOrientation();
+          const cardElement = document.getElementById('factCard');
+          const canvas = await html2canvas(cardElement, {
+            scale: 2.5,
+            backgroundColor: '#ffffff',
+            allowTaint: false,
+            useCORS: true,
+            logging: false
+          });
+          canvas.toBlob(function(blob) {
+            if (!blob) {
+              alert('Could not generate image. Please try again.');
+              downloadBtn.innerHTML = originalHTML;
+              downloadBtn.disabled = false;
+              return;
+            }
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            const timestamp = new Date().toISOString().slice(0, 19).replace(/:/g, '-');
+            link.download = `factcard_${currentTemplate}_${timestamp}.png`;
+            link.href = url;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            URL.revokeObjectURL(url);
+            downloadBtn.innerHTML = originalHTML;
+            downloadBtn.disabled = false;
+          }, 'image/png');
+        } catch (error) {
+          console.error(error);
+          alert('Something went wrong. Please try again.');
+          downloadBtn.innerHTML = originalHTML;
+          downloadBtn.disabled = false;
+        }
+      });
+
+      // Initialize
+      applyTemplate('clean');
+      factTextarea.value = 'A day on Venus is longer than a year on Venus.';
+      updateFactText();
+      updateImagePreview();
+    })();
+  </script>
+</body>
+</html>
