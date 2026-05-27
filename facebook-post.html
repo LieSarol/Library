@@ -3,11 +3,11 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-  <title>CurioCard · Scroll-Stopping Fact Studio</title>
+  <title>FactCard · Scroll-Stopping Templates</title>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700;14..32,800;14..32,900&family=Playfair+Display:wght@600;700;800;900&family=Anton&family=Oswald:wght@400;500;600;700&family=Montserrat:wght@400;500;600;700;800;900&family=DM+Serif+Display:ital@0;1&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Playfair+Display:wght@600;700;800;900&family=Anton&family=Oswald:wght@400;500;600;700&family=Montserrat:wght@400;500;600;700;800;900&family=DM+Serif+Display&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
   <style>
     * {
       margin: 0;
@@ -31,7 +31,7 @@
       max-width: 860px;
       width: 100%;
       background: #ffffff;
-      border-radius: 28px;
+      border-radius: 24px;
       padding: 32px 32px 36px;
       box-shadow: 0 1px 2px rgba(0,0,0,0.02), 0 12px 40px rgba(0,0,0,0.06);
       display: flex;
@@ -73,7 +73,7 @@
     .upload-area {
       background: #fafaf8;
       border: 2px dashed #e0dbd2;
-      border-radius: 24px;
+      border-radius: 16px;
       padding: 28px 20px;
       display: flex;
       flex-direction: column;
@@ -84,24 +84,41 @@
       position: relative;
       overflow: hidden;
     }
+    .upload-area::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(circle at center, rgba(24,119,242,0.03) 0%, transparent 70%);
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
     .upload-area:hover {
       border-color: #1877f2;
       background: #f8f9fc;
       transform: translateY(-1px);
     }
+    .upload-area:hover::before {
+      opacity: 1;
+    }
     .upload-icon {
       font-size: 2rem;
       margin-bottom: 8px;
+      position: relative;
+      z-index: 1;
     }
     .upload-text {
       font-weight: 600;
       color: #2d2923;
       font-size: 0.95rem;
+      position: relative;
+      z-index: 1;
     }
     .upload-hint {
       font-size: 0.72rem;
       color: #a0988b;
       margin-top: 4px;
+      position: relative;
+      z-index: 1;
     }
     .file-name {
       margin-top: 10px;
@@ -111,6 +128,8 @@
       padding: 6px 16px;
       border-radius: 20px;
       font-weight: 600;
+      position: relative;
+      z-index: 1;
     }
     #imageInput {
       display: none;
@@ -139,9 +158,9 @@
       width: 100%;
       padding: 14px 16px;
       border: 2px solid #e8e3d9;
-      border-radius: 16px;
+      border-radius: 12px;
       font-size: 0.9rem;
-      line-height: 1.5;
+      line-height: 1.6;
       resize: vertical;
       font-family: 'Inter', sans-serif;
       background: #fdfdfb;
@@ -154,7 +173,7 @@
       box-shadow: 0 0 0 4px rgba(24, 119, 242, 0.06);
     }
 
-    /* ============ TEMPLATE PILLS (modern scroll-stopping) ============ */
+    /* ============ TEMPLATE PILLS ============ */
     .template-options {
       display: flex;
       gap: 10px;
@@ -166,7 +185,7 @@
       background: #f6f3ee;
       border: 2px solid transparent;
       padding: 14px 10px;
-      border-radius: 18px;
+      border-radius: 14px;
       font-weight: 600;
       color: #5c554b;
       cursor: pointer;
@@ -178,6 +197,7 @@
       font-size: 0.78rem;
       font-family: 'Inter', sans-serif;
       letter-spacing: 0.2px;
+      position: relative;
     }
     .template-btn:hover {
       background: #ece6dc;
@@ -195,7 +215,7 @@
       transition: transform 0.3s ease;
     }
     .template-btn.active .template-icon {
-      transform: scale(1.1);
+      transform: scale(1.15);
     }
 
     /* ============ PREVIEW SECTION ============ */
@@ -212,7 +232,7 @@
       width: 100%;
       max-width: 360px;
       aspect-ratio: 3 / 4;
-      border-radius: 18px;
+      border-radius: 12px;
       overflow: hidden;
       box-shadow: 0 4px 20px rgba(0,0,0,0.1), 0 16px 48px rgba(0,0,0,0.12);
       display: flex;
@@ -258,7 +278,7 @@
       text-align: center;
     }
 
-    /* ============ OVERLAY & TEXT BLOCK - shared ============ */
+    /* ============ OVERLAY ============ */
     .card-overlay {
       position: absolute;
       bottom: 0;
@@ -280,51 +300,51 @@
       z-index: 2;
     }
 
-    /* ============ TEMPLATE 1: BOLD IMPACT (SCROLL-STOP MODERN) ============ */
+    /* ============ TEMPLATE 1: BOLD OVERLAY - SCROLL-STOPPER ============ */
     .template-bold .fact-card {
-      border-radius: 16px;
+      border-radius: 8px;
     }
     .template-bold .card-overlay {
       background: linear-gradient(
         to top,
         rgba(0,0,0,0.92) 0%,
-        rgba(0,0,0,0.78) 15%,
-        rgba(0,0,0,0.55) 38%,
-        rgba(0,0,0,0.28) 60%,
+        rgba(0,0,0,0.78) 12%,
+        rgba(0,0,0,0.55) 35%,
+        rgba(0,0,0,0.28) 58%,
         rgba(0,0,0,0.08) 80%,
         transparent 100%
       );
       padding: 56px 28px 32px;
     }
+    /* Label: dissolved into the design — thin red line + tracked text */
     .template-bold .card-label {
       background: transparent;
       color: #ffffff;
       font-family: 'Inter', sans-serif;
-      font-size: 0.6rem;
+      font-size: 0.55rem;
       font-weight: 700;
-      letter-spacing: 3px;
+      letter-spacing: 2.5px;
       padding: 0 0 10px 0;
       border-radius: 0;
-      border-bottom: 2px solid rgba(255,85,51,0.9);
+      border-bottom: 2px solid rgba(255,59,48,0.8);
       display: inline-block;
       align-self: flex-start;
       text-shadow: 0 1px 4px rgba(0,0,0,0.6);
-      text-transform: uppercase;
     }
     .template-bold .card-fact {
       color: #ffffff;
       font-family: 'Anton', 'Oswald', 'Impact', sans-serif;
-      font-size: 2.5rem;
+      font-size: 2.4rem;
       font-weight: 400;
-      letter-spacing: 0px;
-      line-height: 0.96;
-      text-shadow: 0 2px 14px rgba(0,0,0,0.7);
+      letter-spacing: 0.2px;
+      line-height: 0.95;
+      text-shadow: 0 2px 12px rgba(0,0,0,0.8);
       margin-top: 2px;
     }
 
-    /* ============ TEMPLATE 2: FRESH EDITORIAL (neutral fact vibe) ============ */
+    /* ============ TEMPLATE 2: EDITORIAL CLEAN ============ */
     .template-minimal .fact-card {
-      border-radius: 14px;
+      border-radius: 6px;
       background: #ffffff;
     }
     .template-minimal .card-image-area {
@@ -334,70 +354,70 @@
       flex: 0.9;
       background: #ffffff;
       padding: 20px 24px 24px;
-      gap: 8px;
-      border-left: 4px solid #30a46c;
-      margin: 0;
+      gap: 6px;
+      border-left: 3px solid #1877f2;
+      margin: 0 0 0 0;
     }
     .template-minimal .card-label {
       background: transparent;
-      color: #30a46c;
+      color: #1877f2;
       font-family: 'Inter', sans-serif;
-      font-size: 0.6rem;
-      font-weight: 800;
+      font-size: 0.58rem;
+      font-weight: 700;
       letter-spacing: 2px;
       padding: 0;
       border-radius: 0;
       align-self: flex-start;
-      margin-bottom: 4px;
+      margin-bottom: 2px;
       text-transform: uppercase;
     }
     .template-minimal .card-fact {
-      color: #1f1c17;
+      color: #12100e;
       font-family: 'DM Serif Display', 'Playfair Display', 'Georgia', serif;
-      font-size: 1.28rem;
-      font-weight: 500;
+      font-size: 1.25rem;
+      font-weight: 400;
       text-shadow: none;
-      line-height: 1.28;
+      line-height: 1.25;
       letter-spacing: -0.2px;
     }
 
-    /* ============ TEMPLATE 3: MODERN DARK CINEMATIC ============ */
+    /* ============ TEMPLATE 3: DARK CINEMATIC ============ */
     .template-dark .fact-card {
-      border-radius: 16px;
-      background: #0f0f0f;
+      border-radius: 0;
+      background: #080808;
     }
     .template-dark .card-image-area {
-      flex: 2.5;
-      border-bottom: 2px solid #bc9a6c;
+      flex: 2.6;
+      border-bottom: 2px solid #c9a050;
     }
     .template-dark .card-text-block {
-      flex: 0.8;
-      background: #0f0f0f;
-      padding: 20px 24px 22px;
-      gap: 8px;
+      flex: 0.75;
+      background: #080808;
+      padding: 18px 24px 22px;
+      gap: 6px;
     }
     .template-dark .card-label {
       background: transparent;
-      color: #bc9a6c;
+      color: #c9a050;
       font-family: 'Inter', sans-serif;
-      font-size: 0.58rem;
-      font-weight: 700;
-      letter-spacing: 2.8px;
+      font-size: 0.55rem;
+      font-weight: 600;
+      letter-spacing: 2.5px;
       padding: 0;
       border-radius: 0;
       align-self: flex-start;
       margin-bottom: 4px;
       text-transform: uppercase;
-      border-bottom: 1px solid rgba(188,154,108,0.5);
+      border-bottom: 1px solid rgba(201,160,80,0.4);
       padding-bottom: 8px;
     }
     .template-dark .card-fact {
-      color: #f0e7db;
+      color: #e8e2d4;
       font-family: 'Playfair Display', 'Georgia', serif;
-      font-size: 1.32rem;
+      font-size: 1.3rem;
       font-weight: 800;
       text-shadow: none;
-      line-height: 1.22;
+      line-height: 1.2;
       letter-spacing: -0.3px;
     }
 
@@ -406,8 +426,6 @@
       display: flex;
       gap: 12px;
       align-items: center;
-      flex-wrap: wrap;
-      justify-content: center;
     }
     .download-btn {
       background: #12100e;
@@ -416,7 +434,7 @@
       font-weight: 700;
       font-size: 0.88rem;
       padding: 14px 32px;
-      border-radius: 40px;
+      border-radius: 28px;
       display: flex;
       align-items: center;
       gap: 8px;
@@ -441,6 +459,7 @@
       font-weight: 500;
     }
 
+    /* ============ HELPER BADGE ============ */
     .ratio-badge {
       display: inline-flex;
       align-items: center;
@@ -452,6 +471,7 @@
       font-weight: 600;
       color: #5c554b;
       font-family: 'Inter', sans-serif;
+      letter-spacing: 0.3px;
     }
     .ratio-badge::before {
       content: '';
@@ -465,12 +485,13 @@
     @media (max-width: 600px) {
       .app-container {
         padding: 20px 16px 24px;
+        border-radius: 18px;
       }
       .fact-card {
         max-width: 300px;
       }
       .template-bold .card-fact {
-        font-size: 1.9rem;
+        font-size: 1.8rem;
       }
       .template-minimal .card-fact {
         font-size: 1.05rem;
@@ -485,290 +506,262 @@
   </style>
 </head>
 <body>
-<div class="app-container">
-  <div class="app-header">
-    <h1>CurioCard <span>FactDrop</span></h1>
-    <div class="ratio-badge">3:4 Viral Ready</div>
-  </div>
+  <div class="app-container">
+    <div class="app-header">
+      <h1>FactCard <span>Beta</span></h1>
+      <div class="ratio-badge">3:4 Portrait</div>
+    </div>
 
-  <!-- Upload -->
-  <div class="upload-area" id="uploadTrigger">
-    <div class="upload-icon">🖼️✨</div>
-    <div class="upload-text">Drop your image or click to upload</div>
-    <div class="upload-hint">Use striking visuals for maximum scroll-stopping effect</div>
-    <div class="file-name" id="fileNameDisplay">No image selected</div>
-    <input type="file" id="imageInput" accept="image/*">
-  </div>
+    <!-- Upload -->
+    <div class="upload-area" id="uploadTrigger">
+      <div class="upload-icon">📸</div>
+      <div class="upload-text">Drop your image here or click to browse</div>
+      <div class="upload-hint">High resolution works best · JPG, PNG, WEBP</div>
+      <div class="file-name" id="fileNameDisplay">No file selected</div>
+      <input type="file" id="imageInput" accept="image/*">
+    </div>
 
-  <!-- Fact text : general curiosity, no historical template constraint -->
-  <div class="text-section">
-    <label>⚡ Your scroll-stopping fact (general curiosity)</label>
-    <textarea id="factText" placeholder="e.g., A cloud can weigh over a million pounds — about the same as 100 elephants. ☁️🐘" rows="3">Octopuses have three hearts, and two of them stop beating when they swim.</textarea>
-  </div>
+    <!-- Fact text -->
+    <div class="text-section">
+      <label>Your scroll-stopping fact</label>
+      <textarea id="factText" placeholder="e.g. Cleopatra lived closer in time to the iPhone than to the building of the Great Pyramid." rows="3"></textarea>
+    </div>
 
-  <!-- Templates (modern designs, no "historical" theming) -->
-  <div>
-    <span class="template-section-label">visual vibe</span>
-    <div class="template-options" id="templateContainer">
-      <button class="template-btn active" data-template="bold">
-        <span class="template-icon">⚡</span> Shock Value
-      </button>
-      <button class="template-btn" data-template="minimal">
-        <span class="template-icon">✧</span> Fresh Fact
-      </button>
-      <button class="template-btn" data-template="dark">
-        <span class="template-icon">◈</span> Midnight Mode
-      </button>
+    <!-- Templates -->
+    <div>
+      <span class="template-section-label">Choose your style</span>
+      <div class="template-options" id="templateContainer">
+        <button class="template-btn active" data-template="bold">
+          <span class="template-icon">🔥</span> Bold Impact
+        </button>
+        <button class="template-btn" data-template="minimal">
+          <span class="template-icon">✧</span> Editorial Clean
+        </button>
+        <button class="template-btn" data-template="dark">
+          <span class="template-icon">◈</span> Dark Cinematic
+        </button>
+      </div>
+    </div>
+
+    <!-- Preview -->
+    <div class="preview-download">
+      <div id="factCard" class="fact-card template-bold">
+        <div class="card-image-area" id="cardImageContainer">
+          <span class="placeholder-img">Your image appears here</span>
+        </div>
+        <div class="card-overlay" id="cardOverlay">
+          <span class="card-label" id="cardLabel">History Fact</span>
+          <p class="card-fact" id="cardFactDisplay">Your fact text appears here.</p>
+        </div>
+        <div class="card-text-block" id="cardTextBlock" style="display: none;">
+          <span class="card-label" id="cardLabelAlt">History Fact</span>
+          <p class="card-fact" id="cardFactDisplayAlt">Your fact text appears here.</p>
+        </div>
+      </div>
+      <div class="button-row">
+        <button class="download-btn" id="downloadBtn">
+          <span>⬇</span> Download Post
+        </button>
+        <span class="note">Perfect 3:4 · Scroll-stopping design</span>
+      </div>
     </div>
   </div>
 
-  <!-- Preview -->
-  <div class="preview-download">
-    <div id="factCard" class="fact-card template-bold">
-      <div class="card-image-area" id="cardImageContainer">
-        <span class="placeholder-img">📸 Your visual anchor</span>
-      </div>
-      <div class="card-overlay" id="cardOverlay">
-        <span class="card-label" id="cardLabel">curious fact</span>
-        <p class="card-fact" id="cardFactDisplay">Your fact text appears here.</p>
-      </div>
-      <div class="card-text-block" id="cardTextBlock" style="display: none;">
-        <span class="card-label" id="cardLabelAlt">did you know?</span>
-        <p class="card-fact" id="cardFactDisplayAlt">Your fact text appears here.</p>
-      </div>
-    </div>
-    <div class="button-row">
-      <button class="download-btn" id="downloadBtn">
-        <span>⬇</span> Download scroll-stopper
-      </button>
-      <span class="note">Perfect 3:4 · share anywhere</span>
-    </div>
-  </div>
-</div>
+  <script>
+    (function() {
+      const imageInput = document.getElementById('imageInput');
+      const uploadTrigger = document.getElementById('uploadTrigger');
+      const fileNameDisplay = document.getElementById('fileNameDisplay');
+      const factTextarea = document.getElementById('factText');
+      const factCard = document.getElementById('factCard');
+      const cardImageContainer = document.getElementById('cardImageContainer');
+      const cardOverlay = document.getElementById('cardOverlay');
+      const cardTextBlock = document.getElementById('cardTextBlock');
+      const cardLabel = document.getElementById('cardLabel');
+      const cardFactDisplay = document.getElementById('cardFactDisplay');
+      const cardLabelAlt = document.getElementById('cardLabelAlt');
+      const cardFactDisplayAlt = document.getElementById('cardFactDisplayAlt');
+      const templateButtons = document.querySelectorAll('.template-btn');
+      const downloadBtn = document.getElementById('downloadBtn');
 
-<script>
-  (function() {
-    // DOM elements
-    const imageInput = document.getElementById('imageInput');
-    const uploadTrigger = document.getElementById('uploadTrigger');
-    const fileNameDisplay = document.getElementById('fileNameDisplay');
-    const factTextarea = document.getElementById('factText');
-    const factCard = document.getElementById('factCard');
-    const cardImageContainer = document.getElementById('cardImageContainer');
-    const cardOverlay = document.getElementById('cardOverlay');
-    const cardTextBlock = document.getElementById('cardTextBlock');
-    const cardLabel = document.getElementById('cardLabel');
-    const cardFactDisplay = document.getElementById('cardFactDisplay');
-    const cardLabelAlt = document.getElementById('cardLabelAlt');
-    const cardFactDisplayAlt = document.getElementById('cardFactDisplayAlt');
-    const templateButtons = document.querySelectorAll('.template-btn');
-    const downloadBtn = document.getElementById('downloadBtn');
+      let currentImageDataUrl = null;
+      let currentTemplate = 'bold';
 
-    let currentImageDataUrl = null;
-    let currentTemplate = 'bold';
+      const labelTexts = {
+        bold: 'This is wild',
+        minimal: 'Did You Know?',
+        dark: 'The Truth'
+      };
 
-    // Neutral, modern fact labels (no "history" template style)
-    const labelTexts = {
-      bold: 'This is wild',
-      minimal: 'random genius',
-      dark: 'deep truth'
-    };
+      function applyTemplate(templateName) {
+        factCard.classList.remove('template-bold', 'template-minimal', 'template-dark');
+        factCard.classList.add(`template-${templateName}`);
+        currentTemplate = templateName;
 
-    // Apply selected template structure
-    function applyTemplate(templateName) {
-      factCard.classList.remove('template-bold', 'template-minimal', 'template-dark');
-      factCard.classList.add(`template-${templateName}`);
-      currentTemplate = templateName;
-
-      if (templateName === 'bold') {
-        cardOverlay.style.display = 'flex';
-        cardTextBlock.style.display = 'none';
-        if (cardLabel && labelTexts[templateName]) {
-          cardLabel.textContent = labelTexts[templateName];
+        if (templateName === 'bold') {
+          cardOverlay.style.display = 'flex';
+          cardTextBlock.style.display = 'none';
+          if (cardLabel && labelTexts[templateName]) {
+            cardLabel.textContent = labelTexts[templateName];
+          }
+          cardFactDisplay.textContent = factTextarea.value.trim() || 'Your fact text appears here.';
+        } else if (templateName === 'minimal' || templateName === 'dark') {
+          cardOverlay.style.display = 'none';
+          cardTextBlock.style.display = 'flex';
+          if (cardLabelAlt && labelTexts[templateName]) {
+            cardLabelAlt.textContent = labelTexts[templateName];
+          }
+          cardFactDisplayAlt.textContent = factTextarea.value.trim() || 'Your fact text appears here.';
         }
-        cardFactDisplay.textContent = factTextarea.value.trim() || 'Your fact text appears here.';
-      } else if (templateName === 'minimal' || templateName === 'dark') {
-        cardOverlay.style.display = 'none';
-        cardTextBlock.style.display = 'flex';
-        if (cardLabelAlt && labelTexts[templateName]) {
-          cardLabelAlt.textContent = labelTexts[templateName];
-        }
-        cardFactDisplayAlt.textContent = factTextarea.value.trim() || 'Your fact text appears here.';
       }
-    }
 
-    // update fact text in both possible containers
-    function updateFactText() {
-      const rawText = factTextarea.value.trim();
-      const displayText = rawText === '' ? '✨ Discover something unexpected ✨' : rawText;
-      cardFactDisplay.textContent = displayText;
-      cardFactDisplayAlt.textContent = displayText;
-    }
+      function updateFactText() {
+        const text = factTextarea.value.trim() || 'Your fact text appears here.';
+        cardFactDisplay.textContent = text;
+        cardFactDisplayAlt.textContent = text;
+      }
 
-    // smart image orientation: ensures image covers area nicely
-    function applyImageOrientation() {
-      const images = cardImageContainer.querySelectorAll('img');
-      images.forEach(img => {
-        img.classList.remove('img-cover-landscape', 'img-cover-portrait');
-        if (img.complete && img.naturalWidth > 0) {
-          if (img.naturalWidth >= img.naturalHeight) {
-            img.classList.add('img-cover-landscape');
-          } else {
-            img.classList.add('img-cover-portrait');
+      function applyImageOrientation() {
+        const images = cardImageContainer.querySelectorAll('img');
+        images.forEach(img => {
+          img.classList.remove('img-cover-landscape', 'img-cover-portrait');
+          if (img.complete && img.naturalWidth > 0) {
+            if (img.naturalWidth >= img.naturalHeight) {
+              img.classList.add('img-cover-landscape');
+            } else {
+              img.classList.add('img-cover-portrait');
+            }
           }
-        }
-      });
-    }
+        });
+      }
 
-    // Update image preview inside the card container
-    function updateImagePreview() {
-      cardImageContainer.innerHTML = '';
-      if (currentImageDataUrl) {
-        const img = document.createElement('img');
-        img.src = currentImageDataUrl;
-        img.alt = 'fact visual';
-        img.onload = function() {
-          // orientation class
-          if (img.naturalWidth >= img.naturalHeight) {
-            img.classList.add('img-cover-landscape');
-          } else {
-            img.classList.add('img-cover-portrait');
-          }
-        };
-        img.onerror = function() {
-          cardImageContainer.innerHTML = '';
+      function updateImagePreview() {
+        cardImageContainer.innerHTML = '';
+        if (currentImageDataUrl) {
+          const img = document.createElement('img');
+          img.src = currentImageDataUrl;
+          img.alt = 'uploaded image';
+          img.onload = function() {
+            if (img.naturalWidth >= img.naturalHeight) {
+              img.classList.add('img-cover-landscape');
+            } else {
+              img.classList.add('img-cover-portrait');
+            }
+          };
+          img.onerror = function() {
+            cardImageContainer.innerHTML = '';
+            const placeholder = document.createElement('span');
+            placeholder.className = 'placeholder-img';
+            placeholder.textContent = 'Your image appears here';
+            cardImageContainer.appendChild(placeholder);
+          };
+          cardImageContainer.appendChild(img);
+        } else {
           const placeholder = document.createElement('span');
           placeholder.className = 'placeholder-img';
-          placeholder.textContent = '🖼️ image preview failed';
+          placeholder.textContent = 'Your image appears here';
           cardImageContainer.appendChild(placeholder);
+        }
+      }
+
+      function handleFileSelect(file) {
+        if (!file) return;
+        if (!file.type.startsWith('image/')) {
+          alert('Please select a valid image file.');
+          return;
+        }
+        fileNameDisplay.textContent = file.name.length > 28 ? file.name.substring(0, 25) + '...' : file.name;
+        const reader = new FileReader();
+        reader.onload = function(e) {
+          currentImageDataUrl = e.target.result;
+          updateImagePreview();
         };
-        cardImageContainer.appendChild(img);
-      } else {
-        const placeholder = document.createElement('span');
-        placeholder.className = 'placeholder-img';
-        placeholder.textContent = '📷 drop an image here';
-        cardImageContainer.appendChild(placeholder);
+        reader.readAsDataURL(file);
       }
-    }
 
-    function handleFileSelect(file) {
-      if (!file) return;
-      if (!file.type.startsWith('image/')) {
-        alert('Please choose an image file (PNG, JPG, WEBP).');
-        return;
-      }
-      const truncatedName = file.name.length > 30 ? file.name.substring(0, 27) + '...' : file.name;
-      fileNameDisplay.textContent = truncatedName;
-      const reader = new FileReader();
-      reader.onload = function(e) {
-        currentImageDataUrl = e.target.result;
-        updateImagePreview();
-      };
-      reader.readAsDataURL(file);
-    }
-
-    // ---- Event listeners ----
-    uploadTrigger.addEventListener('click', () => imageInput.click());
-    imageInput.addEventListener('change', (e) => {
-      if (e.target.files[0]) handleFileSelect(e.target.files[0]);
-    });
-
-    // drag & drop
-    uploadTrigger.addEventListener('dragover', (e) => {
-      e.preventDefault();
-      uploadTrigger.style.borderColor = '#1877f2';
-      uploadTrigger.style.background = '#f8f9fc';
-    });
-    uploadTrigger.addEventListener('dragleave', (e) => {
-      e.preventDefault();
-      uploadTrigger.style.borderColor = '#e0dbd2';
-      uploadTrigger.style.background = '#fafaf8';
-    });
-    uploadTrigger.addEventListener('drop', (e) => {
-      e.preventDefault();
-      uploadTrigger.style.borderColor = '#e0dbd2';
-      uploadTrigger.style.background = '#fafaf8';
-      if (e.dataTransfer.files.length > 0) {
-        handleFileSelect(e.dataTransfer.files[0]);
-        imageInput.files = e.dataTransfer.files;
-      }
-    });
-
-    // fact text updates
-    factTextarea.addEventListener('input', updateFactText);
-
-    // template switching
-    templateButtons.forEach(btn => {
-      btn.addEventListener('click', function() {
-        templateButtons.forEach(b => b.classList.remove('active'));
-        this.classList.add('active');
-        const template = this.getAttribute('data-template');
-        if (template) applyTemplate(template);
+      uploadTrigger.addEventListener('click', () => imageInput.click());
+      imageInput.addEventListener('change', (e) => {
+        if (e.target.files[0]) handleFileSelect(e.target.files[0]);
       });
-    });
 
-    // download as PNG with html2canvas — scroll-stopping export
-    downloadBtn.addEventListener('click', async function() {
-      const originalHTML = downloadBtn.innerHTML;
-      downloadBtn.innerHTML = '<span>🎨</span> Rendering ...';
-      downloadBtn.disabled = true;
+      uploadTrigger.addEventListener('dragover', (e) => {
+        e.preventDefault();
+        uploadTrigger.style.borderColor = '#1877f2';
+        uploadTrigger.style.background = '#f8f9fc';
+      });
+      uploadTrigger.addEventListener('dragleave', (e) => {
+        e.preventDefault();
+        uploadTrigger.style.borderColor = '#e0dbd2';
+        uploadTrigger.style.background = '#fafaf8';
+      });
+      uploadTrigger.addEventListener('drop', (e) => {
+        e.preventDefault();
+        uploadTrigger.style.borderColor = '#e0dbd2';
+        uploadTrigger.style.background = '#fafaf8';
+        if (e.dataTransfer.files.length > 0) {
+          handleFileSelect(e.dataTransfer.files[0]);
+          imageInput.files = e.dataTransfer.files;
+        }
+      });
 
-      try {
-        // Force orientation update for any new image dimensions
-        applyImageOrientation();
-        const cardElement = document.getElementById('factCard');
-        // ensure any layout shifts are captured with high quality
-        const canvas = await html2canvas(cardElement, {
-          scale: 2.8,
-          backgroundColor: '#ffffff',
-          allowTaint: false,
-          useCORS: true,
-          logging: false,
-          windowWidth: cardElement.scrollWidth,
-          windowHeight: cardElement.scrollHeight
+      factTextarea.addEventListener('input', updateFactText);
+
+      templateButtons.forEach(btn => {
+        btn.addEventListener('click', function() {
+          templateButtons.forEach(b => b.classList.remove('active'));
+          this.classList.add('active');
+          const template = this.getAttribute('data-template');
+          if (template) applyTemplate(template);
         });
+      });
 
-        canvas.toBlob(function(blob) {
-          if (!blob) {
-            alert('Could not generate image, please try again.');
+      downloadBtn.addEventListener('click', async function() {
+        const originalHTML = downloadBtn.innerHTML;
+        downloadBtn.innerHTML = '<span>⏳</span> Generating...';
+        downloadBtn.disabled = true;
+        try {
+          applyImageOrientation();
+          const cardElement = document.getElementById('factCard');
+          const canvas = await html2canvas(cardElement, {
+            scale: 2.5,
+            backgroundColor: '#ffffff',
+            allowTaint: false,
+            useCORS: true,
+            logging: false
+          });
+          canvas.toBlob(function(blob) {
+            if (!blob) {
+              alert('Could not generate image. Please try again.');
+              downloadBtn.innerHTML = originalHTML;
+              downloadBtn.disabled = false;
+              return;
+            }
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            const timestamp = new Date().toISOString().slice(0, 19).replace(/:/g, '-');
+            link.download = `factcard_${timestamp}.png`;
+            link.href = url;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            URL.revokeObjectURL(url);
             downloadBtn.innerHTML = originalHTML;
             downloadBtn.disabled = false;
-            return;
-          }
-          const url = URL.createObjectURL(blob);
-          const link = document.createElement('a');
-          const timestamp = new Date().toISOString().slice(0, 19).replace(/:/g, '-');
-          const factPreview = (factTextarea.value.trim().slice(0, 25) || 'curiofact').replace(/[^a-z0-9]/gi, '_');
-          link.download = `curio_${factPreview}_${timestamp}.png`;
-          link.href = url;
-          document.body.appendChild(link);
-          link.click();
-          document.body.removeChild(link);
-          URL.revokeObjectURL(url);
+          }, 'image/png');
+        } catch (error) {
+          console.error(error);
+          alert('Something went wrong. Please try again.');
           downloadBtn.innerHTML = originalHTML;
           downloadBtn.disabled = false;
-        }, 'image/png');
-      } catch (error) {
-        console.error('Export error:', error);
-        alert('Something went wrong while generating the card. Please retry.');
-        downloadBtn.innerHTML = originalHTML;
-        downloadBtn.disabled = false;
-      }
-    });
+        }
+      });
 
-    // ---- initialization with modern / neutral content (no historical bias) ----
-    applyTemplate('bold');
-    // Set a fresh general-knowledge / fun-fact example (no historical theme)
-    factTextarea.value = 'Octopuses have three hearts, and two of them stop beating when they swim. 🐙💓';
-    updateFactText();
-    updateImagePreview();
-
-    // dynamic orientation helper on image load if needed (mutations)
-    const observer = new MutationObserver(() => {
-      applyImageOrientation();
-    });
-    observer.observe(cardImageContainer, { childList: true, subtree: true });
-  })();
-</script>
+      // Initialize
+      applyTemplate('bold');
+      factTextarea.value = 'Cleopatra lived closer in time to the iPhone than to the building of the Great Pyramid.';
+      updateFactText();
+      updateImagePreview();
+    })();
+  </script>
 </body>
 </html>
