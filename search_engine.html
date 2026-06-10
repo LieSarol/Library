@@ -89,7 +89,7 @@
       resultsDiv.innerHTML = "<p class='text-center text-gray-400'>✨ Loading cuteness... ✨</p>";
 
       if (mode === "web") {
-        const res = await fetch(`https://visionary-piroshki-7cee32.netlify.app/crawl?query=${q}`);
+        const res = await fetch(`https://crawler30.onrender.com/crawl?query=${q}`);
         const data = await res.json();
 
         resultsDiv.innerHTML = "";
